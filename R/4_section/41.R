@@ -29,21 +29,35 @@ pto_06 <- pto_census("CA06", pto_06v, "2006")
 pto_01 <- pto_census("CA01", pto_01v, "2001") |> 
   mutate(total = owner + tenant)
 
-pto <- bind_rows(pto_21, pto_16, pto_11, pto_06, pto_01) |> 
+pto <- bind_rows(pto_21, pto_16, pto_11, pto_06, pto_01) |>
   pivot_longer(cols = c("owner", "tenant"), 
                names_to = "type", 
-               values_to = "count") |> 
-  mutate("count_cc" = convert_number(count),
-         "prop" = count / total,
-         "prop_cc" = convert_pct(count / total))
+               values_to = "count") |>
+  group_by(type) |>
+  arrange(Year) |>
+  mutate(
+    count_cc = convert_number(count),
+    prop = count / total,
+    prop_cc = paste0(
+      convert_pct(prop),
+      ifelse(is.na(lag(prop)), "", 
+             ifelse(prop > lag(prop), "▲", "▼"))
+    )
+  ) |>
+  ungroup()
 
 #Creating a grouped bar chart
-ggplot(pto, aes(x = Year, y = count, fill = type)) +
+plot_4_1_1 <- ggplot(pto, aes(x = Year, y = count, fill = type)) +
   geom_bar(stat = "identity", position = "dodge") +
-  scale_fill_manual(values = c("owner" = "#A3B0D1", "tenant" = "#CD718C")) +
+  geom_text(aes(label = prop_cc), position = position_dodge(width = 0.9),
+            vjust = 2, size = 5, color = "white") +
+  scale_fill_manual(values = c("owner" = "#A3B0D1", "tenant" = "#CD718C"),
+                    labels = c("owner" = "Propriétaire", "tenant" = "Locataire")) +
   scale_y_continuous(labels = function(x) convert_number(x)) +
   labs(x = "", y = "Nombre de ménages") +
   graph_theme
+
+ggsave("outputs/4/plot_4_1_1.png", plot = plot_4_1_1, width = 800/72, height = 600/72, dpi = 72)
 
 # 4.1.2 -------------------------------------------------------------------
 
@@ -56,10 +70,17 @@ ggplot(pto, aes(x = Year, y = count, fill = type)) +
 # 4.1.6 -------------------------------------------------------------------
 
 # 4.1.7 -------------------------------------------------------------------
+data_4_1_7 <- read_excel("data/4/4_1_7.xlsx") |> 
+  filter(RA == 13)
 
+ggplot(data_4_1_7, aes(x = Year, y = Total)) +
+  geom_line(color = "#A3B0D1", linewidth = 1.5) +
+  geom_point(color = "blue") +
+  labs(x = "Year", y = "Total") +
+  graph_theme
 # 4.1.8 -------------------------------------------------------------------
 
 # 4.1.9 -------------------------------------------------------------------
 
 # R Markdown --------------------------------------------------------------
-
+qs::qsavem(plot_4_1_1, file = "data/section_4_1.qsm")

@@ -7,6 +7,7 @@ library(extrafont)
 library(showtext)
 library(sf)
 library(gt)
+library(readxl)
 
 # Checking vectors for Canada ---------------------------------------------
 cmhc_breakdown <- list_cmhc_breakdowns()
@@ -28,7 +29,10 @@ curbcut_colors$brandbook <-
 
 graph_theme <- theme_minimal() +
   theme(legend.title = element_blank(), legend.position = "bottom",
-        text=element_text(family="KMR Apparat Regular"))
+        legend.margin = margin(t = -5, r = 0, b = 5, l = 0),
+        text=element_text(family="KMR Apparat Regular"),
+        legend.text = element_text(size = 11),
+        axis.title.y = element_text(size = 12))
 
 # Number functions --------------------------------------------------------
 convert_hundreds <- function(x) {
