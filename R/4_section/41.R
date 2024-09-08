@@ -60,6 +60,53 @@ plot_4_1_1 <- ggplot(pto, aes(x = Year, y = count, fill = type)) +
 ggsave("outputs/4/plot_4_1_1.png", plot = plot_4_1_1, width = 800/72, height = 600/72, dpi = 72)
 
 # 4.1.2 -------------------------------------------------------------------
+data_4_1_2 <- read_excel("data/4/mode_occupation_revenu_SR.xlsx") |> #Editied version of the spreadsheet
+  select(-GeoUID) |> 
+  summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
+  pivot_longer(cols = everything(), names_to = "type", values_to = "households") |> 
+  mutate(income = case_when(
+    str_detect(type, "19999") ~ "< 19 999 $",
+    str_detect(type, "39999") ~ "20 - 39 999 $",
+    str_detect(type, "59999") ~ "40 - 59 999 $",
+    str_detect(type, "79999") ~ "60 - 79 999 $",
+    str_detect(type, "99999") ~ "80 - 99 999 $",
+    str_detect(type, "124999") ~ "100 - 124 999 $",
+    str_detect(type, "125000") ~ "> 125 999 $",
+    TRUE ~ NA_character_)) |> 
+  mutate(type = case_when(
+    str_detect(type, "Total") ~ "Total",
+    str_detect(type, "Owner") & !str_detect(type, "Condo Owner") ~ "Propriétaire",
+    str_detect(type, "Condo Owner") ~ "Propriétaire d’une copropriété",
+    str_detect(type, "Tenant") & !str_detect(type, "Condo Tenant") ~ "Locataire",
+    str_detect(type, "Condo Tenant") ~ "Locataire en copropriété",
+    str_detect(type, "Subsidized") ~ "Logement subventionné",
+    str_detect(type, "Unsubsidized") ~ "Logement non subventionné",
+    TRUE ~ type
+    )) |>
+  mutate(type = factor(type, levels = c(
+    "Total", 
+    "Propriétaire", 
+    "Propriétaire d’une copropriété", 
+    "Locataire", 
+    "Locataire en copropriété", 
+    "Logement subventionné", 
+    "Logement non subventionné")),
+    income = factor(income, levels = c(
+      "< 19 999 $", 
+      "20 - 39 999 $", 
+      "40 - 59 999 $", 
+      "60 - 79 999 $", 
+      "80 - 99 999 $", 
+      "100 - 124 999 $", 
+      "> 125 999 $")))
+
+ggplot(data_4_1_2, aes(x = type, y = households, fill = income)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "", y = "Nombre de ménages (n)", title = "") +
+  scale_fill_manual(values = c("< 19 999 $" = "#A3B0D1", "20 - 39 999 $" = "#CD718C")) +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 18)) +
+  graph_theme +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 # 4.1.3 -------------------------------------------------------------------
 

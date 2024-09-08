@@ -31,7 +31,7 @@ graph_theme <- theme_minimal() +
   theme(legend.title = element_blank(), legend.position = "bottom",
         legend.margin = margin(t = -5, r = 0, b = 5, l = 0),
         text=element_text(family="KMR Apparat Regular"),
-        legend.text = element_text(size = 11),
+        legend.text = element_text(size = 10),
         axis.title.y = element_text(size = 12))
 
 # Number functions --------------------------------------------------------
