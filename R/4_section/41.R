@@ -176,9 +176,12 @@ data_4_1_9 <- read_excel("data/4/4_1_9.xlsx") |>
          "25-64" = `20-64` - `20-24`)
 
 data_4_1_9_2 <- data_4_1_7 |> 
-  
+  mutate(`15-24` = `15-19` + `20-24`,
+         `25-64` = `25-29` + `30-34` + `35-39` + `40-44` + `45-49` +
+                   `50-54`+ `55-59` + `60-64`,
+         `65+` = `65-69` + `70-74` + `75-79` + `80-84` + `85+`)
 
-plot_4_1_7_pop <- ggplot(data_4_1_9, aes(x = Year)) +
+plot_4_1_9_pop <- ggplot(data_4_1_9, aes(x = Year)) +
   geom_line(data = subset(data_4_1_9, Year < 2024), aes(y = `0-24`, color = "0-24", linetype = "Before 2024"), linewidth = 1.75) +
   geom_line(data = subset(data_4_1_9, Year >= 2024), aes(y = `0-24`, color = "0-24", linetype = "After 2024"), linewidth = 1.75) +
   geom_line(data = subset(data_4_1_9, Year < 2024), aes(y = `25-64`, color = "25-64", linetype = "Before 2024"), linewidth = 1.75) +
@@ -193,6 +196,23 @@ plot_4_1_7_pop <- ggplot(data_4_1_9, aes(x = Year)) +
   labs(x = "", y = "Population (n)", color = "Age Group", linetype = "Period") +
   graph_theme
 
+plot_4_1_9_hh <- ggplot(data_4_1_9_2, aes(x = Year)) +
+  geom_line(data = subset(data_4_1_9_2, Year < 2024), aes(y = `15-24`, color = "15-24", linetype = "Before 2024"), linewidth = 1.75) +
+  geom_line(data = subset(data_4_1_9_2, Year >= 2024), aes(y = `15-24`, color = "15-24", linetype = "After 2024"), linewidth = 1.75) +
+  geom_line(data = subset(data_4_1_9_2, Year < 2024), aes(y = `25-64`, color = "25-64", linetype = "Before 2024"), linewidth = 1.75) +
+  geom_line(data = subset(data_4_1_9_2, Year >= 2024), aes(y = `25-64`, color = "25-64", linetype = "After 2024"), linewidth = 1.75) +
+  geom_line(data = subset(data_4_1_9_2, Year < 2024), aes(y = `65+`, color = "65+", linetype = "Before 2024"), linewidth = 1.75) +
+  geom_line(data = subset(data_4_1_9_2, Year >= 2024), aes(y = `65+`, color = "65+", linetype = "After 2024"), linewidth = 1.75) +
+  scale_color_manual(values = c("15-24" = "#A3B0D1", "25-64" = "#CD718C", "65+" = "#73AD80"),
+                     labels = c("15-24", "25-64", "65+")) +
+  scale_linetype_manual(values = c("Before 2024" = "solid", "After 2024" = "dotted"),
+                        labels = c("Avant 2024", "Après 2024")) +
+  scale_y_continuous(labels = function(x) convert_number(x)) +
+  labs(x = "", y = "Nombre de ménages (n)", color = "Age Group", linetype = "Period") +
+  graph_theme
 
+ggsave("outputs/4/plot_4_1_9_pop.png", plot = plot_4_1_7, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/plot_4_1_9_hh.png", plot = plot_4_1_7, width = 800/72, height = 600/72, dpi = 72)
 # R Markdown --------------------------------------------------------------
-qs::qsavem(plot_4_1_1, plot_4_1_2, plot_4_1_3, file = "data/section_4_1.qsm")
+qs::qsavem(plot_4_1_1, plot_4_1_2, plot_4_1_3, plot_4_1_9_hh, plot_4_1_9_pop,
+           file = "data/section_4_1.qsm")
