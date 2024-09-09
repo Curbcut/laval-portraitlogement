@@ -32,7 +32,7 @@ graph_theme <- theme_minimal() +
         legend.margin = margin(t = -5, r = 0, b = 5, l = 0),
         text=element_text(family="KMR Apparat Regular"),
         legend.text = element_text(size = 10),
-        axis.title.y = element_text(size = 12))
+        axis.title.y = element_text(size = 11))
 
 # Number functions --------------------------------------------------------
 convert_hundreds <- function(x) {

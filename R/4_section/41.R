@@ -60,7 +60,7 @@ plot_4_1_1 <- ggplot(pto, aes(x = Year, y = count, fill = type)) +
 ggsave("outputs/4/plot_4_1_1.png", plot = plot_4_1_1, width = 800/72, height = 600/72, dpi = 72)
 
 # 4.1.2 -------------------------------------------------------------------
-data_4_1_2 <- read_excel("data/4/mode_occupation_revenu_SR.xlsx") |> #Editied version of the spreadsheet
+data_4_1_2 <- read_excel("data/4/mode_occupation_revenu_SR.xlsx") |> #Edited version of the spreadsheet
   select(-GeoUID) |> 
   summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
   pivot_longer(cols = everything(), names_to = "type", values_to = "households") |> 
@@ -71,26 +71,17 @@ data_4_1_2 <- read_excel("data/4/mode_occupation_revenu_SR.xlsx") |> #Editied ve
     str_detect(type, "79999") ~ "60 - 79 999 $",
     str_detect(type, "99999") ~ "80 - 99 999 $",
     str_detect(type, "124999") ~ "100 - 124 999 $",
-    str_detect(type, "125000") ~ "> 125 999 $",
+    str_detect(type, "125000") ~ "> 125 000 $",
     TRUE ~ NA_character_)) |> 
   mutate(type = case_when(
-    str_detect(type, "Total") ~ "Total",
     str_detect(type, "Owner") & !str_detect(type, "Condo Owner") ~ "Propriétaire",
-    str_detect(type, "Condo Owner") ~ "Propriétaire d’une copropriété",
     str_detect(type, "Tenant") & !str_detect(type, "Condo Tenant") ~ "Locataire",
-    str_detect(type, "Condo Tenant") ~ "Locataire en copropriété",
-    str_detect(type, "Subsidized") ~ "Logement subventionné",
-    str_detect(type, "Unsubsidized") ~ "Logement non subventionné",
     TRUE ~ type
     )) |>
+  filter(type %in% c("Propriétaire", "Locataire")) |> 
   mutate(type = factor(type, levels = c(
-    "Total", 
     "Propriétaire", 
-    "Propriétaire d’une copropriété", 
-    "Locataire", 
-    "Locataire en copropriété", 
-    "Logement subventionné", 
-    "Logement non subventionné")),
+    "Locataire")),
     income = factor(income, levels = c(
       "< 19 999 $", 
       "20 - 39 999 $", 
@@ -98,18 +89,63 @@ data_4_1_2 <- read_excel("data/4/mode_occupation_revenu_SR.xlsx") |> #Editied ve
       "60 - 79 999 $", 
       "80 - 99 999 $", 
       "100 - 124 999 $", 
-      "> 125 999 $")))
+      "> 125 000 $")))
 
-ggplot(data_4_1_2, aes(x = type, y = households, fill = income)) +
+
+plot_4_1_2 <- ggplot(data_4_1_2, aes(x = income, y = households, fill = type)) +
   geom_bar(stat = "identity", position = "dodge") +
   labs(x = "", y = "Nombre de ménages (n)", title = "") +
-  scale_fill_manual(values = c("< 19 999 $" = "#A3B0D1", "20 - 39 999 $" = "#CD718C")) +
+  scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
   scale_x_discrete(labels = function(x) str_wrap(x, width = 18)) +
+  scale_y_continuous(labels = function(x) convert_number(x)) +
   graph_theme +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-# 4.1.3 -------------------------------------------------------------------
+ggsave("outputs/4/plot_4_1_2.png", plot = plot_4_1_2, width = 800/72, height = 600/72, dpi = 72)
 
+# 4.1.3 -------------------------------------------------------------------
+data_4_1_3 <- read_excel("data/4/mode_occupation_composition_SR.xlsx") |> #Edited version of the spreadsheet
+  select(-GeoUID) |> 
+  summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
+  pivot_longer(cols = everything(), names_to = "type", values_to = "households") |> 
+  mutate(composition = case_when(
+    str_detect(type, "wo child") ~ "Couple sans enfants*",
+    str_detect(type, "child") ~ "Couple avec enfants*",
+    str_detect(type, "single parent") ~ "Famille monoparentale*",
+    str_detect(type, "multigen") ~ "Ménage multigénérationnel",
+    str_detect(type, "other") ~ "Autres ménages comptant une famille de recensement",
+    str_detect(type, "sole") ~ "Ménage composé d'une seule personne",
+    str_detect(type, "non cf") ~ "Ménage composé de deux personnes ou plus",
+    TRUE ~ NA_character_)) |> 
+  mutate(type = case_when(
+    str_detect(type, "Owner") & !str_detect(type, "Condo Owner") ~ "Propriétaire",
+    str_detect(type, "Tenant") & !str_detect(type, "Condo Tenant") ~ "Locataire",
+    TRUE ~ type
+  )) |>
+  filter(type %in% c("Propriétaire", "Locataire")) |>  
+  mutate(type = factor(type, levels = c(
+    "Propriétaire", 
+    "Locataire")),
+    composition = factor(composition, levels = c(
+      "Couple avec enfants*", 
+      "Couple sans enfants*", 
+      "Famille monoparentale*", 
+      "Ménage multigénérationnel", 
+      "Autres ménages comptant une famille de recensement", 
+      "Ménage composé d'une seule personne", 
+      "Ménage composé de deux personnes ou plus")))
+
+plot_4_1_3 <- ggplot(data_4_1_3, aes(x = composition, y = households, fill = type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "", y = "Nombre de ménages (n)", title = "", caption = "*Ménage comptant une seule famille de recensement, sans personnes additionnelles") +
+  scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 18)) +
+  scale_y_continuous(labels = function(x) convert_number(x)) +
+  graph_theme +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.caption = element_text(hjust = 0))
+
+ggsave("outputs/4/plot_4_1_3.png", plot = plot_4_1_3, width = 800/72, height = 600/72, dpi = 72)
 # 4.1.4 -------------------------------------------------------------------
 
 # 4.1.5 -------------------------------------------------------------------
@@ -118,16 +154,45 @@ ggplot(data_4_1_2, aes(x = type, y = households, fill = income)) +
 
 # 4.1.7 -------------------------------------------------------------------
 data_4_1_7 <- read_excel("data/4/4_1_7.xlsx") |> 
-  filter(RA == 13)
+  filter(RA == 13) |> 
+  mutate(period = factor(ifelse(Year < 2024, "Avant 2024", "Après 2024"),
+                         levels = c("Avant 2024", "Après 2024")))
 
-ggplot(data_4_1_7, aes(x = Year, y = Total)) +
-  geom_line(color = "#A3B0D1", linewidth = 1.5) +
-  geom_point(color = "blue") +
-  labs(x = "Year", y = "Total") +
+plot_4_1_7 <- ggplot(data_4_1_7, aes(x = Year, y = Total, linetype = period)) +
+  geom_line(color = "black", linewidth = 1.75) +
+  scale_linetype_manual(values = c("Avant 2024" = "solid", "Après 2024" = "dotted"),
+                        labels = c("Avant 2024", "Après 2024")) +
+  scale_y_continuous(labels = function(x) convert_number(x)) +
+  labs(x = "", y = "Nombre de ménages (n)", linetype = "Période") +
   graph_theme
+
+ggsave("outputs/4/plot_4_1_7.png", plot = plot_4_1_7, width = 800/72, height = 600/72, dpi = 72)
 # 4.1.8 -------------------------------------------------------------------
 
 # 4.1.9 -------------------------------------------------------------------
+data_4_1_9 <- read_excel("data/4/4_1_9.xlsx") |> 
+  filter(RA == 13 & Sexe == 3) |> 
+  mutate("0-24" = `0-19` + `20-24`,
+         "25-64" = `20-64` - `20-24`)
+
+data_4_1_9_2 <- data_4_1_7 |> 
+  
+
+plot_4_1_7_pop <- ggplot(data_4_1_9, aes(x = Year)) +
+  geom_line(data = subset(data_4_1_9, Year < 2024), aes(y = `0-24`, color = "0-24", linetype = "Before 2024"), linewidth = 1.75) +
+  geom_line(data = subset(data_4_1_9, Year >= 2024), aes(y = `0-24`, color = "0-24", linetype = "After 2024"), linewidth = 1.75) +
+  geom_line(data = subset(data_4_1_9, Year < 2024), aes(y = `25-64`, color = "25-64", linetype = "Before 2024"), linewidth = 1.75) +
+  geom_line(data = subset(data_4_1_9, Year >= 2024), aes(y = `25-64`, color = "25-64", linetype = "After 2024"), linewidth = 1.75) +
+  geom_line(data = subset(data_4_1_9, Year < 2024), aes(y = `65+`, color = "65+", linetype = "Before 2024"), linewidth = 1.75) +
+  geom_line(data = subset(data_4_1_9, Year >= 2024), aes(y = `65+`, color = "65+", linetype = "After 2024"), linewidth = 1.75) +
+  scale_color_manual(values = c("0-24" = "#A3B0D1", "25-64" = "#CD718C", "65+" = "#73AD80"),
+                     labels = c("0-24", "25-64", "65+")) +
+  scale_linetype_manual(values = c("Before 2024" = "solid", "After 2024" = "dotted"),
+                        labels = c("Avant 2024", "Après 2024")) +
+  scale_y_continuous(labels = function(x) convert_number(x)) +
+  labs(x = "", y = "Population (n)", color = "Age Group", linetype = "Period") +
+  graph_theme
+
 
 # R Markdown --------------------------------------------------------------
-qs::qsavem(plot_4_1_1, file = "data/section_4_1.qsm")
+qs::qsavem(plot_4_1_1, plot_4_1_2, plot_4_1_3, file = "data/section_4_1.qsm")
