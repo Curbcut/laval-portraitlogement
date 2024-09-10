@@ -21,6 +21,13 @@ starts_by_type <-
       year = x)}) |> 
   bind_rows()
 
+starts_by_type |> 
+  filter(!is.na(`Survey Zones`)) |> 
+  ggplot(aes(Year, Value, colour = `Dwelling Type`)) +
+  geom_line() +
+  facet_wrap(~`Survey Zones`, scales = "free_y") +
+  theme_minimal()
+
 
 # 6.1.3 Mises en chantier par mode d'occupation ---------------------------
 
@@ -34,3 +41,10 @@ starts_by_market <-
       geo_uid = "2465005",
       year = x)}) |> 
   bind_rows()
+
+starts_by_market |> 
+  filter(!is.na(`Survey Zones`)) |> 
+  ggplot(aes(Year, Value, colour = `Intended Market`)) +
+  geom_line() +
+  facet_wrap(~`Survey Zones`, scales = "free_y") +
+  theme_minimal()
