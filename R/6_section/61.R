@@ -22,7 +22,8 @@ starts_by_type <-
   bind_rows()
 
 starts_by_type |> 
-  filter(!is.na(`Survey Zones`)) |> 
+  filter(!is.na(`Survey Zones`)) |>
+  filter(`Dwelling Type` != "All") |> 
   ggplot(aes(Year, Value, colour = `Dwelling Type`)) +
   geom_line() +
   facet_wrap(~`Survey Zones`, scales = "free_y") +
@@ -44,6 +45,7 @@ starts_by_market <-
 
 starts_by_market |> 
   filter(!is.na(`Survey Zones`)) |> 
+  filter(`Intended Market` != "All") |> 
   ggplot(aes(Year, Value, colour = `Intended Market`)) +
   geom_line() +
   facet_wrap(~`Survey Zones`, scales = "free_y") +
