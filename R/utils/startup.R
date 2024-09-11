@@ -34,6 +34,48 @@ graph_theme <- theme_minimal() +
         legend.text = element_text(size = 10),
         axis.title.y = element_text(size = 11))
 
+# Map Theme ---------------------------------------------------------------
+
+lvl <- cancensus::get_census("CA21", regions = list(CSD = 2465005), 
+                             level = "CSD",
+                             geo_format = "sf")
+lvlbbox <- sf::st_bbox(lvl)
+laval_sectors <- qs::qread("data/geom_context/secteur.qs")
+
+tiles <- mapboxapi::get_static_tiles(
+  location = lvlbbox, 
+  username = "curbcut",
+  zoom = 11,##
+  style_id = "clz1cxvvi021f01nxef327y5p",#"cljkciic3002h01qveq5z1wrp",
+  access_token = "pk.eyJ1IjoiY3VyYmN1dCIsImEiOiJjbGprYnVwOTQwaDAzM2xwaWdjbTB6bzdlIn0.Ks1cOI6v2i8jiIjk38s_kg",
+  scaling_factor = "2x")
+
+gg_cc_tiles <- list(ggspatial::layer_spatial(tiles, alpha = 0.7))
+default_theme <- theme(legend.position = "bottom",
+                       legend.box = "horizontal",
+                       legend.title = element_text(size = indesign_title_fontsize, 
+                                                   family="KMR Apparat Regular"),
+                       legend.text = element_text(size = indesign_fontsize, 
+                                                  family="KMR Apparat Regular"),
+                       legend.title.align = 0.5,
+                       legend.text.align = 0.5,
+                       text=element_text(size = indesign_fontsize, family="KMR Apparat Regular"), 
+                       legend.box.margin = margin(t = -10))
+gg_cc_theme_no_sf <- list(
+  theme_minimal(),
+  default_theme
+)
+
+gg_cc_theme <- c(list(
+  geom_sf(data = laval_sectors, fill = "transparent", color = "black"),
+  coord_sf(xlim = c(lvlbbox["xmin"], lvlbbox["xmax"]), 
+           ylim = c(lvlbbox["ymin"], lvlbbox["ymax"]))),
+  gg_cc_theme_no_sf,
+  list(theme_void()),
+  list(default_theme),
+  list(theme(legend.box.margin = margin(t = 0)))
+)
+
 # Number functions --------------------------------------------------------
 convert_hundreds <- function(x) {
   curbcut:::round_big_marks(
