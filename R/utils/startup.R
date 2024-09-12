@@ -53,13 +53,13 @@ tiles <- mapboxapi::get_static_tiles(
 gg_cc_tiles <- list(ggspatial::layer_spatial(tiles, alpha = 0.7))
 default_theme <- theme(legend.position = "bottom",
                        legend.box = "horizontal",
-                       legend.title = element_text(size = indesign_title_fontsize, 
+                       legend.title = element_text(size = 11, 
                                                    family="KMR Apparat Regular"),
-                       legend.text = element_text(size = indesign_fontsize, 
+                       legend.text = element_text(size = 10, 
                                                   family="KMR Apparat Regular"),
                        legend.title.align = 0.5,
                        legend.text.align = 0.5,
-                       text=element_text(size = indesign_fontsize, family="KMR Apparat Regular"), 
+                       text=element_text(size = 10, family="KMR Apparat Regular"), 
                        legend.box.margin = margin(t = -10))
 gg_cc_theme_no_sf <- list(
   theme_minimal(),
