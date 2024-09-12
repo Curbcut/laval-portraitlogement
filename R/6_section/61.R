@@ -5,11 +5,51 @@ source("R/utils/startup.R")
 
 # 6.1.1 Dév rés récent (répartition territoriale par type de logem --------
 
+list_cmhc_dimensions("Scss", "Completions")
+
+completions_by_type <- 
+  map(1990:2023, \(x) {
+    get_cmhc(
+      survey = "Scss",
+      series = "Completions", 
+      dimension = "Dwelling Type",
+      breakdown = "Survey Zones", 
+      geo_uid = "2465005",
+      year = x)}) |> 
+  bind_rows() |> 
+  set_names(c("zone", "type", "value", "date", "year", "survey", "series"))
+
+#' Completions trending downward in last 20 years, albeit with high levels of 
+#' variability
+completions_by_type |> 
+  filter(is.na(zone)) |>
+  filter(type == "All") |>
+  mutate(value_trend = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
+         .by = type) |>
+  ggplot(aes(year, value)) +
+  geom_line(lwd = 0.4, alpha = 0.5) +
+  # geom_line(aes(year, value_trend), lwd = 1) +
+  geom_smooth(se = FALSE) +
+  # geom_smooth(method = "lm", se = FALSE) +
+  theme_minimal()
+
+completions_by_market <- 
+  map(1990:2023, \(x) {
+    get_cmhc(
+      survey = "Scss",
+      series = "Completions", 
+      dimension = "Intended Market",
+      breakdown = "Survey Zones", 
+      geo_uid = "2465005",
+      year = x)}) |> 
+  bind_rows() |> 
+  set_names(c("zone", "market", "value", "date", "year", "survey", "series"))
+
 
 # 6.1.2 Mises en chantier par typologie -----------------------------------
 
 starts_by_type <- 
-  map(2010:2023, \(x) {
+  map(1990:2023, \(x) {
     get_cmhc(
       survey = "Scss",
       series = "Starts", 
@@ -74,7 +114,7 @@ starts_by_type |>
 # 6.1.3 Mises en chantier par mode d'occupation ---------------------------
 
 starts_by_market <- 
-  map(2010:2023, \(x) {
+  map(1990:2023, \(x) {
     get_cmhc(
       survey = "Scss",
       series = "Starts", 
@@ -82,7 +122,8 @@ starts_by_market <-
       breakdown = "Survey Zones", 
       geo_uid = "2465005",
       year = x)}) |> 
-  bind_rows()
+  bind_rows() |> 
+  set_names(c("zone", "market", "value", "date", "year", "survey", "series"))
 
 starts_by_market |> 
   filter(!is.na(`Survey Zones`)) |> 
