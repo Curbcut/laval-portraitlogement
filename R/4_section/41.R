@@ -125,13 +125,14 @@ map_4_1_1_tenant <- ggplot(data = pto_map) +
   guides(fill = guide_legend(title.position = "top",
                              title.hjust = 0.5))
 
+#Saving the files as photos
 ggsave("outputs/4/plot_4_1_1.png", plot = plot_4_1_1, width = 800/72, height = 600/72, dpi = 72)
 ggsave("outputs/4/map_4_1_1_total.png", plot = map_4_1_1_total, width = 800/72, height = 600/72, dpi = 72)
 ggsave("outputs/4/map_4_1_1_owner.png", plot = map_4_1_1_owner, width = 800/72, height = 600/72, dpi = 72)
 ggsave("outputs/4/map_4_1_1_tenant.png", plot = map_4_1_1_tenant, width = 800/72, height = 600/72, dpi = 72)
 
-
 # 4.1.2 -------------------------------------------------------------------
+#Data frame for the plot
 data_4_1_2 <- read_excel("data/4/mode_occupation_revenu_SR.xlsx") |> #Edited version of the spreadsheet
   select(-GeoUID) |> 
   summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
@@ -163,7 +164,7 @@ data_4_1_2 <- read_excel("data/4/mode_occupation_revenu_SR.xlsx") |> #Edited ver
       "100 - 124 999 $", 
       "> 125 000 $")))
 
-
+#Plotting the data
 plot_4_1_2 <- ggplot(data_4_1_2, aes(x = income, y = households, fill = type)) +
   geom_bar(stat = "identity", position = "dodge") +
   labs(x = "", y = "Nombre de ménages (n)", title = "") +
@@ -173,9 +174,119 @@ plot_4_1_2 <- ggplot(data_4_1_2, aes(x = income, y = households, fill = type)) +
   graph_theme +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+#Data for the maps
+data_4_1_2_map <- read_excel("data/4/mode_occupation_revenu_SR.xlsx") |> 
+  as.data.frame() |> 
+  mutate(GeoUID = sprintf("%.2f", as.numeric(GeoUID))) |>  # Ensure two decimal places
+  mutate(GeoUID = as.character(GeoUID))
+
+data_4_1_2_sf <- full_join(laval_ct, data_4_1_2_map, by = "GeoUID")
+
+#Finding and creating the breaks
+data_4_1_2_breaks <- data_4_1_2_sf |> 
+  select(contains("total")) |> 
+  st_drop_geometry() |> 
+  pivot_longer(cols = everything(),
+               names_to = "variable", 
+               values_to = "value")
+
+#list(classInt::classIntervals(data_4_1_2_breaks$value, n = 5, style = "jenks")$brks)
+`4_1_2_total_breaks` <- c(-Inf, 115, 250, 425, 725, Inf)
+`4_1_2_total_breaks_labels` <- c("< 115", "115 - 250", "250 - 425", "425 - 725", "> 725")
+
+#Adding the breaks back into the joined file
+data_4_1_2_sf <- data_4_1_2_sf |> 
+  mutate("quantile_19999" = cut(`Total 19999`, breaks = `4_1_2_total_breaks`, include.lowest = TRUE,
+                                labels = `4_1_2_total_breaks_labels`),
+         "quantile_39999" = cut(`Total 39999`, breaks = `4_1_2_total_breaks`, include.lowest = TRUE,
+                                labels = `4_1_2_total_breaks_labels`),
+         "quantile_59999" = cut(`Total 59999`, breaks = `4_1_2_total_breaks`, include.lowest = TRUE,
+                                labels = `4_1_2_total_breaks_labels`),
+         "quantile_79999" = cut(`Total 79999`, breaks = `4_1_2_total_breaks`, include.lowest = TRUE,
+                                labels = `4_1_2_total_breaks_labels`),
+         "quantile_99999" = cut(`Total 99999`, breaks = `4_1_2_total_breaks`, include.lowest = TRUE,
+                                labels = `4_1_2_total_breaks_labels`),
+         "quantile_124999" = cut(`Total 124999`, breaks = `4_1_2_total_breaks`, include.lowest = TRUE,
+                                labels = `4_1_2_total_breaks_labels`),
+         "quantile_125000" = cut(`Total 125000`, breaks = `4_1_2_total_breaks`, include.lowest = TRUE,
+                                labels = `4_1_2_total_breaks_labels`))
+
+#Mapping the data
+map_4_1_2_19999 <- ggplot(data = data_4_1_2_sf) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = `quantile_19999`), alpha = 0.9, color = "transparent") +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Nombre de ménages (revenu inférieur à 19 999 $) (n)") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
+map_4_1_2_39999 <- ggplot(data = data_4_1_2_sf) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = `quantile_39999`), alpha = 0.9, color = "transparent") +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Nombre de ménages (revenu entre 20 000 $ et 39 999 $) (n)") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
+map_4_1_2_59999 <- ggplot(data = data_4_1_2_sf) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = `quantile_59999`), alpha = 0.9, color = "transparent") +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Nombre de ménages (revenu entre 40 000 $ et 59 999 $) (n)") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
+map_4_1_2_79999 <- ggplot(data = data_4_1_2_sf) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = `quantile_79999`), alpha = 0.9, color = "transparent") +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Nombre de ménages (revenu entre 60 000 $ et 79 999 $) (n)") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
+map_4_1_2_99999 <- ggplot(data = data_4_1_2_sf) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = `quantile_99999`), alpha = 0.9, color = "transparent") +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Nombre de ménages (revenu entre 80 000 $ et 99 999 $) (n)") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
+map_4_1_2_124999 <- ggplot(data = data_4_1_2_sf) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = `quantile_124999`), alpha = 0.9, color = "transparent") +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Nombre de ménages (revenu entre 100 000 $ et 124 999 $) (n)") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
+map_4_1_2_125000 <- ggplot(data = data_4_1_2_sf) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = `quantile_125000`), alpha = 0.9, color = "transparent") +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Nombre de ménages (revenu supérieur à 125 000 $) (n)") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+  
+#Saving the visuals as images
 ggsave("outputs/4/plot_4_1_2.png", plot = plot_4_1_2, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/map_4_1_2_19999.png", plot = map_4_1_2_19999, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/map_4_1_2_39999.png", plot = map_4_1_2_39999, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/map_4_1_2_59999.png", plot = map_4_1_2_59999, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/map_4_1_2_79999.png", plot = map_4_1_2_79999, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/map_4_1_2_99999.png", plot = map_4_1_2_99999, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/map_4_1_2_124999.png", plot = map_4_1_2_124999, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/map_4_1_2_125000.png", plot = map_4_1_2_125000, width = 800/72, height = 600/72, dpi = 72)
 
 # 4.1.3 -------------------------------------------------------------------
+#Grabbing the data for the plot
 data_4_1_3 <- read_excel("data/4/mode_occupation_composition_SR.xlsx") |> #Edited version of the spreadsheet
   select(-GeoUID) |> 
   summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
@@ -207,6 +318,7 @@ data_4_1_3 <- read_excel("data/4/mode_occupation_composition_SR.xlsx") |> #Edite
       "Ménage composé d'une seule personne", 
       "Ménage composé de deux personnes ou plus")))
 
+#Plotting the plot
 plot_4_1_3 <- ggplot(data_4_1_3, aes(x = composition, y = households, fill = type)) +
   geom_bar(stat = "identity", position = "dodge") +
   labs(x = "", y = "Nombre de ménages (n)", title = "", caption = "*Ménage comptant une seule famille de recensement, sans personnes additionnelles") +
@@ -217,7 +329,117 @@ plot_4_1_3 <- ggplot(data_4_1_3, aes(x = composition, y = households, fill = typ
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         plot.caption = element_text(hjust = 0))
 
+#Data for the map
+data_4_1_3_map <- read_excel("data/4/mode_occupation_composition_SR.xlsx") |> 
+  as.data.frame() |> 
+  mutate(GeoUID = sprintf("%.2f", as.numeric(GeoUID))) |>  # Ensure two decimal places
+  mutate(GeoUID = as.character(GeoUID))
+
+data_4_1_3_sf <- full_join(laval_ct, data_4_1_3_map, by = "GeoUID")
+
+#Finding and creating the breaks
+data_4_1_3_breaks <- data_4_1_3_sf |> 
+  select(contains("total")) |> 
+  st_drop_geometry() |> 
+  pivot_longer(cols = everything(),
+               names_to = "variable", 
+               values_to = "value")
+
+#list(classInt::classIntervals(data_4_1_3_breaks$value, n = 5, style = "quantile")$brks)
+`4_1_3_total_breaks` <- c(-Inf, 50, 100, 300, 600, Inf)
+`4_1_3_total_breaks_labels` <- c("< 50", "50 - 100", "100 - 300", "300 - 600", "> 600")
+
+#Adding the breaks back into the joined file
+data_4_1_3_sf <- data_4_1_3_sf |> 
+  mutate("wo_child" = cut(`Total - wo child`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
+                                labels = `4_1_2_total_breaks_labels`),
+         "child" = cut(`Total - child`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
+                                labels = `4_1_3_total_breaks_labels`),
+         "single" = cut(`Total - single parent`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
+                                labels = `4_1_3_total_breaks_labels`),
+         "multigen" = cut(`Total - multigen`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
+                                labels = `4_1_3_total_breaks_labels`),
+         "other" = cut(`Total - other`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
+                                labels = `4_1_3_total_breaks_labels`),
+         "sole" = cut(`Total - sole`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
+                                 labels = `4_1_3_total_breaks_labels`),
+         "non_cf" = cut(`Total - non cf`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
+                                 labels = `4_1_3_total_breaks_labels`))
+
+#Graphing the maps
+map_4_1_3_wochild <- ggplot(data = data_4_1_3_sf) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = `wo_child`), alpha = 0.9, color = "transparent") +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Nombre de ménages (couple sans enfants) (n)") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
+map_4_1_3_child <- ggplot(data = data_4_1_3_sf) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = `child`), alpha = 0.9, color = "transparent") +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Nombre de ménages (couple avec enfants) (n)") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
+map_4_1_3_single <- ggplot(data = data_4_1_3_sf) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = `single`), alpha = 0.9, color = "transparent") +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Nombre de ménages (famille monoparentale) (n)") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
+map_4_1_3_multigen <- ggplot(data = data_4_1_3_sf) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = `multigen`), alpha = 0.9, color = "transparent") +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Nombre de ménages (multigénérationnel) (n)") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
+map_4_1_3_other <- ggplot(data = data_4_1_3_sf) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = `other`), alpha = 0.9, color = "transparent") +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Nombre de ménages (autres familles de recensement) (n)") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
+map_4_1_3_sole <- ggplot(data = data_4_1_3_sf) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = `sole`), alpha = 0.9, color = "transparent") +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Nombre de ménages (une seule personne) (n)") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
+map_4_1_3_noncf <- ggplot(data = data_4_1_3_sf) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = `non_cf`), alpha = 0.9, color = "transparent") +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Nombre de ménages (sans famille de recensement, composé de deux personnes ou plus) (n)") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
+#Saving visuals as images
 ggsave("outputs/4/plot_4_1_3.png", plot = plot_4_1_3, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/map_4_1_3_wochild.png", plot = map_4_1_3_wochild, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/map_4_1_3_child.png", plot = map_4_1_3_child, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/map_4_1_3_single.png", plot = map_4_1_3_single, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/map_4_1_3_multigen.png", plot = map_4_1_3_multigen, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/map_4_1_3_other.png", plot = map_4_1_3_other, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/map_4_1_3_sole.png", plot = map_4_1_3_sole, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/map_4_1_3_noncf.png", plot = map_4_1_3_noncf, width = 800/72, height = 600/72, dpi = 72)
+
 # 4.1.4 -------------------------------------------------------------------
 
 # 4.1.5 -------------------------------------------------------------------
@@ -285,7 +507,12 @@ plot_4_1_9_hh <- ggplot(data_4_1_9_2, aes(x = Year)) +
 
 ggsave("outputs/4/plot_4_1_9_pop.png", plot = plot_4_1_7, width = 800/72, height = 600/72, dpi = 72)
 ggsave("outputs/4/plot_4_1_9_hh.png", plot = plot_4_1_7, width = 800/72, height = 600/72, dpi = 72)
+
 # R Markdown --------------------------------------------------------------
 qs::qsavem(plot_4_1_1, map_4_1_1_total, map_4_1_1_owner, map_4_1_1_tenant,
-           plot_4_1_2, plot_4_1_3, plot_4_1_9_hh, plot_4_1_9_pop,
+           plot_4_1_2, map_4_1_2_19999, map_4_1_2_39999, map_4_1_2_59999,
+           map_4_1_2_79999, map_4_1_2_99999, map_4_1_2_124999, map_4_1_2_125000,
+           plot_4_1_3, map_4_1_3_wochild, map_4_1_3_child, map_4_1_3_single,
+           map_4_1_3_other, map_4_1_3_sole, map_4_1_3_noncf,
+           plot_4_1_9_hh, plot_4_1_9_pop,
            file = "data/section_4_1.qsm")
