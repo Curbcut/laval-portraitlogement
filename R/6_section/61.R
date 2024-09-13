@@ -39,12 +39,16 @@ completions_by_type <-
   bind_rows() |> 
   set_names(c("zone", "type", "value", "date", "year", "survey", "series"))
 
-# Current map
+# Map of last five years of housing completions
 completions_by_type |> 
-  filter(year == 2023) |> 
+  filter(year >= 2019) |> 
   filter(type == "All") |> 
   filter(!is.na(zone)) |> 
-  inner_join(cmhc_zones)
+  summarize(value = sum(value), .by = zone) |> 
+  inner_join(cmhc_zones) |> 
+  st_as_sf() |> 
+  ggplot(aes(fill = value)) +
+  geom_sf()
 
 #' Completions trending downward in last 20 years, albeit with high levels of 
 #' variability
