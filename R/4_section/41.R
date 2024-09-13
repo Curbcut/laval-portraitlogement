@@ -16,8 +16,8 @@ pto_census <- function(datayear, pto_year, cyear){
              vectors = pto_year
   ) |> 
     mutate(Year = cyear) |> 
-    select(-GeoUID, -Type, -`Region Name`, -`Area (sq km)`, -Population,
-           -Dwellings, -Households, -CD_UID, -PR_UID, -CMA_UID)
+    select(-Type, -`Region Name`, -`Area (sq km)`, -Population,
+           -Dwellings, -Households, -CD_UID, -CMA_UID, -PR_UID, -GeoUID)
 }
 
 #Grabbing data for 2001-2021 for Laval
@@ -29,6 +29,7 @@ pto_06 <- pto_census("CA06", pto_06v, "2006")
 pto_01 <- pto_census("CA01", pto_01v, "2001") |> 
   mutate(total = owner + tenant)
 
+#Binding the data for the graphs
 pto <- bind_rows(pto_21, pto_16, pto_11, pto_06, pto_01) |>
   pivot_longer(cols = c("owner", "tenant"), 
                names_to = "type", 
@@ -57,7 +58,78 @@ plot_4_1_1 <- ggplot(pto, aes(x = Year, y = count, fill = type)) +
   labs(x = "", y = "Nombre de ménages") +
   graph_theme
 
+#Grabbing the data to create a map
+pto_map <- get_census(dataset = "CA21",
+             regions = list(CSD = 2465005),
+             level = "DA",
+             vectors = c("total" = "v_CA21_4288", "owner" = "v_CA21_4305",
+                         "tenant" = "v_CA21_4313"),
+             geo_format = "sf") |> 
+    select(total, owner, tenant) |> 
+  mutate(owner = if_else(is.na(owner), 0, owner),
+         tenant = if_else(is.na(tenant), 0, tenant)) |> 
+  mutate(total = if_else(is.na(total), owner + tenant, total))
+
+#Finding and creating the breaks
+#list(classInt::classIntervals(pto_map$total, n = 5, style = "jenks")$brks)
+pto_total_breaks <- c(-Inf, 230, 415, 715, 1315, Inf)
+pto_total_breaks_labels <- c("< 230", "230 - 415", "415 - 715", "715 - 1 315", "> 1 315")
+#list(classInt::classIntervals(pto_map$owner, n = 5, style = "jenks")$brks)
+pto_owner_breaks <- c(-Inf, 115, 210, 365, 660, Inf)
+pto_owner_breaks_labels <- c("< 115", "115 - 210", "210 - 365", "365 - 660", "> 660")
+#list(classInt::classIntervals(pto_map$tenant, n = 5, style = "jenks")$brks)
+pto_tenant_breaks <- c(-Inf, 55, 165, 365, 715, Inf)
+pto_tenant_breaks_labels <- c("< 55", "55 - 165", "165 - 365", "365 - 715", "> 715")
+
+#Applying the breaks as new columns to the data frame
+pto_map <- pto_map |> 
+  mutate(
+    total_quantile = cut(total, breaks = pto_total_breaks, include.lowest = TRUE,
+                         labels = pto_total_breaks_labels),
+    owner_quantile = cut(total, breaks = pto_owner_breaks, include.lowest = TRUE,
+                         labels = pto_owner_breaks_labels),
+    tenant_quantile = cut(total, breaks = pto_tenant_breaks, include.lowest = TRUE,
+                         labels = pto_tenant_breaks_labels)
+  )
+
+#Plotting total number of households
+map_4_1_1_total <- ggplot(data = pto_map) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = total_quantile), alpha = 0.9, color = "transparent") +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Nombre de ménages (n)") +
+  geom_sf(data = laval_sectors, fill = "transparent", color = "black") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
+#Plotting total number of owner households
+map_4_1_1_owner <- ggplot(data = pto_map) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = owner_quantile), alpha = 0.9, color = "transparent") +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Nombre de ménages propriétaires (n)") +
+  geom_sf(data = laval_sectors, fill = "transparent", color = "black") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
+#Plotting total number of tenant households
+map_4_1_1_tenant <- ggplot(data = pto_map) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = tenant_quantile), alpha = 0.9, color = "transparent") +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Nombre de ménages locataires (n)") +
+  geom_sf(data = laval_sectors, fill = "transparent", color = "black") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
 ggsave("outputs/4/plot_4_1_1.png", plot = plot_4_1_1, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/map_4_1_1_total.png", plot = map_4_1_1_total, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/map_4_1_1_owner.png", plot = map_4_1_1_owner, width = 800/72, height = 600/72, dpi = 72)
+ggsave("outputs/4/map_4_1_1_tenant.png", plot = map_4_1_1_tenant, width = 800/72, height = 600/72, dpi = 72)
+
 
 # 4.1.2 -------------------------------------------------------------------
 data_4_1_2 <- read_excel("data/4/mode_occupation_revenu_SR.xlsx") |> #Edited version of the spreadsheet
@@ -214,5 +286,6 @@ plot_4_1_9_hh <- ggplot(data_4_1_9_2, aes(x = Year)) +
 ggsave("outputs/4/plot_4_1_9_pop.png", plot = plot_4_1_7, width = 800/72, height = 600/72, dpi = 72)
 ggsave("outputs/4/plot_4_1_9_hh.png", plot = plot_4_1_7, width = 800/72, height = 600/72, dpi = 72)
 # R Markdown --------------------------------------------------------------
-qs::qsavem(plot_4_1_1, plot_4_1_2, plot_4_1_3, plot_4_1_9_hh, plot_4_1_9_pop,
+qs::qsavem(plot_4_1_1, map_4_1_1_total, map_4_1_1_owner, map_4_1_1_tenant,
+           plot_4_1_2, plot_4_1_3, plot_4_1_9_hh, plot_4_1_9_pop,
            file = "data/section_4_1.qsm")

@@ -1,6 +1,8 @@
 # Loading Libraries -------------------------------------------------------
 library(cmhc)
 library(cancensus)
+library(scales)
+library(classInt)
 library(tidyverse)
 library(curbcut)
 library(extrafont)
@@ -13,9 +15,25 @@ library(readxl)
 cmhc_breakdown <- list_cmhc_breakdowns()
 cancensus_21_vectors <- list_census_vectors("CA21")
 
+# Shapefiles -------------------------------------------------------------
+laval_da <- get_census(dataset = "CA21",
+                       regions = list(CSD = 2465005),
+                       level = "DA",
+                       geo_format = "sf") |> 
+  select(GeoUID) |> 
+  st_transform(crs = 4326)
+
+laval_ct <- get_census(dataset = "CA21",
+                       regions = list(CSD = 2465005),
+                       level = "CT",
+                       geo_format = "sf") |> 
+  select(GeoUID) |> 
+  st_transform(crs = 4326)
+
 # Addition of colors ------------------------------------------------------
 
 curbcut_colors <- cc.buildr::build_colours()
+curbcut_scale <- c("#C4CDE1", "#98A8CB", "#6C83B5", "#4C5C7F", "#2B3448")
 
 # Colors from brandbook
 curbcut_colors$brandbook <- 
@@ -38,7 +56,8 @@ graph_theme <- theme_minimal() +
 
 lvl <- cancensus::get_census("CA21", regions = list(CSD = 2465005), 
                              level = "CSD",
-                             geo_format = "sf")
+                             geo_format = "sf") |> 
+  st_transform(crs = 32618)
 lvlbbox <- sf::st_bbox(lvl)
 laval_sectors <- qs::qread("data/geom_context/secteur.qs")
 
@@ -52,25 +71,43 @@ tiles <- mapboxapi::get_static_tiles(
 
 gg_cc_tiles <- list(ggspatial::layer_spatial(tiles, alpha = 0.7))
 default_theme <- theme(legend.position = "bottom",
-                       legend.box = "horizontal",
-                       legend.title = element_text(size = 11, 
-                                                   family="KMR Apparat Regular"),
-                       legend.text = element_text(size = 10, 
-                                                  family="KMR Apparat Regular"),
+                       legend.box = "vertical",
+                       legend.title = element_text(size = 11, family="KMR Apparat Regular"),
+                       legend.text = element_text(size = 10, family="KMR Apparat Regular"),
                        legend.title.align = 0.5,
                        legend.text.align = 0.5,
                        text=element_text(size = 10, family="KMR Apparat Regular"), 
                        legend.box.margin = margin(t = -10))
-gg_cc_theme_no_sf <- list(
-  theme_minimal(),
-  default_theme
+
+#Converting the bounding box to be compatible with EPSG:4326
+bbox <- data.frame(
+  x = c(lvlbbox["xmin"], lvlbbox["xmax"]),
+  y = c(lvlbbox["ymin"], lvlbbox["ymax"])) |> 
+  st_as_sf(coords = c("x", "y"), crs = 32618) |> 
+  st_transform(crs = 4326) |> 
+  st_bbox()
+
+x_range <- bbox["xmax"] - bbox["xmin"]
+y_range <- bbox["ymax"] - bbox["ymin"]
+
+#Zooming out the bbox a little bit so it's not right on the borders
+padding <- 0.09
+
+xlim_zoomed_out <- c(
+  bbox["xmin"] - padding * x_range,
+  bbox["xmax"] + padding * x_range
+)
+ylim_zoomed_out <- c(
+  bbox["ymin"] - padding * y_range,
+  bbox["ymax"] + padding * y_range
 )
 
+# Map theme
 gg_cc_theme <- c(list(
   geom_sf(data = laval_sectors, fill = "transparent", color = "black"),
-  coord_sf(xlim = c(lvlbbox["xmin"], lvlbbox["xmax"]), 
-           ylim = c(lvlbbox["ymin"], lvlbbox["ymax"]))),
-  gg_cc_theme_no_sf,
+  coord_sf(xlim = xlim_zoomed_out, 
+           ylim = ylim_zoomed_out,
+           expand = FALSE)),
   list(theme_void()),
   list(default_theme),
   list(theme(legend.box.margin = margin(t = 0)))
