@@ -1,11 +1,31 @@
 #### 6.1 #######################################################################
 
 source("R/utils/startup.R")
+qs::qload("data/cmhc_shp.qsm")
+
+
+# Process CMHC zones ------------------------------------------------------
+
+cmhc_zones <-
+  cmhc_nbhd_2022 |> 
+  filter(METCODE == "1060",
+         NBHDCODE %in% c("370", "380", "390", "400", "410", "420", "430", "440", 
+                         "450", "460", "470", "480")) |> 
+  summarize(geometry = st_union(geometry), .by = ZONECODE) |> 
+  mutate(zone = case_when(
+    ZONECODE == 19 ~ "Chomedey/Sainte-Dorothée",
+    ZONECODE == 20 ~ "Laval-des-Rapides",
+    ZONECODE == 21 ~ "Pont-Viau",
+    ZONECODE == 22 ~ "St-François/St-Vincent/Duvernay",
+    ZONECODE == 23 ~ "Vimont/Auteuil",
+    ZONECODE == 24 ~ "Laval-Ouest/Fabreville/Ste-Rose"), .after = ZONECODE) |> 
+  rename(zone_code = ZONECODE)
+
+rm(cmhc_nbhd_2016, cmhc_nbhd_2017, cmhc_nbhd_2018, cmhc_nbhd_2019,
+   cmhc_nbhd_2020, cmhc_nbhd_2021, cmhc_nbhd_2022)
 
 
 # 6.1.1 Dév rés récent (répartition territoriale par type de logem --------
-
-list_cmhc_dimensions("Scss", "Completions")
 
 completions_by_type <- 
   map(1990:2023, \(x) {
@@ -18,6 +38,13 @@ completions_by_type <-
       year = x)}) |> 
   bind_rows() |> 
   set_names(c("zone", "type", "value", "date", "year", "survey", "series"))
+
+# Current map
+completions_by_type |> 
+  filter(year == 2023) |> 
+  filter(type == "All") |> 
+  filter(!is.na(zone)) |> 
+  inner_join(cmhc_zones)
 
 #' Completions trending downward in last 20 years, albeit with high levels of 
 #' variability

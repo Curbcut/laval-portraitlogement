@@ -95,7 +95,7 @@ default_theme <- theme(
   text=element_text(size = 10, family="KMR Apparat Regular"), 
   legend.box.margin = margin(t = -10))
 
-#Converting the bounding box to be compatible with EPSG:4326
+# Converting the bounding box to be compatible with EPSG:4326
 bbox <- tibble(
   x = c(lvlbbox["xmin"], lvlbbox["xmax"]),
   y = c(lvlbbox["ymin"], lvlbbox["ymax"])) |> 
@@ -106,13 +106,14 @@ bbox <- tibble(
 x_range <- bbox["xmax"] - bbox["xmin"]
 y_range <- bbox["ymax"] - bbox["ymin"]
 
-#Zooming out the bbox a little bit so it's not right on the borders
+# Zooming out the bbox a little bit so it's not right on the borders
 padding <- 0.09
 
 xlim_zoomed_out <- c(
   bbox["xmin"] - padding * x_range,
   bbox["xmax"] + padding * x_range
 )
+
 ylim_zoomed_out <- c(
   bbox["ymin"] - padding * y_range,
   bbox["ymax"] + padding * y_range
