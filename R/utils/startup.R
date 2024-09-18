@@ -14,6 +14,8 @@ library(sf)
 library(gt)
 library(readxl)
 
+source("R/utils/crosstab.R")
+
 
 # Checking vectors for Canada ---------------------------------------------
 
