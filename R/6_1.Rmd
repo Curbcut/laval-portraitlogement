@@ -1,0 +1,42 @@
+---
+title: "6.1 À but lucratif (abordable, prix du marché)"
+author: "Curbcut"
+output: html_document
+---
+
+```{r setup_6_1, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+qs::qload("data/section_6_1.qsm")
+
+```
+
+# 6.1.1 Dév rés récent (répartition territoriale par type de logement et typologie)
+
+```{r s_6_1_1}
+
+# Min and max 5-year avg
+min_max_vals <- 
+  completions_by_type |> 
+  filter(is.na(zone)) |>
+  filter(type == "All") |> 
+  mutate(value_trend = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
+         .by = type) |>
+  filter(value_trend %in% c(min(value_trend), max(value_trend)))
+
+
+```
+
+Since 1990, the number of annual housing completions in Laval has remained relatively level, albeit with high levels of year-to-year fluctuation. 
+
+
+# 6.1.2 Mises en chantier par typologie
+
+# 6.1.3 Mises en chantier par mode d'occupation
+
+# 6.1.4 Mises en chantier par nombre de chambres à coucher
+
+# 6.1.5 Prix des logements neufs
+
+# 6.1.7 Mises en chantier selon le prix par nombre de chambres à coucher
+
+# 6.1.12 Valeur foncière (si possible Ventilé par typologie et au pied carré)
