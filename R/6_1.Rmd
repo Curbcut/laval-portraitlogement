@@ -4,15 +4,16 @@ author: "Curbcut"
 output: html_document
 ---
 
-```{r setup_6_1, include=FALSE}
+```{r setup_6_1, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
-qs::qload("data/section_6_1.qsm")
+qs::qload(here::here("data", "section_6_1.qsm"))
+library(tidyverse)
 
 ```
 
 # 6.1.1 Dév rés récent (répartition territoriale par type de logement et typologie)
 
-```{r s_6_1_1}
+```{r s_6_1_1, include = FALSE}
 
 # Min and max 5-year avg
 min_max_vals <- 
@@ -26,7 +27,7 @@ min_max_vals <-
 
 ```
 
-Since 1990, the number of annual housing completions in Laval has remained relatively level, albeit with high levels of year-to-year fluctuation. 
+Since 1990, the number of annual housing completions in Laval has remained relatively level, albeit with high levels of year-to-year fluctuation. The five-year period with the most completions has been `r paste0(min_max_vals$year[2] - 2, "-", min_max_vals$year[2] - 2)`, when there was an average of `r min_max_vals$value_trend[2]` housing units completed each year. By contrast, in the period `r paste0(min_max_vals$year[1] - 2, "-", min_max_vals$year[1] - 2)` only `r min_max_vals$value_trend[1]` housing units were completed on average each year.
 
 
 # 6.1.2 Mises en chantier par typologie

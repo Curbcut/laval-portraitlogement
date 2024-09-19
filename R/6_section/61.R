@@ -104,31 +104,29 @@ table_6_1_1_five_year <-
   gt::tab_header("Average annual housing completions by dwelling type")
 
 # Comparison of long-term residential completion trends by building type
-completions_by_type |> 
+plot_6_1_1_type <- 
+  completions_by_type |> 
   filter(is.na(zone)) |>
   filter(type != "All") |>
-  # mutate(value_trend = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
-  #        .by = type) |>
-  # pivot_longer(c(value, value_trend)) |> 
-  # mutate(name = if_else(name == "value", "Actual", 
-  #                       "Five-year moving average")) |> 
   ggplot(aes(year, value, colour = type)) +
   geom_line() +
   scale_y_continuous("Completions") +
   scale_x_continuous("Year") +
+  scale_colour_discrete("Dwelling type") +
   ggtitle("Annual housing completions by dwelling type") +
   theme_minimal() +
   theme(legend.position = "bottom")
 
 # Variation with between-type difference emphasized
-completions_by_type |> 
+plot_6_1_1_type_facet <-
+  completions_by_type |> 
   filter(is.na(zone)) |>
   filter(type != "All") |>
   mutate(value = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
          .by = type) |>
   ggplot(aes(year, value, group = type)) +
   geom_line() +
-  gghighlight::gghighlight() +
+  gghighlight::gghighlight(use_direct_label = FALSE) +
   scale_y_continuous("Completions") +
   scale_x_continuous("Year") +
   facet_wrap(~type) +
@@ -230,5 +228,5 @@ starts_by_market |>
 # R Markdown --------------------------------------------------------------
 
 qs::qsavem(completions_by_type, completions_by_market, plot_6_1_1_overall,
-           table_6_1_1_five_year,
+           table_6_1_1_five_year, plot_6_1_1_type, plot_6_1_1_type_facet,
            file = "data/section_6_1.qsm")
