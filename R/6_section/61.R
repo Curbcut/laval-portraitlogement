@@ -39,31 +39,6 @@ completions_by_type <-
   bind_rows() |> 
   set_names(c("zone", "type", "value", "date", "year", "survey", "series"))
 
-# Map of last five years of housing completions
-completions_by_type |> 
-  filter(year >= 2019) |> 
-  filter(type == "All") |> 
-  filter(!is.na(zone)) |> 
-  summarize(value = sum(value), .by = zone) |> 
-  inner_join(cmhc_zones) |> 
-  st_as_sf() |> 
-  ggplot(aes(fill = value)) +
-  geom_sf()
-
-#' Completions trending downward in last 20 years, albeit with high levels of 
-#' variability
-completions_by_type |> 
-  filter(is.na(zone)) |>
-  filter(type == "All") |>
-  mutate(value_trend = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
-         .by = type) |>
-  ggplot(aes(year, value)) +
-  geom_line(lwd = 0.4, alpha = 0.5) +
-  # geom_line(aes(year, value_trend), lwd = 1) +
-  geom_smooth(se = FALSE) +
-  # geom_smooth(method = "lm", se = FALSE) +
-  theme_minimal()
-
 completions_by_market <- 
   map(1990:2023, \(x) {
     get_cmhc(
@@ -75,6 +50,90 @@ completions_by_market <-
       year = x)}) |> 
   bind_rows() |> 
   set_names(c("zone", "market", "value", "date", "year", "survey", "series"))
+
+# Map of last five years of housing completions
+completions_by_type |> 
+  filter(year >= 2019) |> 
+  filter(type == "All") |> 
+  filter(!is.na(zone)) |> 
+  summarize(value = sum(value), .by = zone) |> 
+  inner_join(cmhc_zones) |> 
+  st_as_sf() |> 
+  ggplot(aes(fill = value)) +
+  geom_sf()
+
+#' Overall completions mostly stable over last 30 years, albeit with high 
+#' levels of year-to-year variability
+plot_6_1_1_overall <- 
+  completions_by_type |> 
+  filter(is.na(zone)) |>
+  filter(type == "All") |>
+  mutate(value_trend = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
+         .by = type) |>
+  pivot_longer(c(value, value_trend)) |> 
+  mutate(name = if_else(name == "value", "Actual", 
+                        "Five-year moving average")) |> 
+  ggplot(aes(year, value, group = name, linewidth = name, alpha = name)) +
+  geom_line() +
+  scale_y_continuous("Completions") +
+  scale_x_continuous("Year") +
+  scale_linewidth_manual(name = NULL, values = c(
+    "Actual" = 0.4, "Five-year moving average" = 1)) +
+  scale_alpha_manual(name = NULL, values = c(
+    "Actual" = 0.2, "Five-year moving average" = 1)) +
+  ggtitle("Annual housing completions") +
+  graph_theme
+
+# Table with 5-year aggregations
+table_6_1_1_five_year <- 
+  completions_by_type |> 
+  filter(is.na(zone)) |>
+  filter(type != "All") |> 
+  mutate("Date Range" = case_when(
+    year >= 2019 ~ "2019-2023",
+    year >= 2014 ~ "2014-2018",
+    year >= 2009 ~ "2009-2013",
+    year >= 2004 ~ "2004-2008",
+    year >= 1999 ~ "1999-2003",
+    year >= 1994 ~ "1994-1998",
+    year >= 1990 ~ "1990-1993")) |> 
+  summarize(avg = mean(value), .by = c(`Date Range`, type)) |> 
+  pivot_wider(names_from = type, values_from = avg) |> 
+  mutate(Total = Single + `Semi-Detached` + Row + Apartment, .before = Single) |> 
+  gt::gt() |> 
+  gt::tab_header("Average annual housing completions by dwelling type")
+
+# Comparison of long-term residential completion trends by building type
+plot_6_1_1_type <- 
+  completions_by_type |> 
+  filter(is.na(zone)) |>
+  filter(type != "All") |>
+  ggplot(aes(year, value, colour = type)) +
+  geom_line() +
+  scale_y_continuous("Completions") +
+  scale_x_continuous("Year") +
+  scale_colour_discrete("Dwelling type") +
+  ggtitle("Annual housing completions by dwelling type") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+# Variation with between-type difference emphasized
+plot_6_1_1_type_facet <-
+  completions_by_type |> 
+  filter(is.na(zone)) |>
+  filter(type != "All") |>
+  mutate(value = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
+         .by = type) |>
+  ggplot(aes(year, value, group = type)) +
+  geom_line() +
+  gghighlight::gghighlight(use_direct_label = FALSE) +
+  scale_y_continuous("Completions") +
+  scale_x_continuous("Year") +
+  facet_wrap(~type) +
+  ggtitle(
+    "Annual housing completions by dwelling type (five-year moving average)") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
 
 
 # 6.1.2 Mises en chantier par typologie -----------------------------------
@@ -163,3 +222,11 @@ starts_by_market |>
   geom_line() +
   facet_wrap(~`Survey Zones`, scales = "free_y") +
   theme_minimal()
+
+
+
+# R Markdown --------------------------------------------------------------
+
+qs::qsavem(completions_by_type, completions_by_market, plot_6_1_1_overall,
+           table_6_1_1_five_year, plot_6_1_1_type, plot_6_1_1_type_facet,
+           file = "data/section_6_1.qsm")
