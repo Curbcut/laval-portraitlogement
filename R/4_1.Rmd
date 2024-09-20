@@ -12,4 +12,14 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 
 ## Axe démographique
 
-### Répartition ménages selon mode d'occupation
+### État actuel
+
+#### Répartition ménages selon mode d'occupation
+
+```{r 4_1}
+qs::qload(here::here("data/section_4_1.qsm"))
+```
+
+```{r plot_4_1_1, include=TRUE, fig.cap="", fig.align = 'center'}
+plot_4_1_1
+```

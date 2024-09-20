@@ -13,6 +13,7 @@ library(showtext)
 library(sf)
 library(gt)
 library(readxl)
+library(qs)
 
 source("R/utils/crosstab.R")
 
