@@ -372,41 +372,43 @@ ggsave("outputs/4/map_4_1_1_2_tenant.png", plot = map_4_1_1_2_tenant, width = 80
 # ggsave("outputs/4/map_4_1_2_124999.png", plot = map_4_1_2_124999, width = 800/72, height = 600/72, dpi = 72)
 # ggsave("outputs/4/map_4_1_2_125000.png", plot = map_4_1_2_125000, width = 800/72, height = 600/72, dpi = 72)
 
-# 4.1.3 -------------------------------------------------------------------
-#Grabbing the data for the plot
-data_4_1_3 <- read_excel("data/4/mode_occupation_composition_SR.xlsx") |> #Edited version of the spreadsheet
-  select(-GeoUID) |> 
-  summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
-  pivot_longer(cols = everything(), names_to = "type", values_to = "households") |> 
-  mutate(composition = case_when(
-    str_detect(type, "wo child") ~ "Couple sans enfants*",
-    str_detect(type, "child") ~ "Couple avec enfants*",
-    str_detect(type, "single parent") ~ "Famille monoparentale*",
-    str_detect(type, "multigen") ~ "Ménage multigénérationnel",
-    str_detect(type, "other") ~ "Autres ménages comptant une famille de recensement",
-    str_detect(type, "sole") ~ "Ménage composé d'une seule personne",
-    str_detect(type, "non cf") ~ "Ménage composé de deux personnes ou plus",
-    TRUE ~ NA_character_)) |> 
-  mutate(type = case_when(
-    str_detect(type, "Owner") & !str_detect(type, "Condo Owner") ~ "Propriétaire",
-    str_detect(type, "Tenant") & !str_detect(type, "Condo Tenant") ~ "Locataire",
-    TRUE ~ type
-  )) |>
-  filter(type %in% c("Propriétaire", "Locataire")) |>  
-  mutate(type = factor(type, levels = c(
-    "Propriétaire", 
-    "Locataire")),
-    composition = factor(composition, levels = c(
-      "Couple avec enfants*", 
-      "Couple sans enfants*", 
-      "Famille monoparentale*", 
-      "Ménage multigénérationnel", 
-      "Autres ménages comptant une famille de recensement", 
-      "Ménage composé d'une seule personne", 
-      "Ménage composé de deux personnes ou plus")))
+# 4.1.1.3 Type de ménage (taille et composition) selon mode d'occupation --------
+composition <- c("wo_kids"= "  Ménage comptant une seule famille de recensement, sans personnes additionnelles : couple sans enfants",
+                 "w_kids" = "  Ménage comptant une seule famille de recensement, sans personnes additionnelles : couple avec enfants",
+                 "mono" = "  Ménage comptant une seule famille de recensement, sans personnes additionnelles : famille monoparentale",
+                 "multi" = "Ménage multigénérationnel",
+                 "solo" = "Ménage composé d'une seule personne",
+                 "other" = "  Ménage sans famille de recensement, composé de deux personnes ou plus")
 
-#Plotting the plot
-plot_4_1_3 <- ggplot(data_4_1_3, aes(x = composition, y = households, fill = type)) +
+data_4_1_1_3 <- crosstab_get(mode_occupation = mode_occupation, composition = composition) |> 
+  select(-DA_ID) |> 
+  summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
+  pivot_longer(cols = everything(), names_to = "type", values_to = "count") |> 
+  mutate(comp = case_when(
+    str_detect(type, "wo_kids") ~ "Couple sans enfants*",
+    str_detect(type, "w_kids") ~ "Couple avec enfants*",
+    str_detect(type, "mono") ~ "Famille monoparentale*",
+    str_detect(type, "multi") ~ "Ménage multigénérationnel",
+    str_detect(type, "solo") ~ "Seule personne",
+    str_detect(type, "other") ~ "Deux personnes ou plus",
+    TRUE ~ NA_character_),
+    type = case_when(
+      str_detect(type, "owner") ~ "Propriétaire",
+      str_detect(type, "tenant") ~ "Locataire",
+      TRUE ~ type
+    )) |> 
+  mutate(type = factor(type, levels = c(
+    "Propriétaire",
+    "Locataire")),
+    comp = factor(comp, levels = c(
+      "Couple sans enfants*",
+      "Couple avec enfants*",
+      "Famille monoparentale*",
+      "Ménage multigénérationnel",
+      "Seule personne",
+      "Deux personnes ou plus")))
+
+plot_4_1_1_3 <- ggplot(data_4_1_1_3, aes(x = comp, y = count, fill = type)) +
   geom_bar(stat = "identity", position = "dodge") +
   labs(x = "", y = "Nombre de ménages (n)", title = "", caption = "*Ménage comptant une seule famille de recensement, sans personnes additionnelles") +
   scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
@@ -416,118 +418,217 @@ plot_4_1_3 <- ggplot(data_4_1_3, aes(x = composition, y = households, fill = typ
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         plot.caption = element_text(hjust = 0))
 
-#Data for the map
-data_4_1_3_map <- read_excel("data/4/mode_occupation_composition_SR.xlsx") |> 
-  as.data.frame() |> 
-  mutate(GeoUID = sprintf("%.2f", as.numeric(GeoUID))) |>  # Ensure two decimal places
-  mutate(GeoUID = as.character(GeoUID))
+table_data_4_1_1_3 <- crosstab_get(mode_occupation = mode_occupation, composition = composition) |> 
+  select(-DA_ID) |> 
+  summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
+  rename_with(~ gsub("^owner_", "Propriétaire_", .x), starts_with("owner_")) |>  # Rename owner_ to Propriétaire_
+  rename_with(~ gsub("^tenant_", "Locataire_", .x), starts_with("tenant_")) |> 
+  pivot_longer(
+    cols = starts_with("Propriétaire_") | starts_with("Locataire_"),
+    names_to = c("Type de ménage", ".value"),
+    names_pattern = "(Propriétaire|Locataire)_(.*)") |> 
+  mutate(total = wo_kids + w_kids + mono + multi + solo + other) |> 
+  mutate("Couple sans enfants (n)" = wo_kids,
+         "Couple sans enfants (%)" = wo_kids / total,
+         "Couple avec enfants (n)" = w_kids,
+         "Couple avec enfants (%)" = w_kids / total,
+         "Famille monoparentale (n)" = mono,
+         "Famille monoparentale (%)" = mono / total,
+         "Ménage multigénérationnel (n)" = multi,
+         "Ménage multigénérationnel (%)" = multi / total,
+         "Seule personne (n)" = solo,
+         "Seule personne (%)" = solo / total,
+         "Deux personnes ou plus (n)" = other,
+         "Deux personnes ou plus (%)" = other / total) |> 
+  select(-total, -wo_kids, -w_kids, -mono, -multi, -solo, -other)
 
-data_4_1_3_sf <- full_join(laval_ct, data_4_1_3_map, by = "GeoUID")
+table_4_1_1_3 <- table_data_4_1_1_3 |> 
+  gt() |>
+  cols_label(
+    `Couple sans enfants (n)` = html("<div style='width:95px;'>Couple sans enfants (n)</div>"),
+    `Couple sans enfants (%)` = html("<div style='width:95px;'>Couple sans enfants (%)</div>"),
+    `Couple avec enfants (n)` = html("<div style='width:95px;'>Couple avec enfants (n)</div>"),
+    `Couple avec enfants (%)` = html("<div style='width:95px;'>Couple avec enfants (%)</div>"),
+    `Deux personnes ou plus (n)` = html("<div style='width:100px;'>Deux personnes ou plus (n)</div>"),
+    `Deux personnes ou plus (%)` = html("<div style='width:100px;'>Deux personnes ou plus (%)</div>")
+  ) |> 
+  data_color(
+    columns = c(3,5,7,9,11,13),
+    colors = scales::col_numeric(
+      palette = c("white", color_theme("purpletransport")),
+      domain = NULL
+    )
+  ) |> 
+  fmt(columns = c(2,4,6,8,10,12), fns = convert_number) |> 
+  fmt(columns = c(3,5,7,9,11,13), fns = convert_pct) |> 
+  tab_style(
+    style = cell_text(font = "KMR Apparat Regular", size = px(15)),
+    locations = cells_body()) |> 
+  tab_style(
+    style = cell_text(font = "KMR Apparat Regular"),
+    locations = cells_column_labels())
+    
 
-#Finding and creating the breaks
-data_4_1_3_breaks <- data_4_1_3_sf |> 
-  select(contains("total")) |> 
-  st_drop_geometry() |> 
-  pivot_longer(cols = everything(),
-               names_to = "variable", 
-               values_to = "value")
+# #Grabbing the data for the plot
+# data_4_1_3 <- read_excel("data/4/mode_occupation_composition_SR.xlsx") |> #Edited version of the spreadsheet
+#   select(-GeoUID) |> 
+#   summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
+#   pivot_longer(cols = everything(), names_to = "type", values_to = "households") |> 
+#   mutate(composition = case_when(
+#     str_detect(type, "wo child") ~ "Couple sans enfants*",
+#     str_detect(type, "child") ~ "Couple avec enfants*",
+#     str_detect(type, "single parent") ~ "Famille monoparentale*",
+#     str_detect(type, "multigen") ~ "Ménage multigénérationnel",
+#     str_detect(type, "other") ~ "Autres ménages comptant une famille de recensement",
+#     str_detect(type, "sole") ~ "Ménage composé d'une seule personne",
+#     str_detect(type, "non cf") ~ "Ménage composé de deux personnes ou plus",
+#     TRUE ~ NA_character_)) |> 
+#   mutate(type = case_when(
+#     str_detect(type, "Owner") & !str_detect(type, "Condo Owner") ~ "Propriétaire",
+#     str_detect(type, "Tenant") & !str_detect(type, "Condo Tenant") ~ "Locataire",
+#     TRUE ~ type
+#   )) |>
+#   filter(type %in% c("Propriétaire", "Locataire")) |>  
+#   mutate(type = factor(type, levels = c(
+#     "Propriétaire", 
+#     "Locataire")),
+#     composition = factor(composition, levels = c(
+#       "Couple avec enfants*", 
+#       "Couple sans enfants*", 
+#       "Famille monoparentale*", 
+#       "Ménage multigénérationnel", 
+#       "Autres ménages comptant une famille de recensement", 
+#       "Ménage composé d'une seule personne", 
+#       "Ménage composé de deux personnes ou plus")))
+# 
+# #Plotting the plot
+# plot_4_1_3 <- ggplot(data_4_1_3, aes(x = composition, y = households, fill = type)) +
+#   geom_bar(stat = "identity", position = "dodge") +
+#   labs(x = "", y = "Nombre de ménages (n)", title = "", caption = "*Ménage comptant une seule famille de recensement, sans personnes additionnelles") +
+#   scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
+#   scale_x_discrete(labels = function(x) str_wrap(x, width = 18)) +
+#   scale_y_continuous(labels = function(x) convert_number(x)) +
+#   graph_theme +
+#   theme(axis.text.x = element_text(angle = 45, hjust = 1),
+#         plot.caption = element_text(hjust = 0))
+# 
+# #Data for the map
+# data_4_1_3_map <- read_excel("data/4/mode_occupation_composition_SR.xlsx") |> 
+#   as.data.frame() |> 
+#   mutate(GeoUID = sprintf("%.2f", as.numeric(GeoUID))) |>  # Ensure two decimal places
+#   mutate(GeoUID = as.character(GeoUID))
+# 
+# data_4_1_3_sf <- full_join(laval_ct, data_4_1_3_map, by = "GeoUID")
+# 
+# #Finding and creating the breaks
+# data_4_1_3_breaks <- data_4_1_3_sf |> 
+#   select(contains("total")) |> 
+#   st_drop_geometry() |> 
+#   pivot_longer(cols = everything(),
+#                names_to = "variable", 
+#                values_to = "value")
+# 
+# #list(classInt::classIntervals(data_4_1_3_breaks$value, n = 5, style = "quantile")$brks)
+# `4_1_3_total_breaks` <- c(-Inf, 50, 100, 300, 600, Inf)
+# `4_1_3_total_breaks_labels` <- c("< 50", "50 - 100", "100 - 300", "300 - 600", "> 600")
+# 
+# #Adding the breaks back into the joined file
+# data_4_1_3_sf <- data_4_1_3_sf |> 
+#   mutate("wo_child" = cut(`Total - wo child`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
+#                                 labels = `4_1_2_total_breaks_labels`),
+#          "child" = cut(`Total - child`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
+#                                 labels = `4_1_3_total_breaks_labels`),
+#          "single" = cut(`Total - single parent`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
+#                                 labels = `4_1_3_total_breaks_labels`),
+#          "multigen" = cut(`Total - multigen`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
+#                                 labels = `4_1_3_total_breaks_labels`),
+#          "other" = cut(`Total - other`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
+#                                 labels = `4_1_3_total_breaks_labels`),
+#          "sole" = cut(`Total - sole`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
+#                                  labels = `4_1_3_total_breaks_labels`),
+#          "non_cf" = cut(`Total - non cf`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
+#                                  labels = `4_1_3_total_breaks_labels`))
+# 
+# #Graphing the maps
+# map_4_1_3_wochild <- ggplot(data = data_4_1_3_sf) +
+#   gg_cc_tiles +
+#   geom_sf(aes(geometry = geometry, fill = `wo_child`), alpha = 0.9, color = "transparent") +
+#   scale_fill_manual(values = curbcut_scale,
+#                     name = "Nombre de ménages (couple sans enfants) (n)") +
+#   gg_cc_theme +
+#   guides(fill = guide_legend(title.position = "top",
+#                              title.hjust = 0.5))
+# 
+# map_4_1_3_child <- ggplot(data = data_4_1_3_sf) +
+#   gg_cc_tiles +
+#   geom_sf(aes(geometry = geometry, fill = `child`), alpha = 0.9, color = "transparent") +
+#   scale_fill_manual(values = curbcut_scale,
+#                     name = "Nombre de ménages (couple avec enfants) (n)") +
+#   gg_cc_theme +
+#   guides(fill = guide_legend(title.position = "top",
+#                              title.hjust = 0.5))
+# 
+# map_4_1_3_single <- ggplot(data = data_4_1_3_sf) +
+#   gg_cc_tiles +
+#   geom_sf(aes(geometry = geometry, fill = `single`), alpha = 0.9, color = "transparent") +
+#   scale_fill_manual(values = curbcut_scale,
+#                     name = "Nombre de ménages (famille monoparentale) (n)") +
+#   gg_cc_theme +
+#   guides(fill = guide_legend(title.position = "top",
+#                              title.hjust = 0.5))
+# 
+# map_4_1_3_multigen <- ggplot(data = data_4_1_3_sf) +
+#   gg_cc_tiles +
+#   geom_sf(aes(geometry = geometry, fill = `multigen`), alpha = 0.9, color = "transparent") +
+#   scale_fill_manual(values = curbcut_scale,
+#                     name = "Nombre de ménages (multigénérationnel) (n)") +
+#   gg_cc_theme +
+#   guides(fill = guide_legend(title.position = "top",
+#                              title.hjust = 0.5))
+# 
+# map_4_1_3_other <- ggplot(data = data_4_1_3_sf) +
+#   gg_cc_tiles +
+#   geom_sf(aes(geometry = geometry, fill = `other`), alpha = 0.9, color = "transparent") +
+#   scale_fill_manual(values = curbcut_scale,
+#                     name = "Nombre de ménages (autres familles de recensement) (n)") +
+#   gg_cc_theme +
+#   guides(fill = guide_legend(title.position = "top",
+#                              title.hjust = 0.5))
+# 
+# map_4_1_3_sole <- ggplot(data = data_4_1_3_sf) +
+#   gg_cc_tiles +
+#   geom_sf(aes(geometry = geometry, fill = `sole`), alpha = 0.9, color = "transparent") +
+#   scale_fill_manual(values = curbcut_scale,
+#                     name = "Nombre de ménages (une seule personne) (n)") +
+#   gg_cc_theme +
+#   guides(fill = guide_legend(title.position = "top",
+#                              title.hjust = 0.5))
+# 
+# map_4_1_3_noncf <- ggplot(data = data_4_1_3_sf) +
+#   gg_cc_tiles +
+#   geom_sf(aes(geometry = geometry, fill = `non_cf`), alpha = 0.9, color = "transparent") +
+#   scale_fill_manual(values = curbcut_scale,
+#                     name = "Nombre de ménages (sans famille de recensement, composé de deux personnes ou plus) (n)") +
+#   gg_cc_theme +
+#   guides(fill = guide_legend(title.position = "top",
+#                              title.hjust = 0.5))
+# 
+# #Saving visuals as images
+# ggsave("outputs/4/plot_4_1_3.png", plot = plot_4_1_3, width = 800/72, height = 600/72, dpi = 72)
+# ggsave("outputs/4/map_4_1_3_wochild.png", plot = map_4_1_3_wochild, width = 800/72, height = 600/72, dpi = 72)
+# ggsave("outputs/4/map_4_1_3_child.png", plot = map_4_1_3_child, width = 800/72, height = 600/72, dpi = 72)
+# ggsave("outputs/4/map_4_1_3_single.png", plot = map_4_1_3_single, width = 800/72, height = 600/72, dpi = 72)
+# ggsave("outputs/4/map_4_1_3_multigen.png", plot = map_4_1_3_multigen, width = 800/72, height = 600/72, dpi = 72)
+# ggsave("outputs/4/map_4_1_3_other.png", plot = map_4_1_3_other, width = 800/72, height = 600/72, dpi = 72)
+# ggsave("outputs/4/map_4_1_3_sole.png", plot = map_4_1_3_sole, width = 800/72, height = 600/72, dpi = 72)
+# ggsave("outputs/4/map_4_1_3_noncf.png", plot = map_4_1_3_noncf, width = 800/72, height = 600/72, dpi = 72)
 
-#list(classInt::classIntervals(data_4_1_3_breaks$value, n = 5, style = "quantile")$brks)
-`4_1_3_total_breaks` <- c(-Inf, 50, 100, 300, 600, Inf)
-`4_1_3_total_breaks_labels` <- c("< 50", "50 - 100", "100 - 300", "300 - 600", "> 600")
-
-#Adding the breaks back into the joined file
-data_4_1_3_sf <- data_4_1_3_sf |> 
-  mutate("wo_child" = cut(`Total - wo child`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
-                                labels = `4_1_2_total_breaks_labels`),
-         "child" = cut(`Total - child`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
-                                labels = `4_1_3_total_breaks_labels`),
-         "single" = cut(`Total - single parent`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
-                                labels = `4_1_3_total_breaks_labels`),
-         "multigen" = cut(`Total - multigen`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
-                                labels = `4_1_3_total_breaks_labels`),
-         "other" = cut(`Total - other`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
-                                labels = `4_1_3_total_breaks_labels`),
-         "sole" = cut(`Total - sole`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
-                                 labels = `4_1_3_total_breaks_labels`),
-         "non_cf" = cut(`Total - non cf`, breaks = `4_1_3_total_breaks`, include.lowest = TRUE,
-                                 labels = `4_1_3_total_breaks_labels`))
-
-#Graphing the maps
-map_4_1_3_wochild <- ggplot(data = data_4_1_3_sf) +
-  gg_cc_tiles +
-  geom_sf(aes(geometry = geometry, fill = `wo_child`), alpha = 0.9, color = "transparent") +
-  scale_fill_manual(values = curbcut_scale,
-                    name = "Nombre de ménages (couple sans enfants) (n)") +
-  gg_cc_theme +
-  guides(fill = guide_legend(title.position = "top",
-                             title.hjust = 0.5))
-
-map_4_1_3_child <- ggplot(data = data_4_1_3_sf) +
-  gg_cc_tiles +
-  geom_sf(aes(geometry = geometry, fill = `child`), alpha = 0.9, color = "transparent") +
-  scale_fill_manual(values = curbcut_scale,
-                    name = "Nombre de ménages (couple avec enfants) (n)") +
-  gg_cc_theme +
-  guides(fill = guide_legend(title.position = "top",
-                             title.hjust = 0.5))
-
-map_4_1_3_single <- ggplot(data = data_4_1_3_sf) +
-  gg_cc_tiles +
-  geom_sf(aes(geometry = geometry, fill = `single`), alpha = 0.9, color = "transparent") +
-  scale_fill_manual(values = curbcut_scale,
-                    name = "Nombre de ménages (famille monoparentale) (n)") +
-  gg_cc_theme +
-  guides(fill = guide_legend(title.position = "top",
-                             title.hjust = 0.5))
-
-map_4_1_3_multigen <- ggplot(data = data_4_1_3_sf) +
-  gg_cc_tiles +
-  geom_sf(aes(geometry = geometry, fill = `multigen`), alpha = 0.9, color = "transparent") +
-  scale_fill_manual(values = curbcut_scale,
-                    name = "Nombre de ménages (multigénérationnel) (n)") +
-  gg_cc_theme +
-  guides(fill = guide_legend(title.position = "top",
-                             title.hjust = 0.5))
-
-map_4_1_3_other <- ggplot(data = data_4_1_3_sf) +
-  gg_cc_tiles +
-  geom_sf(aes(geometry = geometry, fill = `other`), alpha = 0.9, color = "transparent") +
-  scale_fill_manual(values = curbcut_scale,
-                    name = "Nombre de ménages (autres familles de recensement) (n)") +
-  gg_cc_theme +
-  guides(fill = guide_legend(title.position = "top",
-                             title.hjust = 0.5))
-
-map_4_1_3_sole <- ggplot(data = data_4_1_3_sf) +
-  gg_cc_tiles +
-  geom_sf(aes(geometry = geometry, fill = `sole`), alpha = 0.9, color = "transparent") +
-  scale_fill_manual(values = curbcut_scale,
-                    name = "Nombre de ménages (une seule personne) (n)") +
-  gg_cc_theme +
-  guides(fill = guide_legend(title.position = "top",
-                             title.hjust = 0.5))
-
-map_4_1_3_noncf <- ggplot(data = data_4_1_3_sf) +
-  gg_cc_tiles +
-  geom_sf(aes(geometry = geometry, fill = `non_cf`), alpha = 0.9, color = "transparent") +
-  scale_fill_manual(values = curbcut_scale,
-                    name = "Nombre de ménages (sans famille de recensement, composé de deux personnes ou plus) (n)") +
-  gg_cc_theme +
-  guides(fill = guide_legend(title.position = "top",
-                             title.hjust = 0.5))
-
-#Saving visuals as images
-ggsave("outputs/4/plot_4_1_3.png", plot = plot_4_1_3, width = 800/72, height = 600/72, dpi = 72)
-ggsave("outputs/4/map_4_1_3_wochild.png", plot = map_4_1_3_wochild, width = 800/72, height = 600/72, dpi = 72)
-ggsave("outputs/4/map_4_1_3_child.png", plot = map_4_1_3_child, width = 800/72, height = 600/72, dpi = 72)
-ggsave("outputs/4/map_4_1_3_single.png", plot = map_4_1_3_single, width = 800/72, height = 600/72, dpi = 72)
-ggsave("outputs/4/map_4_1_3_multigen.png", plot = map_4_1_3_multigen, width = 800/72, height = 600/72, dpi = 72)
-ggsave("outputs/4/map_4_1_3_other.png", plot = map_4_1_3_other, width = 800/72, height = 600/72, dpi = 72)
-ggsave("outputs/4/map_4_1_3_sole.png", plot = map_4_1_3_sole, width = 800/72, height = 600/72, dpi = 72)
-ggsave("outputs/4/map_4_1_3_noncf.png", plot = map_4_1_3_noncf, width = 800/72, height = 600/72, dpi = 72)
-
-# 4.1.4 -------------------------------------------------------------------
+# 4.1.1.4 Statut d'immigrant selon mode d'occupation ----------------------
+#Percentages based on provided PDF and 2016 census data
+imm_2016 <- get_census(dataset = datayear,
+                       regions = list(CSD = 2465005),
+                       level = "CSD",
+                       vectors = pto_year)
 
 # 4.1.5 -------------------------------------------------------------------
 
@@ -598,7 +699,7 @@ ggsave("outputs/4/plot_4_1_9_hh.png", plot = plot_4_1_7, width = 800/72, height 
 # R Markdown --------------------------------------------------------------
 qs::qsavem(plot_4_1_1_1, map_4_1_1_1_total, map_4_1_1_1_owner, map_4_1_1_1_tenant,
            plot_4_1_1_2, map_4_1_1_2_owner, map_4_1_1_2_tenant,
-           plot_4_1_3, map_4_1_3_wochild, map_4_1_3_child, map_4_1_3_single,
+           plot_4_1_1_3, table_4_1_1_3,
            map_4_1_3_other, map_4_1_3_sole, map_4_1_3_noncf,
            plot_4_1_9_hh, plot_4_1_9_pop,
            file = "data/section_4_1.qsm")
