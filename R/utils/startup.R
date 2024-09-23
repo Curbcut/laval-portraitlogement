@@ -13,6 +13,7 @@ library(showtext)
 library(sf)
 library(gt)
 library(readxl)
+library(qs)
 
 source("R/utils/crosstab.R")
 
@@ -53,6 +54,9 @@ curbcut_colors$brandbook <- tibble(
   color = c("#F0F0F0", "#A3B0D1", "#73AD80", "#E08565", "#CD718C", 
             "#C9C3FA", "#F5D574", "#ADB033", "#9E9090"))
 
+color_theme <- function(theme) {
+  curbcut_colors$brandbook$color[curbcut_colors$brandbook$theme == theme]
+}
 
 # Themes ------------------------------------------------------------------
 
