@@ -143,16 +143,6 @@ plot_6_1_1_type_facet <-
   theme(legend.position = "bottom")
 
 # Map of housing completions by five-year chunk
-completions_by_type |> 
-  filter(year >= 2019) |> 
-  filter(type == "All") |> 
-  filter(!is.na(zone)) |> 
-  summarize(value = sum(value), .by = zone) |> 
-  inner_join(cmhc_zones) |> 
-  st_as_sf() |> 
-  ggplot(aes(fill = value)) +
-  geom_sf()
-
 map_6_1_1_annual_1 <- 
   completions_by_type |> 
   filter(!is.na(zone)) |>
@@ -217,6 +207,132 @@ starts_by_type <-
       year = x)}) |> 
   bind_rows() |> 
   set_names(c("zone", "type", "value", "date", "year", "survey", "series"))
+
+#' Overall completions mostly stable over last 30 years, albeit with high 
+#' levels of year-to-year variability
+plot_6_1_2_overall <- 
+  starts_by_type |> 
+  filter(is.na(zone)) |>
+  filter(type == "All") |>
+  mutate(value_trend = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
+         .by = type) |>
+  pivot_longer(c(value, value_trend)) |> 
+  mutate(name = if_else(name == "value", "Actual", 
+                        "Five-year moving average")) |> 
+  ggplot(aes(year, value, group = name, linewidth = name, alpha = name)) +
+  geom_line() +
+  scale_y_continuous("Starts") +
+  scale_x_continuous("Year") +
+  scale_linewidth_manual(name = NULL, values = c(
+    "Actual" = 0.4, "Five-year moving average" = 1)) +
+  scale_alpha_manual(name = NULL, values = c(
+    "Actual" = 0.2, "Five-year moving average" = 1)) +
+  ggtitle("Annual housing completions") +
+  graph_theme
+
+# Table with 5-year aggregations
+table_6_1_2_five_year <- 
+  starts_by_type |> 
+  filter(is.na(zone)) |>
+  filter(type != "All") |> 
+  mutate("Date Range" = case_when(
+    year >= 2019 ~ "2019-2023",
+    year >= 2014 ~ "2014-2018",
+    year >= 2009 ~ "2009-2013",
+    year >= 2004 ~ "2004-2008",
+    year >= 1999 ~ "1999-2003",
+    year >= 1994 ~ "1994-1998",
+    year >= 1990 ~ "1990-1993")) |> 
+  summarize(avg = mean(value), .by = c(`Date Range`, type)) |> 
+  pivot_wider(names_from = type, values_from = avg) |> 
+  mutate(Total = Single + `Semi-Detached` + Row + Apartment, .before = Single) |> 
+  gt::gt() |> 
+  gt::tab_header("Average annual housing starts by dwelling type")
+
+# Comparison of long-term residential start trends by building type
+plot_6_1_2_type <- 
+  starts_by_type |> 
+  filter(is.na(zone)) |>
+  filter(type != "All") |>
+  ggplot(aes(year, value, colour = type)) +
+  geom_line() +
+  scale_y_continuous("Starts") +
+  scale_x_continuous("Year") +
+  scale_colour_discrete("Dwelling type") +
+  ggtitle("Annual housing starts by dwelling type") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+# Variation with between-type difference emphasized
+plot_6_1_2_type_facet <-
+  starts_by_type |> 
+  filter(is.na(zone)) |>
+  filter(type != "All") |>
+  mutate(value = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
+         .by = type) |>
+  ggplot(aes(year, value, group = type)) +
+  geom_line() +
+  gghighlight::gghighlight(use_direct_label = FALSE) +
+  scale_y_continuous("Starts") +
+  scale_x_continuous("Year") +
+  facet_wrap(~type) +
+  ggtitle(
+    "Annual housing starts by dwelling type (five-year moving average)") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+# Map of housing completions by five-year chunk
+map_6_1_2_annual_1 <- 
+  starts_by_type |> 
+  filter(!is.na(zone)) |>
+  filter(type == "All") |> 
+  mutate(date = case_when(
+    year >= 2019 ~ "2019-2023",
+    year >= 2014 ~ "2014-2018",
+    year >= 2009 ~ "2009-2013",
+    year >= 2004 ~ "2004-2008",
+    year >= 1999 ~ "1999-2003",
+    year >= 1994 ~ "1994-1998",
+    year >= 1990 ~ "1990-1993")) |> 
+  summarize(avg = mean(value), .by = c(date, zone)) |> 
+  inner_join(cmhc_zones) |> 
+  st_as_sf() |> 
+  select(zone, date, avg, geometry) |> 
+  ggplot(aes(fill = avg)) +
+  geom_sf(colour = "white", lwd = 0.5) +
+  facet_wrap(vars(date), nrow = 3) +
+  scale_fill_viridis_b("Annual starts") +
+  theme_void() +
+  theme(legend.position = "bottom")
+
+map_6_1_2_annual_2 <- 
+  starts_by_type |> 
+  filter(!is.na(zone)) |>
+  filter(type == "All") |> 
+  mutate(date = case_when(
+    year >= 2019 ~ "2019-2023",
+    year >= 2014 ~ "2014-2018",
+    year >= 2009 ~ "2009-2013",
+    year >= 2004 ~ "2004-2008",
+    year >= 1999 ~ "1999-2003",
+    year >= 1994 ~ "1994-1998",
+    year >= 1990 ~ "1990-1993")) |> 
+  summarize(avg = mean(value), .by = c(date, zone)) |> 
+  inner_join(cmhc_zones) |> 
+  st_as_sf() |> 
+  mutate(density = avg / dwellings * 1000) |> 
+  select(zone, date, density, geometry) |> 
+  ggplot(aes(fill = density)) +
+  geom_sf(colour = "white", lwd = 0.5) +
+  facet_wrap(vars(date), nrow = 3) +
+  scale_fill_viridis_b("Annual starts per 1000 dwellings") +
+  theme_void() +
+  theme(legend.position = "bottom")
+
+map_6_1_2_annual <- 
+  patchwork::wrap_plots(map_6_1_2_annual_1, map_6_1_2_annual_2)
+
+
 
 #' Total housing starts are trending down, with an exception of an apparently
 #' one-time surge in 2017/2018.
@@ -297,5 +413,8 @@ starts_by_market |>
 
 qs::qsavem(cmhc_zones, completions_by_type, completions_by_market, 
            plot_6_1_1_overall, table_6_1_1_five_year, plot_6_1_1_type, 
-           plot_6_1_1_type_facet, map_6_1_1_annual, 
+           plot_6_1_1_type_facet, map_6_1_1_annual, starts_by_type, 
+           plot_6_1_2_overall, table_6_1_2_five_year, plot_6_1_2_type, 
+           plot_6_1_2_type_facet, map_6_1_2_annual, 
+           
            file = "data/section_6_1.qsm")

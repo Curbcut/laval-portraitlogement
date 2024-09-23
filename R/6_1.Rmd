@@ -65,9 +65,59 @@ map_6_1_1_annual
 ```
 
 
-
-
 # 6.1.2 Mises en chantier par typologie
+
+
+```{r s_6_1_2, include = FALSE}
+
+# Min and max 5-year avg
+min_max_vals <- 
+  starts_by_type |> 
+  filter(is.na(zone)) |>
+  filter(type == "All") |> 
+  mutate(value_trend = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
+         .by = type) |>
+  filter(value_trend %in% c(min(value_trend), max(value_trend)))
+
+# Start % in Chomedey/Sainte-Dorothée
+start_pct <- 
+  starts_by_type |> 
+  filter(!is.na(zone), type == "All", year >= 2014, year <= 2018) |> 
+  summarize(val = sum(value[zone == "Chomedey/Sainte-Dorothée"]) / sum(value)) |> 
+  pull(val) |> 
+  scales::percent(0.1)
+
+```
+
+Since 1990, the number of annual housing starts in Laval has remained relatively level, albeit with high levels of year-to-year fluctuation. The five-year period with the most completions has been `r paste0(min_max_vals$year[2] - 2, "-", min_max_vals$year[2] - 2)`, when there was an average of `r min_max_vals$value_trend[2]` housing units started each year. By contrast, in the period `r paste0(min_max_vals$year[1] - 2, "-", min_max_vals$year[1] - 2)` only `r min_max_vals$value_trend[1]` housing units were started on average each year.
+
+```{r plot_6_1_2_overall}
+plot_6_1_2_overall
+```
+
+```{r table_6_1_2_five_year}
+table_6_1_2_five_year
+```
+
+Prior to 2000, most newly initated housing projects in Laval comprised single-family homes, with some semi-detached homes also being constructed particularly in the early 1990s. However, since 2000, there has been a substantial shift away from single-detached homes and towards apartments. Annual single-family housing starts peaked in 2003 and have been declining every year since (albeit with minor fluctuations). By contrast, since 2000 apartment starts have surged, with a five-year moving average demonstrating ongoing increases in the total number of apartment projects initiated each year.
+
+There have been no meaningful semi-detached housing starts since the early 1990s, and row houses have consistenly been a negligible portion of total starts.
+
+```{r plot_6_1_2_type}
+plot_6_1_2_type
+```
+
+```{r plot_6_1_2_type_facet}
+plot_6_1_2_type_facet
+```
+
+Both in absolute and per-dwelling terms, new housing starts have been concentrated in the southern Chomedey/Sainte-Dorothée region of Laval. This pattern has remained relatively consistent 2009, although was particularly extreme in the 2014-2018 period, where `r start_pct` of all new housing starts were in the Chomedey/Sainte-Dorothée zone.
+
+```{r map_6_1_2_annual}
+map_6_1_2_annual
+```
+
+
 
 # 6.1.3 Mises en chantier par mode d'occupation
 
