@@ -1,10 +1,11 @@
 #### 6.1 #######################################################################
 
 source("R/utils/startup.R")
-qs::qload("data/cmhc_shp.qsm")
 
 
 # Process CMHC zones ------------------------------------------------------
+
+qs::qload("data/cmhc_shp.qsm")
 
 cmhc_zones <-
   cmhc_nbhd_2022 |> 
@@ -19,10 +20,27 @@ cmhc_zones <-
     ZONECODE == 22 ~ "St-François/St-Vincent/Duvernay",
     ZONECODE == 23 ~ "Vimont/Auteuil",
     ZONECODE == 24 ~ "Laval-Ouest/Fabreville/Ste-Rose"), .after = ZONECODE) |> 
-  rename(zone_code = ZONECODE)
+  rename(zone_code = ZONECODE) |> 
+  st_transform(32618)
+
+# Get 2021 dwelling counts
+dwellings <- 
+  get_census("CA21", regions = list(CSD = 2465005), level = "DB", 
+             geo_format = "sf") |> 
+  as_tibble() |> 
+  st_as_sf() |> 
+  select(dwellings = Dwellings, geometry) |> 
+  st_transform(32618)
+
+# Add to cmhc_zones
+cmhc_zones <- 
+  cmhc_zones |> 
+  mutate(dwellings = 
+           sf::st_interpolate_aw(dwellings, cmhc_zones, extensive = TRUE) |> 
+           pull(dwellings))
 
 rm(cmhc_nbhd_2016, cmhc_nbhd_2017, cmhc_nbhd_2018, cmhc_nbhd_2019,
-   cmhc_nbhd_2020, cmhc_nbhd_2021, cmhc_nbhd_2022)
+   cmhc_nbhd_2020, cmhc_nbhd_2021, cmhc_nbhd_2022, dwellings)
 
 
 # 6.1.1 Dév rés récent (répartition territoriale par type de logem --------
@@ -50,17 +68,6 @@ completions_by_market <-
       year = x)}) |> 
   bind_rows() |> 
   set_names(c("zone", "market", "value", "date", "year", "survey", "series"))
-
-# Map of last five years of housing completions
-completions_by_type |> 
-  filter(year >= 2019) |> 
-  filter(type == "All") |> 
-  filter(!is.na(zone)) |> 
-  summarize(value = sum(value), .by = zone) |> 
-  inner_join(cmhc_zones) |> 
-  st_as_sf() |> 
-  ggplot(aes(fill = value)) +
-  geom_sf()
 
 #' Overall completions mostly stable over last 30 years, albeit with high 
 #' levels of year-to-year variability
@@ -134,6 +141,67 @@ plot_6_1_1_type_facet <-
     "Annual housing completions by dwelling type (five-year moving average)") +
   theme_minimal() +
   theme(legend.position = "bottom")
+
+# Map of housing completions by five-year chunk
+completions_by_type |> 
+  filter(year >= 2019) |> 
+  filter(type == "All") |> 
+  filter(!is.na(zone)) |> 
+  summarize(value = sum(value), .by = zone) |> 
+  inner_join(cmhc_zones) |> 
+  st_as_sf() |> 
+  ggplot(aes(fill = value)) +
+  geom_sf()
+
+map_6_1_1_annual_1 <- 
+  completions_by_type |> 
+  filter(!is.na(zone)) |>
+  filter(type == "All") |> 
+  mutate(date = case_when(
+    year >= 2019 ~ "2019-2023",
+    year >= 2014 ~ "2014-2018",
+    year >= 2009 ~ "2009-2013",
+    year >= 2004 ~ "2004-2008",
+    year >= 1999 ~ "1999-2003",
+    year >= 1994 ~ "1994-1998",
+    year >= 1990 ~ "1990-1993")) |> 
+  summarize(avg = mean(value), .by = c(date, zone)) |> 
+  inner_join(cmhc_zones) |> 
+  st_as_sf() |> 
+  select(zone, date, avg, geometry) |> 
+  ggplot(aes(fill = avg)) +
+  geom_sf(colour = "white", lwd = 0.5) +
+  facet_wrap(vars(date), nrow = 3) +
+  scale_fill_viridis_b("Annual completions") +
+  theme_void() +
+  theme(legend.position = "bottom")
+  
+map_6_1_1_annual_2 <- 
+  completions_by_type |> 
+  filter(!is.na(zone)) |>
+  filter(type == "All") |> 
+  mutate(date = case_when(
+    year >= 2019 ~ "2019-2023",
+    year >= 2014 ~ "2014-2018",
+    year >= 2009 ~ "2009-2013",
+    year >= 2004 ~ "2004-2008",
+    year >= 1999 ~ "1999-2003",
+    year >= 1994 ~ "1994-1998",
+    year >= 1990 ~ "1990-1993")) |> 
+  summarize(avg = mean(value), .by = c(date, zone)) |> 
+  inner_join(cmhc_zones) |> 
+  st_as_sf() |> 
+  mutate(density = avg / dwellings * 1000) |> 
+  select(zone, date, density, geometry) |> 
+  ggplot(aes(fill = density)) +
+  geom_sf(colour = "white", lwd = 0.5) +
+  facet_wrap(vars(date), nrow = 3) +
+  scale_fill_viridis_b("Annual completions per 1000 dwellings") +
+  theme_void() +
+  theme(legend.position = "bottom")
+
+map_6_1_1_annual <- 
+  patchwork::wrap_plots(map_6_1_1_annual_1, map_6_1_1_annual_2)
 
 
 # 6.1.2 Mises en chantier par typologie -----------------------------------
@@ -227,6 +295,7 @@ starts_by_market |>
 
 # R Markdown --------------------------------------------------------------
 
-qs::qsavem(completions_by_type, completions_by_market, plot_6_1_1_overall,
-           table_6_1_1_five_year, plot_6_1_1_type, plot_6_1_1_type_facet,
+qs::qsavem(cmhc_zones, completions_by_type, completions_by_market, 
+           plot_6_1_1_overall, table_6_1_1_five_year, plot_6_1_1_type, 
+           plot_6_1_1_type_facet, map_6_1_1_annual, 
            file = "data/section_6_1.qsm")
