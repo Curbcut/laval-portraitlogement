@@ -138,7 +138,7 @@ plot_6_1_2_type_facet
 plot_6_1_2_type_apart
 ```
 
-Both in absolute and per-dwelling terms, new housing starts have been concentrated in the southern Chomedey/Sainte-Dorothée region of Laval. This pattern has remained relatively consistent 2009, although was particularly extreme in the 2014-2018 period, where `r start_pct` of all new housing starts were in the Chomedey/Sainte-Dorothée zone.
+In both absolute and per-dwelling terms, there has been a progressive shift in the location of new housing starts in Laval. From 2009-2013, the highest number of absolute housing starts were found in the Chomedey/Sainte-Dorothée zone; in proportional terms this was also the case, although there were still relatively robust per-dwelling housing starts throughout most of the city. In the 2014-2018 period, nearly the entirety of housing starts were located in Chomedey/Sainte-Dorothée, and even in proportional terms most other parts of the city saw very little new housing development. In the last five years, by contrast, although Chomedey/Sainte-Dorothée once again saw the greatest number of total new housing starts, it no longer received the highest number of new housing starts proportional to existing dwellings. Instead, it was Laval-Ouest/Fabreville/Ste-Rose that saw the greatest proportional amount of new housing development.
 
 ```{r map_6_1_2_annual}
 map_6_1_2_annual
@@ -186,8 +186,23 @@ plot_6_1_3_market_rental
 
 # 6.1.4 Mises en chantier par nombre de chambres à coucher
 
+CMHC does not make data available about housing starts broken down by bedroom count.
+
 # 6.1.5 Prix des logements neufs
 
+TKTK prices
+
+```{r plot_6_1_5_percentiles}
+plot_6_1_5_percentiles
+```
+
+```{r plot_6_1_5_units}
+plot_6_1_5_units
+```
+
 # 6.1.7 Mises en chantier selon le prix par nombre de chambres à coucher
+
+CMHC does not make data available about housing starts broken down by price or bedroom count.
+
 
 # 6.1.12 Valeur foncière (si possible Ventilé par typologie et au pied carré)
