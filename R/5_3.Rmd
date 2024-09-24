@@ -1,0 +1,19 @@
+---
+title: "6.1 À but lucratif (abordable, prix du marché)"
+author: "Curbcut"
+output: html_document
+---
+
+```{r setup_6_1, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+qs::qload(here::here("data", "section_5_3.qsm"))
+```
+
+# 5.3.2 Pandémie et télétravail
+
+Tant en 2016 qu'en 2021, une majorité des résident·e·s de Laval se déplaçaient à l'extérieur de la ville pour travailler. Toutefois, cette tendance s'est atténuée, la proportion de personnes travaillant à l'extérieur ayant diminué, passant de `r emploi_outside_CSD_2016` en 2016 à `r emploi_outside_CSD` en 2021. En parallèle, de plus en plus de Lavallois·es travaillaient dans leur municipalité de résidence, avec une augmentation notable de `r emploi_within_CSD_2016` à `r emploi_within_CSD` sur la même période. Ces changements sont largement attribués à la pandémie de COVID-19, qui a profondément modifié les habitudes de travail en rendant le télétravail plus accessible et répandu. Comme le recensement se base sur le lieu de travail habituel, les Lavallois·es télétravaillant pour des entreprises situées ailleurs, par exemple à Montréal, sont désormais considérés comme travaillant à Laval, ce qui reflète ce changement structurel.
+
+L'année 2021 a été une année charnière pour le télétravail à Laval. Entre 2001 et 2016, le nombre de Lavallois·es travaillant sur place dans leur lieu de travail physique a progressivement diminué, passant de `r emploi_place_atwork_2001` à `r emploi_place_atwork_2016`. Cependant, entre 2016 et 2021, cette diminution s'est accélérée, chutant à `r emploi_place_atwork`. En parallèle, le nombre de personnes travaillant à domicile a fortement augmenté, passant de `r emploi_place_home_2016` en 2016 à `r emploi_place_home` en 2021. Bien que cette hausse soit en partie liée à la pandémie, elle pourrait annoncer un changement durable dans les pratiques de travail, avec une adoption accrue du télétravail dans les années à venir.
+
+# 5.3.3 Population en résidence pour personnes âgées
+

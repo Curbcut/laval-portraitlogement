@@ -41,6 +41,9 @@ laval_ct <- get_census(dataset = "CA21",
   select(GeoUID) |> 
   st_transform(crs = 4326)
 
+electoral_districts <- sf::st_read("data/limite-district-electoral.geojson")
+electoral_districts <- sf::st_transform(electoral_districts, crs = 32618)
+
 
 # Addition of colours -----------------------------------------------------
 
