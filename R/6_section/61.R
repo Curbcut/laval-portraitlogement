@@ -241,8 +241,7 @@ starts_by_type <-
   bind_rows() |> 
   set_names(c("zone", "type", "value", "date", "year", "survey", "series"))
 
-#' Overall completions mostly stable over last 30 years, albeit with high 
-#' levels of year-to-year variability
+#' Overall starts
 plot_6_1_2_overall <- 
   starts_by_type |> 
   filter(is.na(zone)) |>
@@ -304,16 +303,17 @@ plot_6_1_2_type_facet <-
   filter(type != "All") |>
   mutate(value = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
          .by = type) |>
-  ggplot(aes(year, value, group = type)) +
+  ggplot(aes(year, value, group = type, colour = type)) +
   geom_line() +
   gghighlight::gghighlight(use_direct_label = FALSE) +
   scale_y_continuous("Starts") +
   scale_x_continuous("Year") +
+  scale_colour_discrete("Dwelling type") +
   facet_wrap(~type) +
   ggtitle(
     "Annual housing starts by dwelling type (five-year moving average)") +
   theme_minimal() +
-  theme(legend.position = "bottom")
+  theme(legend.position = "none")
 
 # Pct of annual starts which are apartment
 plot_6_1_2_type_apart <- 
@@ -395,14 +395,138 @@ starts_by_market <-
   bind_rows() |> 
   set_names(c("zone", "market", "value", "date", "year", "survey", "series"))
 
-starts_by_market |> 
-  filter(!is.na(`Survey Zones`)) |> 
-  filter(`Intended Market` != "All") |> 
-  ggplot(aes(Year, Value, colour = `Intended Market`)) +
+# Table with 5-year aggregations
+table_6_1_3_five_year <- 
+  starts_by_market |> 
+  filter(is.na(zone)) |>
+  mutate("Date Range" = case_when(
+    year >= 2019 ~ "2019-2023",
+    year >= 2014 ~ "2014-2018",
+    year >= 2009 ~ "2009-2013",
+    year >= 2004 ~ "2004-2008",
+    year >= 1999 ~ "1999-2003",
+    year >= 1994 ~ "1994-1998",
+    year >= 1990 ~ "1990-1993")) |> 
+  summarize(avg = mean(value), .by = c(`Date Range`, market)) |> 
+  pivot_wider(names_from = market, values_from = avg) |> 
+  select(`Date Range`, Total = All, Homeowner:`Co-Op`) |> 
+  gt::gt() |> 
+  gt::tab_header("Average annual housing starts by intended market")
+
+# Comparison of long-term residential start trends by intended market
+plot_6_1_3_market <- 
+  starts_by_market |> 
+  filter(is.na(zone)) |>
+  filter(market != "All", market != "Unknown") |>
+  ggplot(aes(year, value, colour = market)) +
   geom_line() +
-  facet_wrap(~`Survey Zones`, scales = "free_y") +
+  scale_y_continuous("Starts") +
+  scale_x_continuous("Year") +
+  scale_colour_discrete("Intended market") +
+  ggtitle("Annual housing starts by intended market") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+# Variation with between-type difference emphasized
+plot_6_1_3_market_facet <-
+  starts_by_market |> 
+  filter(is.na(zone)) |>
+  filter(market != "All", market != "Unknown") |>
+  mutate(value = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
+         .by = market) |>
+  ggplot(aes(year, value, group = market, colour = market)) +
+  geom_line() +
+  gghighlight::gghighlight(use_direct_label = FALSE) +
+  scale_y_continuous("Starts") +
+  scale_x_continuous("Year") +
+  scale_colour_discrete("Intended market") +
+  facet_wrap(~market) +
+  ggtitle(
+    "Annual housing starts by intended market (five-year moving average)") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Pct of annual starts which are rental
+plot_6_1_3_market_rental <-
+  starts_by_market |> 
+  filter(is.na(zone)) |>
+  filter(market != "All") |>
+  summarize(rental_pct = value[market == "Rental"] / sum(value), .by = year) |>
+  ggplot(aes(year, rental_pct)) +
+  geom_line() +
+  scale_y_continuous("Starts", limits = c(0, 1), labels = scales::percent) +
+  scale_x_continuous("Year") +
+  ggtitle(
+    "Percentage of annual housing starts which are intended for the rental market") +
   theme_minimal()
 
+
+# 6.1.5 Prix des logements neufs ------------------------------------------
+
+# Prices taken from CMHC HMIP
+new_prices <-
+  tribble(
+    ~year, ~p20, ~p40, ~p60, ~p80, ~median, ~average, ~units,
+    1998, 105000, 120000, 130000, 155000, 125000, 133508, 1010,
+    1999, 115000, 130000, 145000, 160000, 135000, 143505, 1134,
+    2000, 130000, 150000, 160000, 190000, 150000, 163171, 1294,
+    2001, 145000, 160000, 180000, 200000, 165000, 178914, 1254,
+    2002, 175000, 190000, 210000, 250000, 200000, 214559, 1489,
+    2003, 195000, 220000, 250000, 280000, 240000, 242900, 1554,
+    2004, 205000, 235000, 260000, 300000, 250000, 265270, 1653,
+    2005, 225000, 255000, 280000, 355000, 265000, 289693, 1562,
+    2006, 260000, 290000, 335000, 400000, 300000, 336209, 1096,
+    2007, 270000, 300000, 361000, 425000, 330000, 355025, 1075,
+    2008, 295000, 350000, 400000, 480000, 380000, 395287, 1158,
+    2009, 350000, 390000, 425000, 500000, 400000, 427751, 812,
+    2010, 285000, 335000, 390000, 465000, 360000, 384910, 882,
+    2011, 310000, 370000, 420000, 500000, 395000, 406589, 559,
+    2012, 368000, 415000, 485000, 570000, 440000, 463910, 482,
+    2013, 386000, 440000, 508000, 605000, 465000, 487631, 250,
+    2014, 404000, 468000, 525000, 650000, 495000, 527828, 205,
+    2015, 404000, 500000, 580000, 691000, 545000, 553809, 212,
+    2016, 431000, 525000, 558000, 620000, 545000, 535079, 162,
+    2017, 404000, 473000, 539000, 631000, 485000, 523579, 136,
+    2018, 484000, 566000, 626000, 658000, 605000, 617806, 89,
+    2019, NA,     NA,     NA,     NA,     NA,     611825,	90,
+    2020, 532000, 605000, 682000, 924000, 650000, 679529, 87,
+    2021, 586000, 634000, 768000, 866000, 665000, 755538, 74,
+    2022, 779000, 840000, 870000, 952000, 860000, 889831, 125,
+    2023, 801000, 909000, 999000, 1096000, 970000, 1065369, 82)
+
+plot_6_1_5_percentiles <- 
+  new_prices |> 
+  pivot_longer(c(p20, p40, median, p60, p80)) |> 
+  mutate(name = case_when(
+    name == "p20" ~ "20th percentile",
+    name == "p40" ~ "40th percentile",
+    name == "median" ~ "Median",
+    name == "p60" ~ "60th percentile",
+    name == "p80" ~ "80th percentile")) |> 
+  mutate(name = factor(name, levels = c("20th percentile", "40th percentile", 
+                                        "Median", "60th percentile", 
+                                        "80th percentile"))) |> 
+  filter(year != 2019) |> 
+  ggplot(aes(year, value, colour = name)) +
+  geom_line() +
+  scale_y_continuous("Price", labels = scales::dollar) +
+  scale_x_continuous("Year") +
+  scale_colour_discrete(NULL) +
+  ggtitle(
+    "Average annual price for absorbed homeowner and condominimum units") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+plot_6_1_5_units <- 
+  new_prices |> 
+  filter(year != 2019) |> 
+  ggplot(aes(year, units)) +
+  geom_line() +
+  scale_y_continuous("Units", labels = scales::comma) +
+  scale_x_continuous("Year") +
+  ggtitle(
+    "Annual absorbed homeowner and condominimum units") +
+  theme_minimal()
 
 
 # R Markdown --------------------------------------------------------------
@@ -412,5 +536,8 @@ qs::qsavem(cmhc_zones, completions_by_type, completions_by_market,
            plot_6_1_1_type_facet, plot_6_1_1_market, plot_6_1_1_market_facet, 
            map_6_1_1_annual, starts_by_type, plot_6_1_2_overall, 
            table_6_1_2_five_year, plot_6_1_2_type, plot_6_1_2_type_facet, 
-           plot_6_1_2_type_apart, map_6_1_2_annual, 
+           plot_6_1_2_type_apart, map_6_1_2_annual, starts_by_market,
+           table_6_1_3_five_year, plot_6_1_3_market, plot_6_1_3_market_facet,
+           plot_6_1_3_market_rental, new_prices, plot_6_1_5_percentiles,
+           plot_6_1_5_units, 
            file = "data/section_6_1.qsm")
