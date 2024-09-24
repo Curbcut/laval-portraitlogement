@@ -16,6 +16,7 @@ library(readxl)
 library(qs)
 
 source("R/utils/crosstab.R")
+source("R/utils/interpolation.R")
 
 
 # Checking vectors for Canada ---------------------------------------------
