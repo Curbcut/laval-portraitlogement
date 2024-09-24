@@ -241,8 +241,7 @@ starts_by_type <-
   bind_rows() |> 
   set_names(c("zone", "type", "value", "date", "year", "survey", "series"))
 
-#' Overall completions mostly stable over last 30 years, albeit with high 
-#' levels of year-to-year variability
+#' Overall starts
 plot_6_1_2_overall <- 
   starts_by_type |> 
   filter(is.na(zone)) |>
@@ -304,16 +303,17 @@ plot_6_1_2_type_facet <-
   filter(type != "All") |>
   mutate(value = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
          .by = type) |>
-  ggplot(aes(year, value, group = type)) +
+  ggplot(aes(year, value, group = type, colour = type)) +
   geom_line() +
   gghighlight::gghighlight(use_direct_label = FALSE) +
   scale_y_continuous("Starts") +
   scale_x_continuous("Year") +
+  scale_colour_discrete("Dwelling type") +
   facet_wrap(~type) +
   ggtitle(
     "Annual housing starts by dwelling type (five-year moving average)") +
   theme_minimal() +
-  theme(legend.position = "bottom")
+  theme(legend.position = "none")
 
 # Pct of annual starts which are apartment
 plot_6_1_2_type_apart <- 
@@ -395,14 +395,70 @@ starts_by_market <-
   bind_rows() |> 
   set_names(c("zone", "market", "value", "date", "year", "survey", "series"))
 
-starts_by_market |> 
-  filter(!is.na(`Survey Zones`)) |> 
-  filter(`Intended Market` != "All") |> 
-  ggplot(aes(Year, Value, colour = `Intended Market`)) +
-  geom_line() +
-  facet_wrap(~`Survey Zones`, scales = "free_y") +
-  theme_minimal()
+# Table with 5-year aggregations
+table_6_1_3_five_year <- 
+  starts_by_market |> 
+  filter(is.na(zone)) |>
+  mutate("Date Range" = case_when(
+    year >= 2019 ~ "2019-2023",
+    year >= 2014 ~ "2014-2018",
+    year >= 2009 ~ "2009-2013",
+    year >= 2004 ~ "2004-2008",
+    year >= 1999 ~ "1999-2003",
+    year >= 1994 ~ "1994-1998",
+    year >= 1990 ~ "1990-1993")) |> 
+  summarize(avg = mean(value), .by = c(`Date Range`, market)) |> 
+  pivot_wider(names_from = market, values_from = avg) |> 
+  select(`Date Range`, Total = All, Homeowner:`Co-Op`) |> 
+  gt::gt() |> 
+  gt::tab_header("Average annual housing starts by intended market")
 
+# Comparison of long-term residential start trends by intended market
+plot_6_1_3_market <- 
+  starts_by_market |> 
+  filter(is.na(zone)) |>
+  filter(market != "All", market != "Unknown") |>
+  ggplot(aes(year, value, colour = market)) +
+  geom_line() +
+  scale_y_continuous("Starts") +
+  scale_x_continuous("Year") +
+  scale_colour_discrete("Intended market") +
+  ggtitle("Annual housing starts by intended market") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+# Variation with between-type difference emphasized
+plot_6_1_3_market_facet <-
+  starts_by_market |> 
+  filter(is.na(zone)) |>
+  filter(market != "All", market != "Unknown") |>
+  mutate(value = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
+         .by = market) |>
+  ggplot(aes(year, value, group = market, colour = market)) +
+  geom_line() +
+  gghighlight::gghighlight(use_direct_label = FALSE) +
+  scale_y_continuous("Starts") +
+  scale_x_continuous("Year") +
+  scale_colour_discrete("Intended market") +
+  facet_wrap(~market) +
+  ggtitle(
+    "Annual housing starts by intended market (five-year moving average)") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Pct of annual starts which are rental
+plot_6_1_3_market_rental <-
+  starts_by_market |> 
+  filter(is.na(zone)) |>
+  filter(market != "All") |>
+  summarize(rental_pct = value[market == "Rental"] / sum(value), .by = year) |>
+  ggplot(aes(year, rental_pct)) +
+  geom_line() +
+  scale_y_continuous("Starts", limits = c(0, 1), labels = scales::percent) +
+  scale_x_continuous("Year") +
+  ggtitle(
+    "Percentage of annual housing starts which are intended for the rental market") +
+  theme_minimal()
 
 
 # R Markdown --------------------------------------------------------------
@@ -412,5 +468,7 @@ qs::qsavem(cmhc_zones, completions_by_type, completions_by_market,
            plot_6_1_1_type_facet, plot_6_1_1_market, plot_6_1_1_market_facet, 
            map_6_1_1_annual, starts_by_type, plot_6_1_2_overall, 
            table_6_1_2_five_year, plot_6_1_2_type, plot_6_1_2_type_facet, 
-           plot_6_1_2_type_apart, map_6_1_2_annual, 
+           plot_6_1_2_type_apart, map_6_1_2_annual, starts_by_market,
+           table_6_1_3_five_year, plot_6_1_3_market, plot_6_1_3_market_facet,
+           plot_6_1_3_market_rental, 
            file = "data/section_6_1.qsm")

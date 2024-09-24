@@ -89,7 +89,7 @@ map_6_1_1_annual
 ```{r s_6_1_2, include = FALSE}
 
 # Min and max 5-year avg
-min_max_vals <- 
+start_min_max <- 
   starts_by_type |> 
   filter(is.na(zone)) |>
   filter(type == "All") |> 
@@ -114,7 +114,7 @@ starts_21_23 <-
 
 ```
 
-From the mid-1990s through 2010, the number of annual housing starts in Laval was increasing steadily, albeit with some year-to-year fluctuation. Since 2010, however, the trend has reversed, and a five-year moving average of starts shows a clear decline over the last 15 years. The five-year period with the most completions has been `r paste0(min_max_vals$year[1] - 2, "-", min_max_vals$year[1] + 2)`, when there was an average of `r min_max_vals$value_trend[1]` housing units started each year. By contrast, in the period `r paste0(min_max_vals$year[2] - 2, "-", min_max_vals$year[2] - 2)` only `r min_max_vals$value_trend[2]` housing units were started on average each year.
+From the mid-1990s through 2010, the number of annual housing starts in Laval was increasing steadily, albeit with some year-to-year fluctuation. Since 2010, however, the trend has reversed, and a five-year moving average of starts shows a clear decline over the last 15 years. The five-year period with the most completions has been `r paste0(start_min_max$year[1] - 2, "-", start_min_max$year[1] + 2)`, when there was an average of `r start_min_max$value_trend[1]` housing units started each year. By contrast, in the period `r paste0(start_min_max$year[2] - 2, "-", start_min_max$year[2] - 2)` only `r start_min_max$value_trend[2]` housing units were started on average each year.
 
 ```{r plot_6_1_2_overall}
 plot_6_1_2_overall
@@ -124,7 +124,7 @@ plot_6_1_2_overall
 table_6_1_2_five_year
 ```
 
-Prior to 2000, most newly initated housing projects in Laval comprised single-family homes, with some semi-detached homes also being constructed particularly in the early 1990s. However, since 2000, there has been a substantial shift away from single-detached homes and towards apartments. Annual single-family housing starts peaked in 2003 and have been declining every year since (albeit with minor fluctuations). By contrast, since 2000 apartment starts have surged. On the one hand, apartment projects have been steadily increasing as a proportion of total starts. In 2023, in fact, every single housing start was for an apartment project. On the other hand, the absolute number of housing starts—apartments included—has been declining. Over the last three years (2021-2023), there have only been `r starts_21_23` housing units initiated in Laval. The implication is that housing completions will soon catch up to this trend, and that very few housing units will be added to the City's total housing stock in the next few yeras. 
+Prior to 2000, most newly initated housing projects in Laval comprised single-family homes, with some semi-detached homes also being constructed particularly in the early 1990s. However, since 2000, there has been a substantial shift away from single-detached homes and towards apartments. Annual single-family housing starts peaked in 2003 and have been declining every year since (albeit with minor fluctuations). By contrast, since 2000 apartment starts have surged. On the one hand, apartment projects have been steadily increasing as a proportion of total starts. In 2023, in fact, every single housing start was for an apartment project. On the other hand, the absolute number of housing starts—apartments included—has been declining. Over the last three years (2021-2023), there have only been `r starts_21_23` housing units initiated in Laval. The implication is that housing completions will soon catch up to this trend, and that very few housing units will be added to the City's total housing stock in the next few years. 
 
 ```{r plot_6_1_2_type}
 plot_6_1_2_type
@@ -144,9 +144,45 @@ Both in absolute and per-dwelling terms, new housing starts have been concentrat
 map_6_1_2_annual
 ```
 
-
-
 # 6.1.3 Mises en chantier par mode d'occupation
+
+```{r s_6_1_3, include = FALSE}
+
+# Min and max 5-year avg
+start_market_min_max <- 
+  starts_by_market |> 
+  filter(is.na(zone)) |>
+  filter(market != "All", market != "Unknown", market != "Co-Op") |> 
+  mutate(value_trend = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
+         .by = market) |> 
+  filter(year >= 1992) |> 
+  summarize(
+    owner_max = max(value_trend[market == "Homeowner"]),
+    owner_year = year[value_trend == max(value_trend[market == "Homeowner"])],
+    condo_max = max(value_trend[market == "Condo"]),
+    condo_year = year[value_trend == max(value_trend[market == "Condo"])],
+    rental_max = max(value_trend[market == "Rental"]),
+    rental_year = year[value_trend == max(value_trend[market == "Rental"])])
+```
+Housing starts display similar patterns when broken down by intended market. High rates of new housing projects intended for the homeowner market in the 1990s and 2000s have given way first to condominium starts and more recently to rental starts. Looking at five-year moving averages, homeowner starts peaked in `r paste0(start_market_min_max$owner_year - 2, "-", start_market_min_max$owner_year + 2)` at `r start_market_min_max$owner_max` per year. Condominium starts peaked in `r paste0(start_market_min_max$condo_year - 2, "-", start_market_min_max$condo_year + 2)` at `r start_market_min_max$condo_max` per year. And rental starts peaked in `r paste0(start_market_min_max$rental_year - 2, "-", start_market_min_max$rental_year + 2)` at `r start_market_min_max$rental_max` per year.
+
+```{r table_6_1_3_five_year}
+table_6_1_3_five_year
+```
+
+```{r plot_6_1_3_market}
+plot_6_1_3_market
+```
+
+```{r plot_6_1_3_market_facet}
+plot_6_1_3_market_facet
+```
+
+Mirroring the shift discussed in 6.1.2 towards apartment housing starts, sine 2010 an increasingly high percentage of annual housing starts have been intended for the rental market, albeit with a high level of volatility.
+
+```{r plot_6_1_3_market_rental}
+plot_6_1_3_market_rental
+```
 
 # 6.1.4 Mises en chantier par nombre de chambres à coucher
 
