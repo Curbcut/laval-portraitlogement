@@ -142,6 +142,39 @@ plot_6_1_1_type_facet <-
   theme_minimal() +
   theme(legend.position = "bottom")
 
+# Comparison of long-term residential completion trends by intended market
+plot_6_1_1_market <- 
+  completions_by_market |> 
+  filter(is.na(zone)) |>
+  filter(market != "All") |>
+  ggplot(aes(year, value, colour = market)) +
+  geom_line() +
+  scale_y_continuous("Completions") +
+  scale_x_continuous("Year") +
+  scale_colour_discrete("Intended market") +
+  ggtitle("Annual housing completions by intended market") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+# Variation with between-market difference emphasized
+plot_6_1_1_market_facet <-
+  completions_by_market |> 
+  filter(is.na(zone)) |>
+  filter(market != "All") |>
+  mutate(value = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
+         .by = market) |>
+  ggplot(aes(year, value, group = market)) +
+  geom_line() +
+  gghighlight::gghighlight(use_direct_label = FALSE) +
+  scale_y_continuous("Completions") +
+  scale_x_continuous("Year") +
+  facet_wrap(~market) +
+  ggtitle(
+    "Annual housing completions by intended market (five-year moving average)"
+    ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
 # Map of housing completions by five-year chunk
 map_6_1_1_annual_1 <- 
   completions_by_type |> 
@@ -227,7 +260,7 @@ plot_6_1_2_overall <-
     "Actual" = 0.4, "Five-year moving average" = 1)) +
   scale_alpha_manual(name = NULL, values = c(
     "Actual" = 0.2, "Five-year moving average" = 1)) +
-  ggtitle("Annual housing completions") +
+  ggtitle("Annual housing starts") +
   graph_theme
 
 # Table with 5-year aggregations
@@ -245,7 +278,8 @@ table_6_1_2_five_year <-
     year >= 1990 ~ "1990-1993")) |> 
   summarize(avg = mean(value), .by = c(`Date Range`, type)) |> 
   pivot_wider(names_from = type, values_from = avg) |> 
-  mutate(Total = Single + `Semi-Detached` + Row + Apartment, .before = Single) |> 
+  mutate(Total = Single + `Semi-Detached` + Row + Apartment, 
+         .before = Single) |> 
   gt::gt() |> 
   gt::tab_header("Average annual housing starts by dwelling type")
 
@@ -281,7 +315,21 @@ plot_6_1_2_type_facet <-
   theme_minimal() +
   theme(legend.position = "bottom")
 
-# Map of housing completions by five-year chunk
+# Pct of annual starts which are apartment
+plot_6_1_2_type_apart <- 
+  starts_by_type |> 
+  filter(is.na(zone)) |>
+  filter(type != "All") |>
+  summarize(apart_pct = value[type == "Apartment"] / sum(value), .by = year) |>
+  ggplot(aes(year, apart_pct)) +
+  geom_line() +
+  scale_y_continuous("Starts", limits = c(0, 1), labels = scales::percent) +
+  scale_x_continuous("Year") +
+  ggtitle(
+    "Percentage of annual housing starts which are apartments") +
+  theme_minimal()
+
+# Map of housing starts by five-year chunk
 map_6_1_2_annual_1 <- 
   starts_by_type |> 
   filter(!is.na(zone)) |>
@@ -333,58 +381,6 @@ map_6_1_2_annual <-
   patchwork::wrap_plots(map_6_1_2_annual_1, map_6_1_2_annual_2)
 
 
-
-#' Total housing starts are trending down, with an exception of an apparently
-#' one-time surge in 2017/2018.
-starts_by_type |> 
-  filter(is.na(zone)) |>
-  filter(type == "All") |>
-  # mutate(value_trend = slider::slide_dbl(value, mean, .before = 0), .by = type) |>
-  ggplot(aes(year, value)) +
-  geom_line() +
-  geom_smooth(method = "lm", se = FALSE) +
-  theme_minimal()
-
-#' Housing starts are overwhelmingly apartment.
-starts_by_type |> 
-  filter(is.na(zone)) |>
-  filter(type != "All") |>
-  mutate(value_trend = slider::slide_dbl(value, mean, .before = 0), .by = type) |>
-  ggplot(aes(year, colour = type)) +
-  geom_line(aes(y = value_trend), lwd = 1) +
-  theme_minimal()
-
-# Pct of annual starts which are apartment
-starts_by_type |> 
-  filter(is.na(zone)) |>
-  filter(type != "All") |>
-  summarize(apart_pct = value[type == "Apartment"] / sum(value), .by = year) |>
-  ggplot(aes(year, apart_pct)) +
-  geom_line() +
-  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
-  theme_minimal()
-
-# Housing starts mostly in Chomedey/Sainte-Dorothée, but on a downward trend
-starts_by_type |> 
-  filter(!is.na(zone)) |>
-  filter(type != "All") |> 
-  ggplot(aes(year, value, colour = type)) +
-  geom_line() +
-  facet_wrap(~zone, scales = "free_y") +
-  theme_minimal()
-
-starts_by_type |> 
-  filter(!is.na(zone)) |>
-  filter(type == "All") |>
-  summarize(chom_pct = value[zone == "Chomedey/Sainte-Dorothée"] / sum(value), 
-            .by = year) |>
-  ggplot(aes(year, chom_pct)) +
-  geom_line() +
-  geom_smooth(method = "lm", se = FALSE) +
-  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
-  theme_minimal()
-
-
 # 6.1.3 Mises en chantier par mode d'occupation ---------------------------
 
 starts_by_market <- 
@@ -413,8 +409,8 @@ starts_by_market |>
 
 qs::qsavem(cmhc_zones, completions_by_type, completions_by_market, 
            plot_6_1_1_overall, table_6_1_1_five_year, plot_6_1_1_type, 
-           plot_6_1_1_type_facet, map_6_1_1_annual, starts_by_type, 
-           plot_6_1_2_overall, table_6_1_2_five_year, plot_6_1_2_type, 
-           plot_6_1_2_type_facet, map_6_1_2_annual, 
-           
+           plot_6_1_1_type_facet, plot_6_1_1_market, plot_6_1_1_market_facet, 
+           map_6_1_1_annual, starts_by_type, plot_6_1_2_overall, 
+           table_6_1_2_five_year, plot_6_1_2_type, plot_6_1_2_type_facet, 
+           plot_6_1_2_type_apart, map_6_1_2_annual, 
            file = "data/section_6_1.qsm")

@@ -34,9 +34,17 @@ comp_pct <-
   pull(val) |> 
   scales::percent(0.1)
 
+# Completion % for rental
+rent_pct <- 
+  completions_by_market |> 
+  filter(is.na(zone), market != "All", year >= 2015) |> 
+  summarize(val = sum(value[market == "Rental"]) / sum(value)) |> 
+  pull(val) |> 
+  scales::percent(0.1)
+
 ```
 
-Since 1990, the number of annual housing completions in Laval has remained relatively level, albeit with high levels of year-to-year fluctuation. The five-year period with the most completions has been `r paste0(min_max_vals$year[2] - 2, "-", min_max_vals$year[2] - 2)`, when there was an average of `r min_max_vals$value_trend[2]` housing units completed each year. By contrast, in the period `r paste0(min_max_vals$year[1] - 2, "-", min_max_vals$year[1] - 2)` only `r min_max_vals$value_trend[1]` housing units were completed on average each year.
+Since 1990, the number of annual housing completions in Laval has remained relatively level, albeit with high levels of year-to-year fluctuation. The five-year period with the most completions has been `r paste0(min_max_vals$year[2] - 2, "-", min_max_vals$year[2] + 2)`, when there was an average of `r min_max_vals$value_trend[2]` housing units completed each year. By contrast, in the period `r paste0(min_max_vals$year[1] - 2, "-", min_max_vals$year[1] + 2)` only `r min_max_vals$value_trend[1]` housing units were completed on average each year.
 
 ```{r plot_6_1_1_overall}
 plot_6_1_1_overall
@@ -48,7 +56,7 @@ table_6_1_1_five_year
 
 Prior to 2000, most newly constructed housing in Laval comprised single-family homes, with some semi-detached homes also being constructed particularly in the early 1990s. However, since 2000, there has been a substantial shift away from single-detached homes and towards apartments. Annual single-family housing completions peaked in 2003 and have been declining every year since (albeit with minor fluctuations). By contrast, since 2000 apartment completions have surged, with a five-year moving average demonstrating ongoing increases in the total number of apartments entering the market each year.
 
-There have been no meaningful semi-detached housing completions since the early 1990s, and row houses have consistenly been a negligible portion of total completions.
+There have been no meaningful semi-detached housing completions since the early 1990s, and row houses have consistently been a negligible portion of total completions.
 
 ```{r plot_6_1_1_type}
 plot_6_1_1_type
@@ -58,6 +66,17 @@ plot_6_1_1_type
 plot_6_1_1_type_facet
 ```
 
+The same basic trends are evident looking at housing completions by intended market instead of dwelling type. Homeowner housing completions have steadily declined since a recent peak in the early 2000s. Rental and condominium completions are much more volatile—reflecting a smaller number of large projects. Both increased from near-zero levels in the 1990s. In the case of condominiums, completions began rising in the late 2000s, peaked in 2010, and have since been declining. Rental completions, by contrast, began increasing in the late 2000s and have been increasing ever since. `r rent_pct` of all Laval housing completions since 2015 have been intended for the rental market. There have been no co-operative housing completions in Laval in the period of time that CMHC has tracked this information.
+
+```{r plot_6_1_1_market}
+plot_6_1_1_market
+```
+
+```{r plot_6_1_1_market_facet}
+plot_6_1_1_market_facet
+```
+
+
 Both in absolute and per-dwelling terms, housing development has been concentrated in the southern Chomedey/Sainte-Dorothée region of Laval. This pattern has remained relatively consistent 2009, although was particularly extreme in the 2014-2018 period, where `r comp_pct` of all new housing completions were in the Chomedey/Sainte-Dorothée zone.
 
 ```{r map_6_1_1_annual}
@@ -66,7 +85,6 @@ map_6_1_1_annual
 
 
 # 6.1.2 Mises en chantier par typologie
-
 
 ```{r s_6_1_2, include = FALSE}
 
@@ -87,9 +105,16 @@ start_pct <-
   pull(val) |> 
   scales::percent(0.1)
 
+# Starts in the last three years
+starts_21_23 <- 
+  starts_by_type |> 
+  filter(is.na(zone), type == "All", year >= 2021) |> 
+  pull(value) |> 
+  sum()
+
 ```
 
-Since 1990, the number of annual housing starts in Laval has remained relatively level, albeit with high levels of year-to-year fluctuation. The five-year period with the most completions has been `r paste0(min_max_vals$year[2] - 2, "-", min_max_vals$year[2] - 2)`, when there was an average of `r min_max_vals$value_trend[2]` housing units started each year. By contrast, in the period `r paste0(min_max_vals$year[1] - 2, "-", min_max_vals$year[1] - 2)` only `r min_max_vals$value_trend[1]` housing units were started on average each year.
+From the mid-1990s through 2010, the number of annual housing starts in Laval was increasing steadily, albeit with some year-to-year fluctuation. Since 2010, however, the trend has reversed, and a five-year moving average of starts shows a clear decline over the last 15 years. The five-year period with the most completions has been `r paste0(min_max_vals$year[1] - 2, "-", min_max_vals$year[1] + 2)`, when there was an average of `r min_max_vals$value_trend[1]` housing units started each year. By contrast, in the period `r paste0(min_max_vals$year[2] - 2, "-", min_max_vals$year[2] - 2)` only `r min_max_vals$value_trend[2]` housing units were started on average each year.
 
 ```{r plot_6_1_2_overall}
 plot_6_1_2_overall
@@ -99,9 +124,7 @@ plot_6_1_2_overall
 table_6_1_2_five_year
 ```
 
-Prior to 2000, most newly initated housing projects in Laval comprised single-family homes, with some semi-detached homes also being constructed particularly in the early 1990s. However, since 2000, there has been a substantial shift away from single-detached homes and towards apartments. Annual single-family housing starts peaked in 2003 and have been declining every year since (albeit with minor fluctuations). By contrast, since 2000 apartment starts have surged, with a five-year moving average demonstrating ongoing increases in the total number of apartment projects initiated each year.
-
-There have been no meaningful semi-detached housing starts since the early 1990s, and row houses have consistenly been a negligible portion of total starts.
+Prior to 2000, most newly initated housing projects in Laval comprised single-family homes, with some semi-detached homes also being constructed particularly in the early 1990s. However, since 2000, there has been a substantial shift away from single-detached homes and towards apartments. Annual single-family housing starts peaked in 2003 and have been declining every year since (albeit with minor fluctuations). By contrast, since 2000 apartment starts have surged. On the one hand, apartment projects have been steadily increasing as a proportion of total starts. In 2023, in fact, every single housing start was for an apartment project. On the other hand, the absolute number of housing starts—apartments included—has been declining. Over the last three years (2021-2023), there have only been `r starts_21_23` housing units initiated in Laval. The implication is that housing completions will soon catch up to this trend, and that very few housing units will be added to the City's total housing stock in the next few yeras. 
 
 ```{r plot_6_1_2_type}
 plot_6_1_2_type
@@ -109,6 +132,10 @@ plot_6_1_2_type
 
 ```{r plot_6_1_2_type_facet}
 plot_6_1_2_type_facet
+```
+
+```{r plot_6_1_2_type_apart}
+plot_6_1_2_type_apart
 ```
 
 Both in absolute and per-dwelling terms, new housing starts have been concentrated in the southern Chomedey/Sainte-Dorothée region of Laval. This pattern has remained relatively consistent 2009, although was particularly extreme in the 2014-2018 period, where `r start_pct` of all new housing starts were in the Chomedey/Sainte-Dorothée zone.
