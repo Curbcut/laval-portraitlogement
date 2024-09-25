@@ -18,6 +18,16 @@ library(qs)
 source("R/utils/crosstab.R")
 source("R/utils/interpolation.R")
 
+if (Sys.info()["sysname"] == "Windows") {
+  # font_import()
+  # loadfonts(device = "win", quiet = TRUE)
+  # windowsFonts(`KMR Apparat Regular`=windowsFont("KMR Apparat Regular"))
+  # "KMR Apparat Regular" %in% names(windowsFonts())
+  font_add(family = "KMR Apparat Regular", regular = "data/fonts/KMR-Apparat-Regular.ttf")
+  font_add(family = "KMR-Apparat-Regular", regular = "data/fonts/KMR-Apparat-Regular.ttf")
+  showtext_auto()
+}
+
 
 # Checking vectors for Canada ---------------------------------------------
 
@@ -41,8 +51,14 @@ laval_ct <- get_census(dataset = "CA21",
   select(GeoUID) |> 
   st_transform(crs = 4326)
 
+lvl <- 
+  get_census("CA21", regions = list(CSD = 2465005), level = "CSD", 
+             geo_format = "sf") |> 
+  st_transform(crs = 32618)
+
 electoral_districts <- sf::st_read("data/limite-district-electoral.geojson")
 electoral_districts <- sf::st_transform(electoral_districts, crs = 32618)
+electoral_districts <- sf::st_intersection(electoral_districts, lvl["geometry"])
 
 
 # Addition of colours -----------------------------------------------------
@@ -75,11 +91,6 @@ graph_theme <-
 
 # Map Theme ---------------------------------------------------------------
 
-lvl <- 
-  get_census("CA21", regions = list(CSD = 2465005), level = "CSD", 
-             geo_format = "sf") |> 
-  st_transform(crs = 32618)
-
 lvlbbox <- sf::st_bbox(lvl)
 
 laval_sectors <- qs::qread("data/geom_context/secteur.qs")
@@ -110,7 +121,7 @@ bbox <- tibble(
   x = c(lvlbbox["xmin"], lvlbbox["xmax"]),
   y = c(lvlbbox["ymin"], lvlbbox["ymax"])) |> 
   st_as_sf(coords = c("x", "y"), crs = 32618) |> 
-  st_transform(crs = 4326) |> 
+  # st_transform(crs = 4326) |> 
   st_bbox()
 
 x_range <- bbox["xmax"] - bbox["xmin"]
@@ -131,7 +142,7 @@ ylim_zoomed_out <- c(
 
 # Map theme
 gg_cc_theme <- c(list(
-  geom_sf(data = laval_sectors, fill = "transparent", color = "black"),
+  geom_sf(data = electoral_districts, fill = "transparent", color = "black"),
   coord_sf(xlim = xlim_zoomed_out, 
            ylim = ylim_zoomed_out,
            expand = FALSE)),
@@ -140,6 +151,7 @@ gg_cc_theme <- c(list(
   list(theme(legend.box.margin = margin(t = 0)))
 )
 
+table_font_size <- 9.5
 
 # Number functions --------------------------------------------------------
 

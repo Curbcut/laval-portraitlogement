@@ -187,33 +187,121 @@ fetch_all_pages <- function(base_url) {
   all_data
 }
 
-res_aines <- fetch_all_pages(
-  "https://public.arcgis.msss.rtss.qc.ca/arcgis/rest/services/Ressources/K10/MapServer/0/query"
-)
+# res_aines <- fetch_all_pages(
+#   "https://public.arcgis.msss.rtss.qc.ca/arcgis/rest/services/Ressources/K10/MapServer/0/query"
+# )
+# 
+# # Filter only Laval
+# res_aines <- res_aines["nbPlaceRPA"]
+# res_aines <- sf::st_transform(res_aines, crs = sf::st_crs(lvl))
+# res_aines <- sf::st_filter(res_aines, lvl)
+# 
+# # Separate by electoral districts
+# res_aines <- sf::st_intersection(res_aines, electoral_districts) |> 
+#   group_by(NOM) |> 
+#   summarize(places = sum(nbPlaceRPA, na.rm = TRUE)) |> 
+#   sf::st_drop_geometry() |> 
+#   cc.buildr::merge(electoral_districts["NOM"], by = "NOM", all = TRUE) |> 
+#   mutate(places = ifelse(is.na(places), 0, places))
+# 
+# qs::qsave(res_aines, "data/placesRPA.qs")
+res_aines <- qs::qread("data/placesRPA.qs")
+res_aines <- sf::st_intersection(res_aines, electoral_districts["geometry"]) |> 
+  st_collection_extract("POLYGON") |> 
+  group_by(NOM, places) %>%
+  summarise(geometry = st_union(geometry)) %>%
+  ungroup() |> 
+  sf::st_cast("MULTIPOLYGON")
 
-# Filter only Laval
-res_aines <- res_aines["nbPlaceRPA"]
-res_aines <- sf::st_transform(res_aines, crs = sf::st_crs(lvl))
-res_aines <- sf::st_filter(res_aines, lvl)
-
-# Separate by electoral districts
-res_aines <- sf::st_intersection(res_aines, electoral_districts) |> 
-  group_by(NOM) |> 
-  summarize(places = sum(nbPlaceRPA, na.rm = TRUE)) |> 
-  sf::st_drop_geometry() |> 
-  cc.buildr::merge(electoral_districts["NOM"], by = "NOM", all = TRUE) |> 
-  mutate(places = ifelse(is.na(places), 0, places))
+breaks <- c(-Inf, 250, 500, 750, 1000, Inf)
+res_aines$breaks <- cut(res_aines$places, 
+                        breaks = breaks, 
+                        labels = c("< 250", "250 - 500", "500 - 750", "750 - 1 000", "> 1 000"), 
+                        include.lowest = TRUE)
 
 map_5_3_3 <- ggplot(data = res_aines) +
-  # gg_cc_tiles +
-  geom_sf(aes(geometry = geometry, fill = places), color = "transparent") +
-  scale_fill_manual(values = curbcut_scale,
-                    name = "Nombre de ménages (n)") +
-  geom_sf(data = laval_sectors, fill = "transparent", color = "black") +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = breaks), color = "transparent") +
+  scale_fill_manual(values = curbcut_colors$left_5$fill[2:6],
+                    name = NULL) +
   gg_cc_theme +
   guides(fill = guide_legend(title.position = "top",
                              title.hjust = 0.5))
 
+ggsave(plot = map_5_3_3, "outputs/5/map_5_3_3_res_aines.pdf", width = 7.5, height = 6)
+
+# Table
+persones_ages <- get_census(dataset = "CA21",
+                            regions = list(CSD = 2465005),
+                            level = "CSD",
+                            vectors = c("v_CA21_290", "v_CA21_308", "v_CA21_326"))
+
+persones_ages <- rowSums(persones_ages[c(11:13)], )
+persones_ages <- convert_number_noround(persones_ages)
+
+
+persones_ages_DA <- get_census(dataset = "CA21",
+                               regions = list(CSD = 2465005),
+                               level = "DA",
+                               vectors = c(sf = "v_CA21_290", e = "v_CA21_308", ef = "v_CA21_326"),
+                               geo_format = "sf")
+
+persones_ages_DA$ages <- rowSums(persones_ages_DA[c("sf", "e", "ef")] |> sf::st_drop_geometry(),
+                                 na.rm = TRUE)
+
+res_aines <- 
+  merge(res_aines, 
+        interpolate(persones_ages_DA, additive_vars = "ages", 
+                    round_additive = TRUE)[c("NOM", "ages")] |> 
+          sf::st_drop_geometry(),
+        by = "NOM")
+
+res_aines_table <-
+  res_aines |> 
+  sf::st_drop_geometry() |> 
+  select(NOM, places, ages) |> 
+  arrange(-places) |> 
+  gt() %>%
+  cols_label(
+    NOM = "District électoral",
+    places = "Nombre de places en RPA",
+    ages = "Individus âgés de 75 ans et +"
+  ) |>
+  fmt(columns = "places", fns = convert_number) |>
+  # data_color(
+  #   columns = "places",
+  #   colors = scales::col_numeric(
+  #     palette = c("white", color_theme("purpletransport")),
+  #     domain = NULL
+  #   )
+  # ) |>
+  # tab_style(
+  #   style = cell_text(
+  #     font = "KMR Apparat Regular"
+  #   ),
+  #   locations = cells_body()
+  # ) |> 
+  tab_style(
+    style = cell_text(
+      font = "KMR Apparat Regular"
+    ),
+    locations = cells_column_labels()
+  ) |>
+  tab_options(
+    table.font.size = table_font_size,
+    row_group.font.size = table_font_size,
+    table.width = px(3 * 96)
+  ) |>
+  gt_split(row_every_n = ceiling(nrow(res_aines) / 2))
+
+gtsave(grp_pull(res_aines_table, 1), "outputs/5/5_3_3_res_aines_1.png", zoom = 1)
+gtsave(grp_pull(res_aines_table, 2), "outputs/5/5_3_3_res_aines_2.png", zoom = 1)
+  
+
+cor_aines_rpa <- round(cor(res_aines$places, res_aines$ages) * 1000) / 1000
+cor_aines_rpa <- gsub("\\.", ",", cor_aines_rpa)
+
+places_rpa <- convert_number_noround(sum(res_aines$places))
 
 # 5.3.4 -------------------------------------------------------------------
 
@@ -231,4 +319,6 @@ map_5_3_3 <- ggplot(data = res_aines) +
 qs::qsavem(emploi_outside_CSD_2016, emploi_outside_CSD, emploi_within_CSD_2016,
            emploi_within_CSD,
            emploi_place_atwork_2001, emploi_place_atwork_2016, emploi_place_atwork,
-           emploi_place_home_2016, emploi_place_home, file = "data/section_5_3.qsm")
+           emploi_place_home_2016, emploi_place_home, res_aines_table, map_5_3_3,
+           persones_ages, cor_aines_rpa, places_rpa,
+           file = "data/section_5_3.qsm")

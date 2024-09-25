@@ -17,3 +17,22 @@ L'année 2021 a été une année charnière pour le télétravail à Laval. Entr
 
 # 5.3.3 Population en résidence pour personnes âgées
 
+À Laval, la population des personnes âgées de 75 ans et plus, qui constitue le groupe le plus susceptible de résider en résidence privé pour aînés (RPA), s'élève à `r persones_ages` personnes selon les données du dernier recensement canadien, pour `r places_rpa` places en (RPA) ^[Résidences privées pour aînés. (2024). Ministère de la Santé et des Services sociaux. Récupéré au https://public.arcgis.msss.rtss.qc.ca/arcgis/rest/services/Ressources/K10/MapServer/0]. La répartition géographique des places en RPA à travers les quartiers électoraux de la ville montre une corrélation modérée avec la population âgée de 75 ans et plus dans chaque quartier, avec un coefficient de corrélation de `r cor_aines_rpa`. Cette corrélation positive suggère que, dans une certaine mesure, les quartiers où l'on trouve plus de personnes âgées offrent également plus de places en RPA. Cependant, des disparités persistent.
+
+- Souvenir-Labelle (2 891 places), Vimont (2 000 places), et Laval-des-Rapides (1 830 places) disposent du plus grand nombre de places en RPA, répondant en partie à la demande, avec respectivement 2 860, 2 545, et 2 650 personnes âgées de 75 ans et plus dans ces quartiers.
+- Les quartiers sans aucune place en RPA, tels que Marc-Aurèle-Fortin, Val-des-Arbres, et Concorde-Bois-de-Boulogne, comptent néanmoins plusieurs centaines de résidents âgés (1 860, 1 475, et 1 215 personnes âgées de 75 ans et plus respectivement).
+
+Bien que certains quartiers disposent de nombreuses places en RPA, la répartition géographique de ces places pourrait poser des défis d'accès pour les aînés résidant dans des quartiers moins bien desservis. Cela pourrait nécessiter des déplacements ou des transferts vers d'autres secteurs de la ville pour recevoir des services appropriés.
+
+```{r resAinesPlot, include=TRUE, fig.cap="Répartition géographique des places en RPA à travers les différents districts électoraux.", fig.align = 'center'}
+map_5_3_3
+```
+
+```{r resAinesTable, include=TRUE, tab.cap="Places en RPA et nombre d'individus âgés de 75 ans et plus par district électoral.", tab.align = 'center'}
+res_aines_table
+```
+
+# 5.3.4
+
+
+
