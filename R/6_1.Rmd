@@ -44,6 +44,8 @@ rent_pct <-
 
 ```
 
+_Data source: CMHC Starts and Completions Survey._
+
 Since 1990, the number of annual housing completions in Laval has remained relatively level, albeit with high levels of year-to-year fluctuation. The five-year period with the most completions has been `r paste0(min_max_vals$year[2] - 2, "-", min_max_vals$year[2] + 2)`, when there was an average of `r min_max_vals$value_trend[2]` housing units completed each year. By contrast, in the period `r paste0(min_max_vals$year[1] - 2, "-", min_max_vals$year[1] + 2)` only `r min_max_vals$value_trend[1]` housing units were completed on average each year.
 
 ```{r plot_6_1_1_overall}
@@ -114,6 +116,8 @@ starts_21_23 <-
 
 ```
 
+_Data source: CMHC Starts and Completions Survey._
+
 From the mid-1990s through 2010, the number of annual housing starts in Laval was increasing steadily, albeit with some year-to-year fluctuation. Since 2010, however, the trend has reversed, and a five-year moving average of starts shows a clear decline over the last 15 years. The five-year period with the most completions has been `r paste0(start_min_max$year[1] - 2, "-", start_min_max$year[1] + 2)`, when there was an average of `r start_min_max$value_trend[1]` housing units started each year. By contrast, in the period `r paste0(start_min_max$year[2] - 2, "-", start_min_max$year[2] - 2)` only `r start_min_max$value_trend[2]` housing units were started on average each year.
 
 ```{r plot_6_1_2_overall}
@@ -164,6 +168,9 @@ start_market_min_max <-
     rental_max = max(value_trend[market == "Rental"]),
     rental_year = year[value_trend == max(value_trend[market == "Rental"])])
 ```
+
+_Data source: CMHC Starts and Completions Survey._
+
 Housing starts display similar patterns when broken down by intended market. High rates of new housing projects intended for the homeowner market in the 1990s and 2000s have given way first to condominium starts and more recently to rental starts. Looking at five-year moving averages, homeowner starts peaked in `r paste0(start_market_min_max$owner_year - 2, "-", start_market_min_max$owner_year + 2)` at `r start_market_min_max$owner_max` per year. Condominium starts peaked in `r paste0(start_market_min_max$condo_year - 2, "-", start_market_min_max$condo_year + 2)` at `r start_market_min_max$condo_max` per year. And rental starts peaked in `r paste0(start_market_min_max$rental_year - 2, "-", start_market_min_max$rental_year + 2)` at `r start_market_min_max$rental_max` per year.
 
 ```{r table_6_1_3_five_year}
@@ -190,11 +197,27 @@ CMHC does not make data available about housing starts broken down by bedroom co
 
 # 6.1.5 Prix des logements neufs
 
-TKTK prices
+```{r s_6_1_5, include = FALSE}
+
+# 80-20 ratios
+ratios <- 
+  new_prices |> 
+  filter(year %in% c(1998, 2020)) |> 
+  mutate(ratio_80_20 = ratio_80_20 - 1) |> 
+  pull(ratio_80_20) |> 
+  scales::percent()
+
+```
+
+_Data source: CMHC Market Absorption Survey_
+
+CMHC collects data on the selling prices of newly absorbed homeowner and condominium units. According to this data, Laval has seen remarkably consistent annual increases in new housing prices since the 1990s. In 1998, the average selling price of a newly absorbed unit was `r scales::dollar(new_prices$average[1])`, while in 2023 it was `r scales::dollar(new_prices$average[26])`--an increase of `r scales::percent(new_prices$average[26] / new_prices$average[1] - 1)`. Over time, the high-end of the market has seen faster proportionate price increases than the low end of the market. In 1998, the 80th-percentile newly absorbed unit sold for `r ratios[1]` more than the 20th-percentile unit, while in 2020 it was `r ratios[2]`. (The subsequent three years have seen this ratio decline again, but the volatility of the trend makes it too soon to know if that reflects a substantive shift in market conditions.)
 
 ```{r plot_6_1_5_percentiles}
 plot_6_1_5_percentiles
 ```
+
+At the same time, the number of absorbed units being counted towards these prices has declined sharply since the early 2000s. Since the CMHC only collects data on homeowner and condominium units, and an increasingly large percentage of new housing in Laval is renter housing, the price of newly absorbed units is an increasingly imprecise metric for measuring housing costs.
 
 ```{r plot_6_1_5_units}
 plot_6_1_5_units

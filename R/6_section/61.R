@@ -492,7 +492,8 @@ new_prices <-
     2020, 532000, 605000, 682000, 924000, 650000, 679529, 87,
     2021, 586000, 634000, 768000, 866000, 665000, 755538, 74,
     2022, 779000, 840000, 870000, 952000, 860000, 889831, 125,
-    2023, 801000, 909000, 999000, 1096000, 970000, 1065369, 82)
+    2023, 801000, 909000, 999000, 1096000, 970000, 1065369, 82) |> 
+  mutate(ratio_80_20 = p80 / p20)
 
 plot_6_1_5_percentiles <- 
   new_prices |> 
@@ -527,6 +528,47 @@ plot_6_1_5_units <-
   ggtitle(
     "Annual absorbed homeowner and condominimum units") +
   theme_minimal()
+
+
+# 6.1.12 Valeur foncière --------------------------------------------------
+
+# Get forward sortation areas
+fst <- 
+  cc.data::bucket_read_object(object = "postal_codes202103.csv", 
+                              bucket = "curbcut.rawdata",
+                              objectext = ".csv",
+                              method = utils::read.csv) |>
+  as_tibble() |> 
+  st_as_sf(coords = c("LONGITUDE", "LATITUDE"), crs = 4326) |> 
+  mutate(FST = substr(POSTAL_CODE, 1, 3)) |> 
+  summarize(geometry = st_centroid(st_union(geometry)), .by = FST)
+
+uef <- 
+  read_csv("data/role-evaluation-2019.csv") |> 
+  rename(FST = `ra01-code-postal-3-car`)
+
+uef <- 
+  uef |> 
+  inner_join(fst, by = "FST") |> 
+  st_as_sf() |> 
+  filter(`gen-cd-typ-util-nom-2-chifre` == "Logement") |> 
+  select(-`gen-cd-typ-util-nom-2-chifre`,
+         -`ra02-imp-scolaire-nom`,
+         -`ra02-date-init-inscr-role`,
+         -`re98-montant-immeuble-imp`,
+         -`re98-montant-immeuble-ni`,
+         -`re98-montant-eae-imp-scolaire`,
+         -`ra01-nb-total-locaux-nr`)
+
+uef <- 
+  uef |> 
+  set_names(c("FST", "area", "floors", "year_built", "construct_method",
+              "type", "units", "value", "value_previous", "class", 
+              "geometry")) |> 
+  select(-construct_method) |> 
+  mutate(area = as.numeric(str_replace(area, ",", "\\.")))
+
+
 
 
 # R Markdown --------------------------------------------------------------
