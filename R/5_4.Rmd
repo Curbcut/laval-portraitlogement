@@ -1,0 +1,57 @@
+---
+title: "5.4 Axe milieux de vie (aménagement)"
+author: "Curbcut"
+output: html_document
+---
+
+```{r setup_5_4, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+qs::qload(here::here("data", "section_5_4.qsm"))
+```
+
+# 5.4.1 Mixité sociale
+
+Pour calculer la mixité sociale, nous avons utilisé des données du recensement pour cinq grandes dimensions : les catégories socioprofessionnelles, les origines ethniques et culturelles, les tranches d'âge, les niveaux de revenu et les niveaux d'éducation.
+
+- Définition: Mixité sociale
+  - La mixité (parfois appelée diversité) sociale réfère à la présence simultanée ou la cohabitation, en un même secteur géographique, de personnes appartenant à des catégories socioprofessionnelles, à des cultures, à des nationalités, à des tranches d'âge différentes. Cette notion, appliquée à un milieu de vie (un quartier par exemple), suppose une forme d'hétérogénéité en opposition avec des milieux de vie homogènes destinés à une proportion restreinte de la population (communauté ou classe sociale précise).^[Collectivitesviables.org. (2024). Mixité sociale. Récupéré de https://collectivitesviables.org/sujets/mixite-sociale/]
+
+Pour évaluer la mixité sociale dans chaque zone, nous utilisons la méthode de l'entropie de Shannon. Cette méthode mesure à la fois la richesse des catégories (le nombre de groupes différents) et leur uniformité (comment les individus sont répartis entre ces groupes). Pour chaque dimension mentionnée ci-dessus, la formule attribue une valeur plus élevée lorsque les proportions des catégories, par exemple les niveaux d'éducation, sont plus uniformément réparties. Si tous les individus d'une zone appartiennent à la même origine ethnique ou culturelle, l'indice d'entropie sera de zéro. Une zone avec une répartition plus équilibrée des individus entre différentes catégories aura une entropie plus élevée, indiquant une plus grande mixité sociale. Les valeurs d'entropie ont d'abord été obtenues pour chaque aire de diffusion et ont ensuite été interpolées aux districts électoraux.
+
+Le graphique \@ref(fig:mixiteSociale) montre une carte de l'indice composite des cinq dimensions de la mixité sociale. Les zones plus foncées indiquent une diversité multidimensionnelle plus élevée.
+
+```{r mixiteSociale, include=TRUE, fig.cap="Indice de mixité sociale composite à Laval", fig.align = 'center'}
+mixite_sociale
+```
+
+Les figures en facettes montrent la mixité pour chaque dimension individuelle. Ces cartes permettent de visualiser les variations spécifiques à chaque dimension et d'identifier les zones où certaines formes de diversité sont plus ou moins présentes. Par exemple, on retrouve, au nord-est du secteur Vimont, Auteuil une haute mixité en terme de revenu et d'occupation professionnelle, mais une faible diversité en termes d'origines ethniques ou culturelles et de niveaux d'éducation. L'examination de chaque dimension séparément nous offre une compréhension plus nuancée et détaillée de la mixité sociale sur le territoire lavallois.
+
+```{r mixiteSocialeFacet, include=TRUE, fig.cap="Mixité sociale à Laval,", fig.align = 'center'}
+mixite_sociale_facet
+```
+
+# 5.4.2 Habitation et densification
+
+Le graphique \@ref(fig:densiteRes) met en évidence la distribution spatiale de la densité résidentielle à Laval, mesurée en unités résidentielles par kilomètre carré. On observe une concentration plus élevée de la densité dans les quartiers centraux et sud, tels que Laval-des-Rapides, Marigot, et Chomedey, où la densité dépasse souvent les 1 500 unités par km², avec certaines zones dépassant même les 2 000 unités. En contraste, les quartiers plus périphériques au nord et à l'est, comme Auteuil et Saint-François, présentent une densité plus faible, généralement inférieure à 500 unités par km².
+
+```{r densiteRes, include=TRUE, fig.cap="Unités résidentielles par kilomètre carré", fig.align = 'center'}
+densite_res_plot
+```
+
+D'après les données du recensement canadien, la densité résidentielle à Laval a généralement augmenté entre 2001 et 2021, avec des variations importantes selon les quartiers. Les secteurs de Laval-des-Rapides et Saint-Martin se démarquent par les hausses les plus marquées, avec une augmentation de 4,49 % et 3,79 % respectivement entre 2016 et 2021.
+
+Le graphique \@ref(fig:densiteResEvol) illustre ces tendances, avec une concentration de l'augmentation récente en densité dans le centre et le sud de la ville, où les unités résidentielles par kilomètre carré sont également nettement plus élevées.
+
+```{r densiteResEvol, include=TRUE, fig.cap="Indice de mixité sociale composite à Laval", fig.align = 'center'}
+densite_res_evol_plot
+```
+
+# 5.4.3 TOD, habitation et mixité sociale
+
+Données non spécifiques à Laval dans le carnet métropolitain.
+
+# 5.4.4 Redéveloppement en milieu résidential bâti à faible densité
+
+En attente de "sources en interne (Hab, RPG)"
+
+# 5.4.5 Parts relatives des unités résidentielles à l’intérieur et à l’extérieur des périmètres d’urbanisation

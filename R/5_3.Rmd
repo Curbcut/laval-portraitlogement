@@ -4,12 +4,14 @@ author: "Curbcut"
 output: html_document
 ---
 
-```{r setup_6_1, include = FALSE}
+```{r setup_5_3, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 qs::qload(here::here("data", "section_5_3.qsm"))
 ```
 
 # 5.3.1 Accessibilité universelle au logement
+
+En attente de "Voir avec le SCLSDS (interne)"
 
 # 5.3.2 Pandémie et télétravail
 
@@ -44,6 +46,8 @@ La plupart des étudiants locataires (40,7 %) vivent dans des logements de type 
 
 # 5.3.5 Offre actuelle de logements subventionnés
 
+
+
 # 5.3.6 Itinérance
 
 En 2022, on estimait à 219 le nombre de personnes en situation d’itinérance visible à Laval, un chiffre en légère hausse de 6 % depuis 2018^[Dénombrement des personnes en situation d'itinérance visible au Québec. (11 octobre 2022). Ministère de la Santé et des Services sociaux. Récupéré au https://publications.msss.gouv.qc.ca/msss/fichiers/2023/23-846-05W.pdf]. Parmi ces individus, on estimait que 26 ont passé la nuit dans un lieu extérieur, 47 dans un hébergement lié à la violence et 45 dans un établissement de détention ou quartiers cellulaires des postes de police^[Dénombrement des personnes en situation d'itinérance visible au Québec. (11 octobre 2022). Ministère de la Santé et des Services sociaux. Récupéré au https://publications.msss.gouv.qc.ca/msss/fichiers/2023/23-846-05W.pdf]. Le nombre relativement faible d'itinérants par rapport à d'autres villes comme Montréal ou la Capitale-Nationale pourrait s'expliquer par la proximité de Laval avec un autre centre urbain majeur, où une partie de la population itinérante peut migrer pour bénéficier de ressources plus abondantes.
@@ -54,5 +58,8 @@ Les personnes en situation d’itinérance à Laval dépendent moins des program
 
 5.3.7 Travailleurs agricoles et temporaires
 
+En attente de "Voir avec la chambre de commerce CCI Laval"
+
 5.3.8 Navetteurs aéroportés (fly-in fly-out)
 
+En attente de "Voir avec la chambre de commerce CCI Laval"
