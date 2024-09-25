@@ -55,3 +55,6 @@ Données non spécifiques à Laval dans le carnet métropolitain.
 En attente de "sources en interne (Hab, RPG)"
 
 # 5.4.5 Parts relatives des unités résidentielles à l’intérieur et à l’extérieur des périmètres d’urbanisation
+
+Les codes postaux de l'UEF de 2019 ne sont pas assez précise géolocalisation pour pouvoir calculer avec précision ces parts relatives. Un jeu de donnée avec une meilleure précision sur le nombre d'unité de logement par bâtiment est nécessaire.
+

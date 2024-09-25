@@ -285,6 +285,32 @@ ggplot2::ggsave(filename = here::here("outputs/5/5_4_2_densiteresevol.pdf"),
 
 # 5.4.5 -------------------------------------------------------------------
 
+# uef <- tibble::as_tibble(read.csv("data/role-evaluation-2016.csv"))
+# pc <- cc.data::bucket_read_object(object = "postal_codes202103.csv",
+#                             bucket = "curbcut.rawdata",
+#                             objectext = ".csv",
+#                             method = utils::read.csv) |>
+#   tibble::as_tibble()
+# pc <- sf::st_as_sf(pc, coords = c("LONGITUDE", "LATITUDE"), crs = 4326)
+# pc <- pc |> 
+#   mutate(pc = gsub(" .{3}$", "", POSTAL_CODE)) |> 
+#   group_by(pc) |> 
+#   summarize()
+# 
+# uef <- uef[c("ra01.code.postal.3.car", "ra01.nb.total.logements")]
+# names(uef) <- c("pc", "logements")
+# 
+# pc <- pc[pc$pc %in% uef$pc, ]
+
+pu <- sf::st_read("data/sad-perimetre-d-urbanisation.geojson")
+
+DB <- get_census(dataset = "CA21", 
+                 regions = list(CSD = 2465005), 
+                 level = "DB",
+                 geo_format = "sf")
+
+# Too poor accuracy
+mapview::mapview(list(DB |> sf::st_cast("MULTILINESTRING"), pu))
 
 # Save --------------------------------------------------------------------
 
