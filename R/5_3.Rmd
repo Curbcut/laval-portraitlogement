@@ -32,7 +32,13 @@ map_5_3_3
 res_aines_table
 ```
 
-# 5.3.4
+# 5.3.4 Ménages étudiants
 
+À Laval, seulement 41,3 % des étudiants sont locataires, un pourcentage bien en dessous de la moyenne provinciale de 77,4 %. De plus, seulement 26 % (contre 87 % pour la province) des locataires étudiants de Laval résident dans la ville où se situe leur campus principal, ce qui indique que la majorité d’entre eux étudient dans une autre ville, principalement Montréal. Laval est la ville au Québec avec la plus grande rétention de locataires étudiant·e·s pendant l'été: Ce sont 93 % de la population étudiante locataire de Laval qui habite au même lieu de résidence l'été, contre 80 % pour la province.
 
+Le loyer médian à Laval pour les étudiants locataires est de 950 $, soit 18,8 % plus élevé que le loyer médian calculé par la SCHL. De plus, les étudiants locataires à Laval sont particulièrement vulnérables au stress financier lié au logement: 81 % des locataires étudiants de Laval consacrent plus de 30 % de leur revenu à leur loyer, le taux le plus élevé au Québec. 
+
+La plupart des étudiants locataires (40,7 %) vivent dans des logements de type 4 ½, ce qui est supérieur à la moyenne provinciale de 34,5 %. Cependant, une proportion importante (16 %) des étudiants à Laval déclare que leur logement nécessite des réparations majeures, un chiffre au-dessus de la moyenne provinciale de 10 %.
+
+# 5.3.7
 
