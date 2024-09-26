@@ -564,7 +564,7 @@ fst <-
   
 map_6_1_12 <- 
   uef |> 
-  summarize(`Per building` = mean(value),
+  summarize(`Per property` = mean(value),
             `Per unit` = sum(value) / sum(units),
             `Per sqft` = 880 * sum(value) / sum(area, na.rm = TRUE), 
             .by = FST) |> 
@@ -585,8 +585,8 @@ plot_6_1_12_boxplot <-
   uef |> 
   mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
   mutate(`Per unit` = value / units) |> 
-  rename(`Per building` = value) |> 
-  pivot_longer(c(`Per building`, `Per unit`)) |> 
+  rename(`Per property` = value) |> 
+  pivot_longer(c(`Per property`, `Per unit`)) |> 
   ggplot(aes(type, value)) +
   geom_boxplot(outliers = FALSE) +
   facet_wrap(~name) +
@@ -594,7 +594,7 @@ plot_6_1_12_boxplot <-
   scale_x_discrete("Property type") +
   theme_minimal()
 
-plot_6_1_12_year_building <-
+plot_6_1_12_year_property <-
   uef |> 
   mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
   summarize(n = n(), value = mean(value), .by = c(year_built, type)) |> 
@@ -607,7 +607,7 @@ plot_6_1_12_year_building <-
   scale_y_continuous("Assessed value", labels = scales::dollar) +
   scale_x_continuous("Year of construction") +
   scale_size_area("Number of properties") +
-  ggtitle("Average annual per-building assessed value by property type") +
+  ggtitle("Average annual per-property assessed value by property type") +
   theme_minimal() +
   theme(legend.position = "bottom")
 
@@ -641,5 +641,5 @@ qs::qsavem(cmhc_zones, completions_by_type, completions_by_market,
            table_6_1_3_five_year, plot_6_1_3_market, plot_6_1_3_market_facet,
            plot_6_1_3_market_rental, new_prices, plot_6_1_5_percentiles,
            plot_6_1_5_units, uef, map_6_1_12, plot_6_1_12_boxplot,
-           plot_6_1_12_year_building, plot_6_1_12_year_unit,
+           plot_6_1_12_year_property, plot_6_1_12_year_unit,
            file = "data/section_6_1.qsm")
