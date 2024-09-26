@@ -27,6 +27,8 @@ prix_sur_marche_table
 
 # 5.2.1.4 Ventes sans garantie légale
 
+Données non spécifiques à Laval dans le cahier métropolitain.
+
 # 5.2.1.5 Sur le marché locatif
 
 # 5.2.1.6 Loyer moyen des logements locatifs selon le nombre de chambres à coucher
