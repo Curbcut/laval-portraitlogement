@@ -64,7 +64,7 @@ electoral_districts <- sf::st_intersection(electoral_districts, lvl["geometry"])
 # Addition of colours -----------------------------------------------------
 
 curbcut_colors <- cc.buildr::build_colours()
-curbcut_scale <- c("#C4CDE1", "#98A8CB", "#6C83B5", "#4C5C7F", "#2B3448")
+curbcut_scale <- curbcut_colors$left_5$fill[2:6]
 
 # Colours from brandbook
 curbcut_colors$brandbook <- tibble(

@@ -1,0 +1,22 @@
+---
+title: "5.2.2 Axe économique du parc actuel - Autres données économiques"
+author: "Curbcut"
+output: html_document
+---
+
+```{r setup_5_2_2, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+qs::qload(here::here("data", "section_5_2_2.qsm"))
+```
+
+# 5.2.2.1 Copro détenues par des non-résidents
+
+Données non spécifiques à Laval dans le cahier métropolitain.
+
+# 5.2.2.2 Reventes rapides (flip)
+
+Données non spécifiques à Laval dans le cahier métropolitain.
+
+# 5.2.2.3 Location à court terme
+
+TKTK

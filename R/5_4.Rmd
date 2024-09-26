@@ -52,7 +52,7 @@ densite_res_evol_plot
 
 # 5.4.3 TOD, habitation et mixité sociale
 
-Données non spécifiques à Laval dans le carnet métropolitain.
+Données non spécifiques à Laval dans le cahier métropolitain.
 
 # 5.4.4 Redéveloppement en milieu résidential bâti à faible densité
 

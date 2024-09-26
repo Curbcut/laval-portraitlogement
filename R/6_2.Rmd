@@ -9,16 +9,38 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 qs::qload(here::here("data", "section_6_2.qsm"))
 ```
 
-# 6.2.1 Développement résidential récent (répartition territoriale par type de logement et typologie)
+# 6.2.1 Développement résidentiel récent (répartition territoriale par type de logement et typologie)
 
-
+TKTKTK
 
 # 6.2.2 Mises en chantier par typologie
 
+Aucune donnée.
+
 # 6.2.3 Mises en chantier par mode d'occupation
 
-# 6.2.4 Mises en chantier par nombre de chambres à coucher
+Aucune donnée.
+
+# 6.2.4 ~~Mises en chantier~~ *Logements à but non lucratif* par nombre de chambres à coucher
+
+_Source: Liste logement social. (2024). Office municipal d'habitation de Laval_
+
+En 2024, il y a 933 unité de logement de logements en coopératives d'habitation, 2 065 en organismes à but non lucratif, ainsi que 2 026 de l'Office municipal d'habitation de Laval. Chaque catégorie présente une offre variée de logements, avec des différences marquées dans les types d'unités offertes. Les coopératives ont tendance à offrir relativement davantage de grands logements, tandis que les OBNL et OMHL se concentrent davantage sur les plus petites unités, particulièrment celles d'une chambre à coucher.
+
+```{r nonlucTypes, include=TRUE, fig.cap="Répartition des unités de logements sociaux par programme et nombre de chambres à coucher", fig.align = 'center'}
+nonluc_types
+```
+
+Pour l'ensemble de la ville de Laval, cette répartition reflète la diversité des besoins en logement. Les petites unités, notamment les logements d'une chambre, semblent répondre à une demande importante de personnes seules ou de couples. En revanche, la présence significative de logements de 2 et 3 chambres indique aussi une attention particulière portée aux familles résidant dans la ville. Cette variété dans l'offre permet de mieux répondre aux besoins de ménages de tailles différentes dans un contexte de croissance démographique et de diversification des types de ménages à Laval. On observe une prédominance des logements d'une chambre, qui comptent 2 276 unités, soit le type de logement le plus répandu. Les logements de 2 chambres suivent avec 1 328 unités, tandis que les unités de 3 chambres ou plu Il y a 419 studios et 197 chambres.
+
+```{r nonlucTypesCity, include=TRUE, fig.cap="Répartition des unités de logements sociaux à Laval par nombre de chambres à coucher", fig.align = 'center'}
+nonluc_types_all
+```
 
 # 6.2.5 Prix des logements neufs
 
+Aucune donnée.
+
 # 6.2.6 Mises en chantier selon le prix par nombre de chambre à coucher
+
+Aucune donnée.

@@ -1,0 +1,13 @@
+---
+title: "5.2.1 Axe économique du parc actuel - Prix"
+author: "Curbcut"
+output: html_document
+---
+
+```{r setup_5_2_1, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+qs::qload(here::here("data", "section_5_2_1.qsm"))
+```
+
+# 5.2.1.1 Sur le marché de la propriété (Prix médian par typologie et secteur Lavallois)
+
