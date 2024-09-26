@@ -229,3 +229,12 @@ CMHC does not make data available about housing starts broken down by price or b
 
 
 # 6.1.12 Valeur foncière (si possible Ventilé par typologie et au pied carré)
+
+_Data source: Unité d'evaluation foncière_
+
+Detached homes had the highest average assessed value (TKTK), followed by "jumelé" (TKTK), then "en rangée" (TKTK), and finally "intégré" (TKTK).
+
+```{r plot_6_1_12_boxplot}
+plot_6_1_12_boxplot
+```
+
