@@ -31,7 +31,35 @@ qs::qload(here::here("data", "section_4_2.qsm"))
 
 # 4.2.11 Aide au logement
 
+_Source: Observatoire Grand Montréal. (2024). Communauté métropolitaine de Montréal. Récupéré au https://observatoire.cmm.qc.ca/grand-montreal-en-statistiques/_
+
+L'aide au logement à Laval regroupe plusieurs programmes offrant des logements subventionnés pour les ménages à faible ou modeste revenu, ainsi que ceux ayant des besoins particuliers.
+
+Logements sociaux et communautaires financés par la CMM: 2 571 logements
+- Logements subventionnés par des programmes municipaux et gouvernementaux, destinés aux ménages à revenu modeste et aux clientèles ayant des besoins particuliers.
+
+Logements en COOP et OBNL d'habitation relevant d'anciens programmes: 1 535 logements
+- Logements gérés par des coopératives et OBNL sans but lucratif
+
+Logements HLM publics: 1 120 logements
+- Gérés par les Offices municipaux, ces logements sont destinés aux ménages à faible revenu, avec un loyer limité à 25 % du revenu familial.
+
+AccèsLogis Québec : 893 logements logements
+- Programme favorisant la création de coopératives et d'OBNL d'habitation, il cible les ménages à revenu modeste et, dans certaines conditions, offre aussi un Supplément au loyer (PSL).
+
+Logements du programme LAQ - volet social et communautaire: 271 logements
+- Ce programme offre une aide financière pour stimuler la réalisation de logements abordables destinés aux ménages à revenu faible ou modeste.
+
+Logements HLM privés et autochtones: 80 logements
+- Logements subventionnés pour les ménages à faible revenu, y compris ceux destinés aux Autochtones hors réserve, avec un loyer plafonné à 25 % du revenu.
+
+
 # 4.2.12 Aide au paiement du loyer
+
+_Source: Observatoire Grand Montréal. (2024). Communauté métropolitaine de Montréal. Récupéré au https://observatoire.cmm.qc.ca/grand-montreal-en-statistiques/_
+
+Dans la Ville de Laval en 2021, il y avait 1 032 logements qui bénéficianet du programme Supplément au loyer (PSL). Ce programme "permet à des ménages à faible revenu d’habiter dans des logements qui font partie du marché locatif privé ou qui appartiennent à des coopératives d’habitation (COOP) ou à des organismes sans but lucratif (OSBL), tout en payant un loyer similaire à celui d’une habitation à loyer modique. Les locataires qui bénéficient de ce programme paient un loyer correspondant à 25 % de leur revenu."^[Programme de supplément au loyer (PSL). (2024). Société d'habitation du Québec. Récupéré au https://www.habitation.gouv.qc.ca/programme/programme/programme-de-supplement-au-loyer-psl]
+
 
 # 4.2.13 Délai d'attente moyen pour l'obtention d'un HLM public ou d'un supplément au loyer régulier ou autre logement subventionné
 
@@ -41,8 +69,8 @@ Les délais d'attente pour obtenir un logement subventionné à Laval varient co
 
 Parmi les clientèles visées, les familles affichent le délai moyen le plus élevé, atteignant `r att_fam` jours. Les personnes s'inscrivant aux programmes de 59 ans et moins attendent en moyenne `r att_lessfn` jours, tandis que pour celles dont la clientèle n’est pas spécifiée, le délai s’élève à `r att_other` jours. Les individus s'inscrivant aux programmes pour les personnes âgées de 65 ans et plus bénéficient du délai moyen le plus court, avec une attente de `r att_sfplus` jours.
 
-Cependant, bien que les aînés aient généralement le délai le plus court, ce groupe connaît également le délai d’attente le plus long dans le programme HLM à Chomedey sans fumée, avec un maximum de 908 jours. À l’opposé, le délai le plus court se trouve dans le programme HLM du territoire 050 - SLO / PSL - Territoire Lavallois, avec une attente de seulement 54 jours. Le tableau suivant présente les délais moyens par programme.
+Cependant, bien que les aînés aient généralement le délai le plus court, ce groupe connaît également le délai d’attente le plus long dans le programme HLM à Chomedey sans fumée (60 ans et +), avec un maximum de 908 jours. À l’opposé, le délai le plus court se trouve dans le programme HLM du territoire 050 - SLO / PSL - Territoire Lavallois, avec une attente de seulement 54 jours. Le tableau suivant présente les délais moyens par programme.
 
-```{r attProgramme, include=TRUE, tab.cap="Places en RPA et nombre d'individus âgés de 75 ans et plus par district électoral.", tab.align = 'center'}
+```{r attProgramme, include=TRUE, tab.cap="Délais d'attente moyens pour l'obtention d'un logement subventionné, selon le programme.", tab.align = 'center'}
 att_programme_table
 ```

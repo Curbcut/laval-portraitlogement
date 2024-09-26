@@ -164,8 +164,8 @@ att |>
   group_by(programme) |> 
   summarize(jours = round(mean(jours))) |> 
   arrange(-jours) |> 
-  mutate(programme = case_when(programme == "COOP" ~ "Coopérative (COOP)",
-                               programme == "OBNL" ~ "Organisme à but non lucratif (OBNL)",
+  mutate(programme = case_when(programme == "COOP" ~ "Logements en coopérative (COOP)",
+                               programme == "OBNL" ~ "Logements en organisme à but non lucratif (OBNL)",
                                programme == "ACL" ~ "Programme AccèsLogis Québec (ACL)",
                                programme == "HLM" ~ "Programme de logement sans but lucratif (HLM)",
                                programme == "LAQ" ~ "Volet social et communautaire du programme Logement abordable Québec (LAQ)",
