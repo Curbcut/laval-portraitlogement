@@ -1,0 +1,48 @@
+---
+title: "4.2 Axe économique : Revenu des ménages et abordabilité"
+author: "Curbcut"
+output: html_document
+---
+
+```{r setup_4_2, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+qs::qload(here::here("data", "section_4_2.qsm"))
+```
+
+# 4.2.1 Revenu total annuel médian selon la composition des ménages, le mode d'occupation et l'âge du principal soutien
+
+# 4.2.2 Proportion de ménages en situation de faible revenu selon le mode d'occupation
+
+# 4.2.3 Ménages ayant des besoins impérieux en logement selon le type de besoin et le mode d'occupation
+
+# 4.2.4 Montant du loyer/frais de logement en fonction du revenu et leur mode d'occupation (axe "prix/revenu" de l'abordabilité)
+
+# 4.2.5 Proportion de ménages consacrant plus de 30% et plus de 50% de leur revenu à se loger
+
+# 4.2.6 Ménages locataires ayant de la difficulté à se loger (Ménage locataire sous le seuil de faible revenu et qui consacre 30 % et plus de son revenu à se loger.)
+
+# 4.2.7 Ménages en situation de surpeuplement (axe "taille" de l'abordabilité)
+
+# 4.2.8 Ménages vivant dans un logement nécessitant des réparations majeures (axe "qualité" de l'abordabilité")
+
+# 4.2.9 Ratio salaires hebo médian/paiement hypothécaire mensuel type
+
+# 4.2.10 Frais de logement
+
+# 4.2.11 Aide au logement
+
+# 4.2.12 Aide au paiement du loyer
+
+# 4.2.13 Délai d'attente moyen pour l'obtention d'un HLM public ou d'un supplément au loyer régulier ou autre logement subventionné
+
+_Source: Délais d'attente moyen par territoire. (Juillet 2024). Office municipal d'habitation de Laval._
+
+Les délais d'attente pour obtenir un logement subventionné à Laval varient considérablement. Le délai moyen, tous programmes, territoires et clientèles confondus, est de r att_general_mean jours.
+
+Parmi les clientèles visées, les familles affichent le délai moyen le plus élevé, atteignant `r att_fam` jours. Les personnes s'inscrivant aux programmes de 59 ans et moins attendent en moyenne `r att_lessfn` jours, tandis que pour celles dont la clientèle n’est pas spécifiée, le délai s’élève à `r att_other` jours. Les individus s'inscrivant aux programmes pour les personnes âgées de 65 ans et plus bénéficient du délai moyen le plus court, avec une attente de `r att_sfplus` jours.
+
+Cependant, bien que les aînés aient généralement le délai le plus court, ce groupe connaît également le délai d’attente le plus long dans le programme HLM à Chomedey sans fumée, avec un maximum de 908 jours. À l’opposé, le délai le plus court se trouve dans le programme HLM du territoire 050 - SLO / PSL - Territoire Lavallois, avec une attente de seulement 54 jours. Le tableau suivant présente les délais moyens par programme.
+
+```{r attProgramme, include=TRUE, tab.cap="Places en RPA et nombre d'individus âgés de 75 ans et plus par district électoral.", tab.align = 'center'}
+att_programme_table
+```

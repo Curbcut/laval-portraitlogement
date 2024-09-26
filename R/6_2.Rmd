@@ -1,0 +1,24 @@
+---
+title: "6.2 À but non lucratif (social, abordable, prix du marché)"
+author: "Curbcut"
+output: html_document
+---
+
+```{r setup_6_2, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+qs::qload(here::here("data", "section_6_2.qsm"))
+```
+
+# 6.2.1 Développement résidential récent (répartition territoriale par type de logement et typologie)
+
+
+
+# 6.2.2 Mises en chantier par typologie
+
+# 6.2.3 Mises en chantier par mode d'occupation
+
+# 6.2.4 Mises en chantier par nombre de chambres à coucher
+
+# 6.2.5 Prix des logements neufs
+
+# 6.2.6 Mises en chantier selon le prix par nombre de chambre à coucher

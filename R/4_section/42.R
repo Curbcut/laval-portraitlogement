@@ -105,6 +105,7 @@ map_4_2_2 <- ggplot(data = data_4_2_2_sf) +
 #Saving the visuals as images
 ggsave("outputs/4/plot_4_2_2.png", plot = plot_4_2_2, width = 600/72, height = 800/72, dpi = 72)
 ggsave("outputs/4/map_4_2_2.png", plot = map_4_2_2, width = 600/72, height = 800/72, dpi = 72)
+
 # 4.2.3 -------------------------------------------------------------------
 
 
@@ -131,6 +132,79 @@ ggsave("outputs/4/map_4_2_2.png", plot = map_4_2_2, width = 600/72, height = 800
 
 # 4.2.11 ------------------------------------------------------------------
 
+# 4.2.12 ------------------------------------------------------------------
+
+# 4.2.13 ------------------------------------------------------------------
+
+att <- read_xlsx("data/OMHL_Données délai d'attente moyen par territoire - juillet 2024.xlsx") |> 
+  setNames(c("programme", "territoire", "jours"))
+
+# Get the clientele
+vec_65 <- grepl("(ans et \\+)|(ans \\+)", att$territoire)
+vec_59 <- grepl("ans et moins", att$territoire)
+vec_fam <- grepl("Famille", att$territoire)
+att <- mutate(att, clientele = case_when(vec_65 ~ "sfplus",
+                                         vec_59 ~ "lessfn",
+                                         vec_fam ~ "fam",
+                                         TRUE ~ "other"))
+
+# Per cliente
+att_clientele <- att |> 
+  group_by(clientele) |> 
+  summarize(jours = mean(jours))
+
+att_fam <- att_clientele$jours[att_clientele$clientele == "fam"] |> round()
+att_lessfn <- att_clientele$jours[att_clientele$clientele == "lessfn"] |> round()
+att_other <- att_clientele$jours[att_clientele$clientele == "other"] |> round()
+att_sfplus <- att_clientele$jours[att_clientele$clientele == "sfplus"] |> round()
+
+att_general_mean <- mean(att$jours)
+att_programme_table <- 
+att |> 
+  group_by(programme) |> 
+  summarize(jours = round(mean(jours))) |> 
+  arrange(-jours) |> 
+  mutate(programme = case_when(programme == "COOP" ~ "Coopérative (COOP)",
+                               programme == "OBNL" ~ "Organisme à but non lucratif (OBNL)",
+                               programme == "ACL" ~ "Programme AccèsLogis Québec (ACL)",
+                               programme == "HLM" ~ "Programme de logement sans but lucratif (HLM)",
+                               programme == "LAQ" ~ "Volet social et communautaire du programme Logement abordable Québec (LAQ)",
+                               programme == "COM" ~ "Logement communautaire (COM) (?) (TKTK)",
+                               TRUE ~ NA_character_)) |> 
+  gt() |> 
+  cols_label(
+    programme = "Programme",
+    jours = "Nombre de jours d'attente",
+  ) |>
+  data_color(
+    columns = "jours",
+    colors = scales::col_numeric(
+      palette = c("white", color_theme("purpletransport")),
+      domain = NULL
+    )
+  ) |>
+  tab_style(
+    style = cell_text(
+      font = "KMR Apparat Regular"
+    ),
+    locations = cells_body()
+  ) |>
+  tab_style(
+    style = cell_text(
+      font = "KMR Apparat Regular"
+    ),
+    locations = cells_column_labels()
+  ) |>
+  tab_options(
+    table.font.size = table_font_size,
+    row_group.font.size = table_font_size,
+    table.width = px(3 * 96)
+  )
+
+gtsave(att_programme_table, "outputs/4/4_2_13_attprogrammetable.png", zoom = 1)
+
+
 # R Markdown --------------------------------------------------------------
-qs::qsavem(plot_4_2_2, map_4_2_2,
-           file = "data/section_4_2.qsm")
+qs::qsavem(plot_4_2_2, map_4_2_2, att_general_mean, att_fam, att_lessfn, att_other,
+           att_sfplus, att_general_mean, att_programme_table,
+           sfplus, file = "data/section_4_2.qsm")

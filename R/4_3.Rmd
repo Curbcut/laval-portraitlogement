@@ -11,6 +11,8 @@ qs::qload(here::here("data", "section_4_3.qsm"))
 
 # 4.3.1 Défavorisation matérielle et sociale
 
+_Source: Indice de défavorisation du Québec 2021. Institut national de santé publique du Québec, dans Données Québec. Récupéré au https://www.donneesquebec.ca/recherche/dataset/indice-de-defavorisation-du-quebec-2021_
+
 Selon l'Institut national de santé publique du Québec (INSPQ), la défavorisation se mesure sous deux formes : matérielle et sociale. La défavorisation matérielle reflète le manque de biens et de commodités considérés comme nécessaires à une vie normale dans une société. Cette forme de défavorisation indique une insuffisance de ressources matérielles, évaluée par des facteurs tels que les niveaux d'éducation, d'emploi et de revenu. La défavorisation sociale, quant à elle, fait référence à la fragilité des réseaux sociaux d'un individu, allant des liens familiaux aux liens communautaires. Cette dimension est évaluée en fonction de circonstances personnelles telles que le fait de vivre seul, d'être monoparental ou de vivre une séparation, un divorce ou un veuvage.^[Indice de défavorisation du Québec 2021. Institut national de santé publique du Québec, dans Données Québec. Récupéré au https://www.donneesquebec.ca/recherche/dataset/indice-de-defavorisation-du-quebec-2021]
 
 La carte du graphique \@ref(fig:defavPlot) illustre les variations régionales de la défavorisation matérielle et sociale dans la région de Laval. Il y a des pochettes de défavorisation matérielle et sociale dans plusieurs secteurs de la ville, et les plus grandes pochettes se trouvent autour de Marigot et de Souvenir-Labelle.

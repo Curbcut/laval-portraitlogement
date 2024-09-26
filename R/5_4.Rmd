@@ -11,6 +11,8 @@ qs::qload(here::here("data", "section_5_4.qsm"))
 
 # 5.4.1 Mixité sociale
 
+_Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
+
 Pour calculer la mixité sociale, nous avons utilisé des données du recensement pour cinq grandes dimensions : les catégories socioprofessionnelles, les origines ethniques et culturelles, les tranches d'âge, les niveaux de revenu et les niveaux d'éducation.
 
 - Définition: Mixité sociale
@@ -31,6 +33,8 @@ mixite_sociale_facet
 ```
 
 # 5.4.2 Habitation et densification
+
+_Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
 
 Le graphique \@ref(fig:densiteRes) met en évidence la distribution spatiale de la densité résidentielle à Laval, mesurée en unités résidentielles par kilomètre carré. On observe une concentration plus élevée de la densité dans les quartiers centraux et sud, tels que Laval-des-Rapides, Marigot, et Chomedey, où la densité dépasse souvent les 1 500 unités par km², avec certaines zones dépassant même les 2 000 unités. En contraste, les quartiers plus périphériques au nord et à l'est, comme Auteuil et Saint-François, présentent une densité plus faible, généralement inférieure à 500 unités par km².
 
