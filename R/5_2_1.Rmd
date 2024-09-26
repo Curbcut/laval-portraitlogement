@@ -11,3 +11,18 @@ qs::qload(here::here("data", "section_5_2_1.qsm"))
 
 # 5.2.1.1 Sur le marché de la propriété (Prix médian par typologie et secteur Lavallois)
 
+# 5.2.1.2 Prix médian des propriétés selon le type et le nombre de chambres à coucher
+
+# 5.2.1.3 Prix médian des logements selon l'occupation des logements (vacants ou occupés) ou des logements nouvellement construits
+
+# 5.2.1.4 Ventes sans garantie légale
+
+# 5.2.1.5 Sur le marché locatif
+
+# 5.2.1.6 Loyer moyen des logements locatifs selon le nombre de chambres à coucher
+
+# 5.2.1.7 Taux d'inoccupation (différenciation entre vacants et occupés) selon le nombre de chambres à coucher et le prix
+
+# 5.2.1.8 Valeur foncière (secteur lucratif, secteur non lucratif)
+
+
