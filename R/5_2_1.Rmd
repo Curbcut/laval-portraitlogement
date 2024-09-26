@@ -11,6 +11,16 @@ qs::qload(here::here("data", "section_5_2_1.qsm"))
 
 # 5.2.1.1 Sur le marché de la propriété (Prix médian par typologie et secteur Lavallois)
 
+_Source: Statistiques immobilières. (2024). Centris.  Récupéré au https://www.centris.ca/fr/outils/statistiques-immobilieres_
+
+Les prix médians des propriétés à Laval varient significativement en fonction du secteur et du type de logement, avec des écarts marqués entre les unifamiliales, les copropriétés et les plex (2 à 5 logements). En ce qui concerne les maisons unifamiliales, le secteur de Sainte-Dorothée affiche le prix médian le plus élevé, atteignant 665 000 \$, suivi de Duvernay avec 630 000 \$. À l'inverse, le secteur de Laval-Ouest enregistre le prix médian le plus bas à 449 500 \$. Pour les copropriétés, les prix médians sont plus accessibles, notamment à Laval-des-Rapides où le prix médian est de 340 000 \$, tandis qu'à Sainte-Dorothée, il atteint 418 000 \$. Les plex, bien que présents en plus faible volume, affichent des prix médians élevés, en particulier dans les secteurs de Chomedey (797 500 \$) et Laval-des-Rapides (739 500 \$).
+
+Le prix de vente médian sépare l'ensemble des transactions en deux parties égales : la moitié des transactions ont été effectuées à un prix inférieur, tandis que l'autre moitié ont été conclues à un prix supérieur.
+
+```{r prixSurMarche, include=TRUE, tab.cap="Prix médian des propriétés par typologie (unifamiliale, copropriété et plex) et par secteur à Laval sur les 4 derniers trimestres", tab.align = 'center'}
+prix_sur_marche_table
+```
+
 # 5.2.1.2 Prix médian des propriétés selon le type et le nombre de chambres à coucher
 
 # 5.2.1.3 Prix médian des logements selon l'occupation des logements (vacants ou occupés) ou des logements nouvellement construits
