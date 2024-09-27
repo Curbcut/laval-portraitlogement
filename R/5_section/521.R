@@ -152,7 +152,95 @@ gtsave(prix_sur_marche_table, "outputs/5/5_2_1_prixsurmarchetable.png", zoom = 1
 
 # 5.2.1.5 -----------------------------------------------------------------
 
-# 5.2.1.6 -----------------------------------------------------------------
+
+# 5.2.1.6 Loyer moyen des logements locatifs selon le nombre de ch --------
+
+rent_by_bedroom <- 
+  map(1990:2023, \(x) {
+    get_cmhc(
+      survey = "Rms",
+      series = "Average Rent", 
+      dimension = "Bedroom Type",
+      breakdown = "Survey Zones", 
+      geo_uid = "2465005",
+      year = x)}) |> 
+  bind_rows() |> 
+  set_names(c("zone", "bedroom", "value", "quality", "date", "year", "survey", 
+              "series"))
+
+rent_by_bedroom_z <- 
+  map(1990:2023, \(x) {
+    get_cmhc(
+      survey = "Rms",
+      series = "Average Rent", 
+      dimension = "Bedroom Type",
+      breakdown = "Survey Zones", 
+      geo_uid = "24462",
+      year = x)}) |> 
+  bind_rows() |> 
+  set_names(c("zone", "bedroom", "value", "quality", "geog", "date", "year",
+              "survey", "series")) |> 
+  select(-geog) |> 
+  filter(zone %in% cmhc_zones$zone)
+
+rent_by_bedroom <- 
+  rent_by_bedroom |> 
+  bind_rows(rent_by_bedroom_z)
+
+plot_5_2_1_6_facet <-
+  rent_by_bedroom |> 
+  filter(is.na(zone)) |>
+  ggplot(aes(year, value, group = bedroom)) +
+  geom_line() +
+  gghighlight::gghighlight(use_direct_label = FALSE) +
+  scale_y_continuous("Average monthly rent", labels = scales::dollar) +
+  scale_x_continuous("Year") +
+  facet_wrap(~bedroom) +
+  ggtitle("Average monthly rent for purpose-built rentals, by bedroom type") +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  graph_theme
+
+# Table with 5-year aggregations
+table_5_2_1_6_five_year <- 
+  rent_by_bedroom |> 
+  filter(is.na(zone)) |>
+  mutate("Date Range" = case_when(
+    year >= 2019 ~ "2019-2023",
+    year >= 2014 ~ "2014-2018",
+    year >= 2009 ~ "2009-2013",
+    year >= 2004 ~ "2004-2008",
+    year >= 1999 ~ "1999-2003",
+    year >= 1994 ~ "1994-1998",
+    year >= 1990 ~ "1990-1993")) |> 
+  summarize(avg = mean(value), .by = c(`Date Range`, bedroom)) |> 
+  pivot_wider(names_from = bedroom, values_from = avg) |> 
+  relocate(Total, .before = Bachelor) |> 
+  mutate(across(-`Date Range`, round)) |> 
+  mutate(across(-`Date Range`, scales::dollar)) |> 
+  gt::gt() |> 
+  gt::tab_header("Average monthly rent for purpose-built rentals by bedroom type")
+
+# Map of average rents by five-year chunk
+map_5_2_1_6_annual <-
+  rent_by_bedroom |> 
+  filter(!is.na(zone)) |>
+  mutate(date = case_when(
+    year >= 2019 ~ "2019-2023",
+    year >= 2014 ~ "2014-2018",
+    year >= 2010 ~ "2009-2013")) |> 
+  summarize(avg = mean(value, na.rm = TRUE), .by = c(date, zone, bedroom)) |> 
+  inner_join(cmhc_zones) |> 
+  st_as_sf() |> 
+  ggplot(aes(fill = avg)) +
+  geom_sf(colour = "white", lwd = 0.5) +
+  facet_grid(rows = vars(bedroom), cols = vars(date)) +
+  scale_fill_viridis_b("Average monthly rent", labels = scales::dollar, 
+                       n.breaks = 6) +
+  theme_void() +
+  theme(legend.position = "bottom",
+        legend.key.width = unit(60, "points"))
+
 
 # 5.2.1.7 -----------------------------------------------------------------
 
@@ -259,5 +347,8 @@ plot_6_1_12_year_unit <-
 
 # Save --------------------------------------------------------------------
 
-qs::qsavem(prix_sur_marche_table, uef, map_6_1_12, plot_6_1_12_boxplot,
-           plot_6_1_12_year_property, plot_6_1_12_year_unit, file = "data/5_2_1.qsm")
+qs::qsavem(prix_sur_marche_table, plot_5_2_1_6_facet, table_5_2_1_6_five_year,
+           map_5_2_1_6_annual, 
+           uef, map_6_1_12, plot_6_1_12_boxplot,
+           plot_6_1_12_year_property, plot_6_1_12_year_unit, 
+           file = "data/5_2_1.qsm")
