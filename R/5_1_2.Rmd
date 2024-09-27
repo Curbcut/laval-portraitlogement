@@ -1,0 +1,44 @@
+---
+title: "5.1.2 Axe cadre bâti - État du parc"
+author: "Curbcut"
+output: html_document
+---
+
+```{r setup_5_1_2, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+qs::qload(here::here("data", "section_5_1_2.qsm"))
+```
+
+# 5.1.2.1 Type de réparations nécessaires selon la période de construction
+
+_Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
+
+En 2021, `reparation_majeur` (`reparation_majeur_pct`) des logements de Laval présentaient des besoins en termes de réparations majeures, et ce sont les secteurs du centre-sud de Laval qui présentaient les plus grands besoins. À Duvernay-Pont-Viau et Marigot, plus de 700 logements nécessitaient des réparations majeures, représentant respectivement 10,2 % et 8,4 % des logements dans ces secteurs. En revanche, dans les quartiers d'Auteuil, Saint-Martin, Sainte-Dorothée et Fabreville, moins de 3 % des logements étaient concernés par de telles réparations, reflétant une meilleure condition générale du parc immobilier dans ces zones. Ces disparités mettent en lumière des défis spécifiques dans les secteurs plus anciens ou plus densément peuplés.
+
+```{r repPctPlot, include=TRUE, fig.cap="Pourcentage de logements nécessitant des réparations majeures à Laval en 2021, par secteur", fig.align = 'center'}
+rep_pct_plot
+```
+
+```{r repPlot, include=TRUE, fig.cap="Nombre de logements nécessitant des réparations majeures à Laval en 2021, par secteur.", fig.align = 'center'}
+rep_plot
+```
+
+_Source: Portrait régional de l’habitation : 13 – Région administrative de Laval. (2020). Société d'habitation du Québec. Récupéré au https://www.habitation.gouv.qc.ca/fileadmin/internet/publications/portraits-regionaux/Portrait_habitation_region_13.pdf_
+
+En 2016, Laval présentait un parc immobilier relativement jeune par rapport à l'ensemble du Québec. Environ 50 % des logements de Laval avaient été construits après 1981, contre 42,9 % pour l'ensemble du Québec. Cette différence dans la composition du parc immobilier se reflétait dans les besoins de réparations majeures : seuls 5,1 % des logements de Laval nécessitaient des réparations majeures, un chiffre inférieur à la moyenne québécoise de 6,3 %.
+
+Les logements construits avant 1980 à Laval étaient plus susceptibles de nécessiter des réparations importantes. Parmi ceux datant d’avant 1960, 10,7 % nécessitaient des réparations majeures, tandis que ce chiffre était de 6,3 % pour les logements bâtis entre 1961 et 1980. En comparaison, les logements construits après 1981 avaient des besoins beaucoup plus faibles, avec seulement 2,7 % nécessitant des réparations majeures, un pourcentage cohérent avec la meilleure condition générale des logements récents.
+
+Il est important de noter que ces données datent de 2016 et que la situation a pu évoluer depuis, en fonction de l'âge croissant du parc immobilier et des interventions de rénovation réalisées au cours des dernières années.
+
+# 5.1.2.2 Pourcentage de logement nécessitant des réparations majeures (%)
+
+Pour "...selon selon la période de construction, le mode d'occupation et l'indice de Pampalon, par aire de diffusion, et le mode de gouvernance (OBNL vs privé)", en attente de "Fichier interne Ville : CEG0454000-1_003_programme_renovation_residentielle_degre_reparation".
+
+_Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
+
+# 5.1.2.3 Qualité et salubrité du logement
+
+Pour 'salubrité', en attente de "données via rapport sur le Code du logement.".
+
+_Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
