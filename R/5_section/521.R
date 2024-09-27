@@ -242,7 +242,96 @@ map_5_2_1_6_annual <-
         legend.key.width = unit(60, "points"))
 
 
-# 5.2.1.7 -----------------------------------------------------------------
+# 5.2.1.7 Taux d'inoccupation ---------------------------------------------
+
+vacancy_by_bedroom <- 
+  map(1990:2023, \(x) {
+    get_cmhc(
+      survey = "Rms",
+      series = "Vacancy Rate", 
+      dimension = "Bedroom Type",
+      breakdown = "Survey Zones", 
+      geo_uid = "2465005",
+      year = x)}) |> 
+  bind_rows() |> 
+  set_names(c("zone", "bedroom", "value", "quality", "date", "year", "survey", 
+              "series"))
+
+vacancy_by_bedroom_z <- 
+  map(1990:2023, \(x) {
+    get_cmhc(
+      survey = "Rms",
+      series = "Vacancy Rate", 
+      dimension = "Bedroom Type",
+      breakdown = "Survey Zones", 
+      geo_uid = "24462",
+      year = x)}) |> 
+  bind_rows() |> 
+  set_names(c("zone", "bedroom", "value", "quality", "geog", "date", "year",
+              "survey", "series")) |> 
+  select(-geog) |> 
+  filter(zone %in% cmhc_zones$zone)
+
+vacancy_by_bedroom <- 
+  vacancy_by_bedroom |> 
+  bind_rows(vacancy_by_bedroom_z)
+
+plot_5_2_1_7_facet <-
+  vacancy_by_bedroom |> 
+  filter(is.na(zone), !is.na(value)) |>
+  ggplot(aes(year, value / 100, group = bedroom)) +
+  geom_line() +
+  gghighlight::gghighlight(use_direct_label = FALSE) +
+  scale_y_continuous("Average vacancy rate", labels = scales::percent) +
+  scale_x_continuous("Year") +
+  facet_wrap(~bedroom) +
+  ggtitle("Vacancy rate for purpose-built rentals, by bedroom type") +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  graph_theme
+
+# Table with 5-year aggregations
+table_5_2_1_7_five_year <- 
+  vacancy_by_bedroom |> 
+  filter(is.na(zone)) |>
+  mutate("Date Range" = case_when(
+    year >= 2019 ~ "2019-2023",
+    year >= 2014 ~ "2014-2018",
+    year >= 2009 ~ "2009-2013",
+    year >= 2004 ~ "2004-2008",
+    year >= 1999 ~ "1999-2003",
+    year >= 1994 ~ "1994-1998",
+    year >= 1990 ~ "1990-1993")) |> 
+  summarize(avg = mean(value, na.rm = TRUE) / 100, 
+            .by = c(`Date Range`, bedroom)) |> 
+  pivot_wider(names_from = bedroom, values_from = avg) |> 
+  relocate(Total, .before = Bachelor) |> 
+  mutate(across(-`Date Range`, round, 3)) |>
+  mutate(across(-`Date Range`, scales::percent)) |> 
+  gt::gt() |> 
+  gt::tab_header("Vacancy rate for purpose-built rentals by bedroom type")
+
+# Map of vacancy rate by five-year chunk
+map_5_2_1_7_annual <-
+  vacancy_by_bedroom |> 
+  filter(!is.na(zone)) |>
+  mutate(date = case_when(
+    year >= 2019 ~ "2019-2023",
+    year >= 2014 ~ "2014-2018",
+    year >= 2010 ~ "2009-2013")) |> 
+  summarize(avg = mean(value, na.rm = TRUE) / 100, 
+            .by = c(date, zone, bedroom)) |> 
+  inner_join(cmhc_zones) |> 
+  st_as_sf() |> 
+  ggplot(aes(fill = avg)) +
+  geom_sf(colour = "white", lwd = 0.5) +
+  facet_grid(rows = vars(bedroom), cols = vars(date)) +
+  scale_fill_viridis_b("Vacancy rate", labels = scales::percent, 
+                       n.breaks = 6) +
+  theme_void() +
+  theme(legend.position = "bottom",
+        legend.key.width = unit(60, "points"))
+
 
 # 6.1.12 Valeur foncière --------------------------------------------------
 
@@ -348,7 +437,8 @@ plot_6_1_12_year_unit <-
 # Save --------------------------------------------------------------------
 
 qs::qsavem(prix_sur_marche_table, plot_5_2_1_6_facet, table_5_2_1_6_five_year,
-           map_5_2_1_6_annual, 
+           map_5_2_1_6_annual, plot_5_2_1_7_facet, table_5_2_1_7_five_year,
+           map_5_2_1_7_annual, 
            uef, map_6_1_12, plot_6_1_12_boxplot,
            plot_6_1_12_year_property, plot_6_1_12_year_unit, 
            file = "data/5_2_1.qsm")
