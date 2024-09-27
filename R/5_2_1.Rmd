@@ -37,4 +37,40 @@ Données non spécifiques à Laval dans le cahier métropolitain.
 
 # 5.2.1.8 Valeur foncière (secteur lucratif, secteur non lucratif)
 
+```{r s_6_1_5, include = FALSE}
+
+# 80-20 ratios
+uef_values <- 
+  uef |> 
+  mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
+  summarize(per_property = mean(value),
+            per_unit = sum(value) / sum(units),
+            .by = type) |> 
+  mutate(across(-type, scales::dollar))
+
+```
+
+_Data source: Unité d'evaluation foncière_
+
+In 2019, the average assessed value of a residential property in Laval was `r scales::dollar(mean(uef$value))`. In both per-property and per-unit terms, detached homes had the highest average assessed value (`r uef_values$per_property[1]` per property, and `r uef_values$per_unit[1]` per unit), followed by "jumelé" (`r uef_values$per_property[2]` per property, and `r uef_values$per_unit[2]` per unit), then "en rangée" (`r uef_values$per_property[4]` per property, and `r uef_values$per_unit[4]` per unit), and finally "intégré" (`r uef_values$per_property[3]` per property, and `r uef_values$per_unit[3]` per unit).
+
+```{r plot_6_1_12_boxplot}
+plot_6_1_12_boxplot
+```
+
+All property types display a clear positive relationship between construction date and assessed value; newer properties have higher assessed values on average, although the relationship is stronger in per-property terms than in per-unit terms.
+
+```{r plot_6_1_12_year_property}
+plot_6_1_12_year_property
+```
+
+```{r plot_6_1_12_year_unit}
+plot_6_1_12_year_unit
+```
+
+In general, assessed property values are higher in the south-western part of the city and lower in the north east. However, in per-square-foot terms, it is actually the central part of the city (H9B postal codes) where assessed values are highest.
+
+```{r map_6_1_12}
+map_6_1_12
+```
 

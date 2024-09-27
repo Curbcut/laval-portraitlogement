@@ -530,106 +530,6 @@ plot_6_1_5_units <-
   theme_minimal()
 
 
-# 6.1.12 Valeur foncière --------------------------------------------------
-
-# Get UEF
-uef <-
-  read_csv("data/role-evaluation-2019.csv") |> 
-  rename(FST = `ra01-code-postal-3-car`) |> 
-  filter(`gen-cd-typ-util-nom-2-chifre` == "Logement") |> 
-  select(-`gen-cd-typ-util-nom-2-chifre`,
-         -`ra02-imp-scolaire-nom`,
-         -`ra02-date-init-inscr-role`,
-         -`re98-montant-immeuble-imp`,
-         -`re98-montant-immeuble-ni`,
-         -`re98-montant-eae-imp-scolaire`,
-         -`ra01-nb-total-locaux-nr`) |> 
-  set_names(c("FST", "area", "floors", "year_built", "construct_method",
-              "type", "units", "value", "value_previous", "class")) |> 
-  select(-construct_method) |> 
-  mutate(area = as.numeric(str_replace(area, ",", "\\."))) |> 
-  filter(str_detect(class, "1|2|3|4|5|6|siduelle") | 
-           class == "Six logement et plus") |> 
-  filter(!str_detect(class, "Agricole"),
-         !is.na(type))
-
-# Get forward sortation areas
-fst <- 
-  read_sf("data/lfsa000b21a_e/lfsa000b21a_e.shp") |> 
-  filter(PRUID == "24") |> 
-  st_make_valid() |> 
-  st_transform(4326) |> 
-  filter(CFSAUID %in% uef$FST) |> 
-  rename(FST = CFSAUID)
-  
-map_6_1_12 <- 
-  uef |> 
-  summarize(`Per property` = mean(value),
-            `Per unit` = sum(value) / sum(units),
-            `Per sqft` = 880 * sum(value) / sum(area, na.rm = TRUE), 
-            .by = FST) |> 
-  pivot_longer(-FST) |> 
-  inner_join(fst) |> 
-  st_as_sf() |> 
-  st_filter(laval_sectors) |> 
-  ggplot(aes(fill = value)) +
-  geom_sf() +
-  scale_fill_viridis_b("Average assessed value", 
-                       n.breaks = 6, labels = scales::dollar) +
-  facet_wrap(~name) +
-  ggtitle("Average assessed property value by forward sortation area (2019)") +
-  theme_void() +
-  theme(legend.position = "bottom", legend.key.width = unit(60, "points"))
-
-plot_6_1_12_boxplot <- 
-  uef |> 
-  mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
-  mutate(`Per unit` = value / units) |> 
-  rename(`Per property` = value) |> 
-  pivot_longer(c(`Per property`, `Per unit`)) |> 
-  ggplot(aes(type, value)) +
-  geom_boxplot(outliers = FALSE) +
-  facet_wrap(~name) +
-  scale_y_continuous("Assessed value", labels = scales::dollar) +
-  scale_x_discrete("Property type") +
-  theme_minimal()
-
-plot_6_1_12_year_property <-
-  uef |> 
-  mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
-  summarize(n = n(), value = mean(value), .by = c(year_built, type)) |> 
-  filter(year_built >= 1900) |>
-  ggplot(aes(year_built, value, size = n, fill = type, 
-             colour = after_scale(alpha(fill, 0.6)))) +
-  geom_point() +
-  gghighlight() +
-  facet_wrap(~type) +
-  scale_y_continuous("Assessed value", labels = scales::dollar) +
-  scale_x_continuous("Year of construction") +
-  scale_size_area("Number of properties") +
-  ggtitle("Average annual per-property assessed value by property type") +
-  theme_minimal() +
-  theme(legend.position = "bottom")
-
-plot_6_1_12_year_unit <- 
-  uef |> 
-  mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
-  summarize(n = sum(units), value = sum(value) / sum(units), 
-            .by = c(year_built, type)) |> 
-  filter(year_built >= 1900) |>
-  ggplot(aes(year_built, value, size = n, fill = type, 
-             colour = after_scale(alpha(fill, 0.6)))) +
-  geom_point() +
-  gghighlight() +
-  facet_wrap(~type) +
-  scale_y_continuous("Assessed value", labels = scales::dollar) +
-  scale_x_continuous("Year of construction") +
-  scale_size_area("Number of properties") +
-  ggtitle("Average annual per-unit assessed value by property type") +
-  theme_minimal() +
-  theme(legend.position = "bottom")
-
-
 # R Markdown --------------------------------------------------------------
 
 qs::qsavem(cmhc_zones, completions_by_type, completions_by_market, 
@@ -640,6 +540,5 @@ qs::qsavem(cmhc_zones, completions_by_type, completions_by_market,
            plot_6_1_2_type_apart, map_6_1_2_annual, starts_by_market,
            table_6_1_3_five_year, plot_6_1_3_market, plot_6_1_3_market_facet,
            plot_6_1_3_market_rental, new_prices, plot_6_1_5_percentiles,
-           plot_6_1_5_units, uef, map_6_1_12, plot_6_1_12_boxplot,
-           plot_6_1_12_year_property, plot_6_1_12_year_unit,
+           plot_6_1_5_units,
            file = "data/section_6_1.qsm")
