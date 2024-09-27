@@ -48,11 +48,65 @@ pto <- bind_rows(pto_21, pto_16, pto_11, pto_06, pto_01) |>
   ) |>
   ungroup()
 
+#Pulling numbers from PTO
+owner_count_diff <- pto |> 
+  filter(type == "owner", Year %in% c(2021, 2001)) |> 
+  summarize(difference = count[Year == 2021] - count[Year == 2001]) |> 
+  mutate(difference = convert_number(difference)) |> 
+  pull(difference)
+
+tenant_count_diff <- pto |> 
+  filter(type == "tenant", Year %in% c(2021, 2001)) |> 
+  summarize(difference = count[Year == 2021] - count[Year == 2001]) |> 
+  mutate(difference = convert_number(difference)) |> 
+  pull(difference)
+
+owner_growth <- pto |> 
+  filter(type == "owner", Year %in% c(2021, 2001)) |> 
+  summarize(difference = count[Year == 2021] / count[Year == 2001] - 1) |> 
+  mutate(difference = convert_pct(difference)) |> 
+  pull(difference)
+
+tenant_growth <- pto |> 
+  filter(type == "tenant", Year %in% c(2021, 2001)) |> 
+  summarize(difference = count[Year == 2021] / count[Year == 2001] - 1) |> 
+  mutate(difference = convert_pct(difference)) |> 
+  pull(difference)
+
+owner_growth_16 <- pto |> 
+  filter(type == "owner", Year %in% c(2021, 2016)) |> 
+  summarize(difference = count[Year == 2021] / count[Year == 2016] - 1) |> 
+  mutate(difference = convert_pct(difference)) |> 
+  pull(difference)
+
+tenant_growth_16 <- pto |> 
+  filter(type == "tenant", Year %in% c(2021, 2016)) |> 
+  summarize(difference = count[Year == 2021] / count[Year == 2016] - 1) |> 
+  mutate(difference = convert_pct(difference)) |> 
+  pull(difference)
+
+total_hh_21 <- pto |> 
+  filter(type == "owner", Year == 2021) |> 
+  mutate(total = convert_number(total)) |> 
+  pull(total)
+
+total_hh_01 <- pto |> 
+  filter(type == "owner", Year == 2001) |> 
+  mutate(total = convert_number(total)) |> 
+  pull(total)
+
+total_prop_diff <- pto |> 
+  filter(type == "owner", Year %in% c(2021, 2001)) |> 
+  select(Year, total) |> 
+  pivot_wider(names_from = Year, values_from = total) |> 
+  mutate(diff = convert_pct(`2021` / `2001` - 1)) |> 
+  pull(diff)
+
 #Creating a grouped bar chart
 plot_4_1_1_1 <- ggplot(pto, aes(x = Year, y = count, fill = type)) +
   geom_bar(stat = "identity", position = "dodge") +
   geom_text(aes(label = prop_cc), position = position_dodge(width = 0.9),
-            vjust = 2, size = 4, color = "white") +
+            vjust = 2, size = 3, color = "white") +
   scale_fill_manual(values = c("owner" = "#A3B0D1", "tenant" = "#CD718C"),
                     labels = c("owner" = "Propriétaire", "tenant" = "Locataire")) +
   scale_y_continuous(labels = function(x) convert_number(x)) +
@@ -71,41 +125,56 @@ pto_map <- get_census(dataset = "CA21",
          tenant = if_else(is.na(tenant), 0, tenant)) |> 
   mutate(total = if_else(is.na(total), owner + tenant, total))
 
+total_hh_map <- interpolate(pto_map, additive_vars = "total")
+owner_hh_map <- interpolate(pto_map, additive_vars = "owner")
+tenant_hh_map <- interpolate(pto_map, additive_vars = "tenant")
+
 #Finding and creating the breaks
-#list(classInt::classIntervals(pto_map$total, n = 5, style = "jenks")$brks)
-pto_total_breaks <- c(-Inf, 230, 415, 715, 1315, Inf)
-pto_total_breaks_labels <- c("< 230", "230 - 415", "415 - 715", "715 - 1 315", "> 1 315")
-#list(classInt::classIntervals(pto_map$owner, n = 5, style = "jenks")$brks)
-pto_owner_breaks <- c(-Inf, 115, 210, 365, 660, Inf)
-pto_owner_breaks_labels <- c("< 115", "115 - 210", "210 - 365", "365 - 660", "> 660")
-#list(classInt::classIntervals(pto_map$tenant, n = 5, style = "jenks")$brks)
-pto_tenant_breaks <- c(-Inf, 55, 165, 365, 715, Inf)
-pto_tenant_breaks_labels <- c("< 55", "55 - 165", "165 - 365", "365 - 715", "> 715")
+#list(classInt::classIntervals(total_hh_map$total, n = 5, style = "jenks")$brks)
+total_hh_breaks <- c(-Inf, 7000, 7600, 8300, 8700, Inf)
+total_hh_breaks_lab <- c("< 7 000", "7 000 - 7 600", "7 600 - 8 300", "8 300 - 8 700", "> 8 700")
+#list(classInt::classIntervals(owner_hh_map$owner, n = 5, style = "jenks")$brks)
+owner_hh_breaks <- c(-Inf, 3500, 4500, 5100, 5900, Inf)
+owner_hh_breaks_lab <- c("< 3 500", "3 500 - 4 500", "4 500 - 5 100", "5 100 - 5 900", "> 5 900")
+#list(classInt::classIntervals(tenant_hh_map$tenant, n = 5, style = "jenks")$brks)
+tenant_hh_breaks <- c(-Inf, 1500, 2200, 3300, 5100, Inf)
+tenant_hh_breaks_lab <- c("< 1 500", "1 500 - 2 200", "2 200 - 3 300", "3 300 - 5 100", "> 5 100")
 
 #Applying the breaks as new columns to the data frame
-pto_map <- pto_map |> 
-  mutate(
-    total_quantile = cut(total, breaks = pto_total_breaks, include.lowest = TRUE,
-                         labels = pto_total_breaks_labels),
-    owner_quantile = cut(total, breaks = pto_owner_breaks, include.lowest = TRUE,
-                         labels = pto_owner_breaks_labels),
-    tenant_quantile = cut(total, breaks = pto_tenant_breaks, include.lowest = TRUE,
-                         labels = pto_tenant_breaks_labels)
-  )
+total_hh_map <- total_hh_map |> 
+  mutate(total_quantile = cut(total, breaks = total_hh_breaks, include.lowest = TRUE,
+                              labels = total_hh_breaks_lab))
+
+owner_hh_map <- owner_hh_map |> 
+  mutate(owner_quantile = cut(owner, breaks = owner_hh_breaks, include.lowest = TRUE,
+                              labels = owner_hh_breaks_lab))
+
+tenant_hh_map <- tenant_hh_map |> 
+  mutate(tenant_quantile = cut(tenant, breaks = tenant_hh_breaks, include.lowest = TRUE,
+                              labels = tenant_hh_breaks_lab))
+
+# pto_map <- pto_map |> 
+#   mutate(
+#     total_quantile = cut(total, breaks = pto_total_breaks, include.lowest = TRUE,
+#                          labels = pto_total_breaks_labels),
+#     owner_quantile = cut(total, breaks = pto_owner_breaks, include.lowest = TRUE,
+#                          labels = pto_owner_breaks_labels),
+#     tenant_quantile = cut(total, breaks = pto_tenant_breaks, include.lowest = TRUE,
+#                          labels = pto_tenant_breaks_labels)
+#   )
 
 #Plotting total number of households
-map_4_1_1_1_total <- ggplot(data = pto_map) +
+map_total_hh <- ggplot(data = total_hh_map) +
   gg_cc_tiles +
   geom_sf(aes(geometry = geometry, fill = total_quantile), alpha = 0.9, color = "transparent") +
   scale_fill_manual(values = curbcut_scale,
                     name = "Nombre de ménages (n)") +
-  geom_sf(data = laval_sectors, fill = "transparent", color = "black") +
   gg_cc_theme +
   guides(fill = guide_legend(title.position = "top",
                              title.hjust = 0.5))
 
 #Plotting total number of owner households
-map_4_1_1_1_owner <- ggplot(data = pto_map) +
+map_owner_hh <- ggplot(data = owner_hh_map) +
   gg_cc_tiles +
   geom_sf(aes(geometry = geometry, fill = owner_quantile), alpha = 0.9, color = "transparent") +
   scale_fill_manual(values = curbcut_scale,
@@ -116,21 +185,67 @@ map_4_1_1_1_owner <- ggplot(data = pto_map) +
                              title.hjust = 0.5))
 
 #Plotting total number of tenant households
-map_4_1_1_1_tenant <- ggplot(data = pto_map) +
+map_tenant_hh <- ggplot(data = tenant_hh_map) +
   gg_cc_tiles +
   geom_sf(aes(geometry = geometry, fill = tenant_quantile), alpha = 0.9, color = "transparent") +
   scale_fill_manual(values = curbcut_scale,
                     name = "Nombre de ménages locataires (n)") +
-  geom_sf(data = laval_sectors, fill = "transparent", color = "black") +
   gg_cc_theme +
   guides(fill = guide_legend(title.position = "top",
                              title.hjust = 0.5))
 
+table_4_1_1_1_data <- total_hh_map |> 
+  st_drop_geometry() |> 
+  left_join(owner_hh_map, by = "NOM") |> 
+  st_drop_geometry() |> 
+  left_join(tenant_hh_map, by = "NOM") |> 
+  st_drop_geometry() |> 
+  select(NOM, total, owner, tenant) |> 
+  mutate(total = round(total),
+         owner = round(owner),
+         tenant = round(tenant)) |> 
+  mutate("Ménages propriétaires (%)" = owner / total,
+         "Ménages locataires (%)" = tenant / total) |> 
+  rename("District électoral" = "NOM",
+         "Nombre total de ménages (n)" = "total",
+         "Ménages propriétaires (n)" = "owner",
+         "Ménages locataires (n)" = "tenant") |> 
+  select("District électoral",
+         "Nombre total de ménages (n)",
+         "Ménages propriétaires (n)",
+         "Ménages propriétaires (%)",
+         "Ménages locataires (n)",
+         "Ménages locataires (%)")
+
+table_4_1_1_1 <- table_4_1_1_1_data |> 
+  gt() |> 
+  data_color(
+    columns = c(4,6),
+    colors = scales::col_numeric(
+      palette = c("white", color_theme("purpletransport")),
+      domain = NULL
+    )
+  ) |> 
+  fmt(columns = c(2,3,5), fns = convert_number) |> 
+  fmt(columns = c(4,6), fns = convert_pct) |> 
+  tab_style(
+    style = cell_text(font = "KMR Apparat Regular", size = px(15)),
+    locations = cells_body()) |> 
+  tab_style(
+    style = cell_text(font = "KMR Apparat Regular"),
+    locations = cells_column_labels()) |> 
+  tab_options(
+    table.font.size = 14,
+    row_group.font.size = 12,
+    table.width = px(8 * 88)
+  )
+
 #Saving the files as photos
-ggsave("outputs/4/plot_4_1_1_1.png", plot = plot_4_1_1_1, width = 800/72, height = 600/72, dpi = 72)
-ggsave("outputs/4/map_4_1_1_1_total.png", plot = map_4_1_1_1_total, width = 800/72, height = 600/72, dpi = 72)
-ggsave("outputs/4/map_4_1_1_1_owner.png", plot = map_4_1_1_1_owner, width = 800/72, height = 600/72, dpi = 72)
-ggsave("outputs/4/map_4_1_1_1_tenant.png", plot = map_4_1_1_1_tenant, width = 800/72, height = 600/72, dpi = 72)
+ggsave(plot = plot_4_1_1_1, "outputs/4/plot_4_1_1_1.pdf", width = 7.5, height = 6)
+ggsave(plot = map_total_hh, "outputs/4/map_total_hh.pdf", width = 7.5, height = 6)
+ggsave(plot = map_owner_hh, "outputs/4/map_owner_hh.pdf", width = 7.5, height = 6)
+ggsave(plot = map_tenant_hh, "outputs/4/map_tenant_hh.pdf", width = 7.5, height = 6)
+gtsave(table_4_1_1_1, "outputs/4/table_4_1_1_1.png", zoom = 1)
 
 # 4.1.1.2 Catégorie de revenu et mode d'occupation ------------------------
 revenu <- c("none"= "Sans revenu total", "10" = "  Supérieur à zéro, moins de 10 000 $",
@@ -625,7 +740,7 @@ table_4_1_1_3 <- table_data_4_1_1_3 |>
 
 # 4.1.1.4 Statut d'immigrant selon mode d'occupation ----------------------
 #Percentages based on provided PDF and 2016 census data
-imm_2016 <- get_census(dataset = datayear,
+imm_2016 <- get_census(dataset = "CA16",
                        regions = list(CSD = 2465005),
                        level = "CSD",
                        vectors = pto_year)
@@ -697,9 +812,7 @@ ggsave("outputs/4/plot_4_1_9_pop.png", plot = plot_4_1_7, width = 800/72, height
 ggsave("outputs/4/plot_4_1_9_hh.png", plot = plot_4_1_7, width = 800/72, height = 600/72, dpi = 72)
 
 # R Markdown --------------------------------------------------------------
-qs::qsavem(plot_4_1_1_1, map_4_1_1_1_total, map_4_1_1_1_owner, map_4_1_1_1_tenant,
-           plot_4_1_1_2, map_4_1_1_2_owner, map_4_1_1_2_tenant,
-           plot_4_1_1_3, table_4_1_1_3,
-           map_4_1_3_other, map_4_1_3_sole, map_4_1_3_noncf,
-           plot_4_1_9_hh, plot_4_1_9_pop,
+qs::qsavem(plot_4_1_1_1, map_total_hh, map_owner_hh, map_tenant_hh, table_4_1_1_1,
+           owner_count_diff, tenant_count_diff, owner_growth, tenant_growth,
+           owner_growth_16, tenant_growth_16, total_hh_01, total_hh_21, total_prop_diff,
            file = "data/section_4_1.qsm")

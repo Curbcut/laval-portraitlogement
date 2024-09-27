@@ -1,10 +1,10 @@
 ---
-title: "Axe 3 - Le soutien aux communautés de proximité"
+title: "Portrait des ménages et de leur logement"
 author: "Curbcut"
 output: html_document
 ---
 
-```{r setupAxe3, include=FALSE}
+```{r setup 4_1_markdown, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 ```
 
@@ -20,6 +20,28 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 qs::qload(here::here("data/section_4_1.qsm"))
 ```
 
-```{r plot_4_1_1, include=TRUE, fig.cap="", fig.align = 'center'}
-plot_4_1_1
+_Source: Recensement de la population (2001-2021)
+
+From 2001 to 2016, the city of Laval has seen its number of households grow `r total_prop_diff` from `r total_hh_01` to `r total_hh_21`. As shown below in `r plot_4_1_1_1`, the proportion of owner households has held steady, with the proportion of owner households changing only 0,3 %, a difference of `r owner_count_diff` households, despite growing `r owner_growth`. Similarly, the proportion of tenant households shrank by 0,1 %, despite growing by `r tenant_count_diff` or `r tenant_growth`. However, the years 2016-2021 saw an abrupt change to the trend compared to 2001-2016, where the growth of tenant households, seeing a `r tenant_growth_16`, signficantly outpaced owner household growth, at `r owner_growth_16`, causing the proportion of owner households to drop 1,7 % and the proportion of tenant households to grow 2,9 %.
+
+```{r plot_4_1_1_1, include=TRUE, fig.cap="Proportion de ménages propriétaires et locataires", fig.align = 'center'}
+plot_4_1_1_1
+```
+
+Because the city of Laval has a higher proportion of owner households, the majority of electoral districts in Laval have a higher number of owner households compared to tenant households. This is especially notable in districts such as Auteuil and Saint-Francois, where, as shown in `r table_4_1_1_1`, owner households make up over 85% of households in the district. Additionally, as shown in `r map_owner_hh`, areas that have larger amounts of owner households are located away from the downtown area. Conversely, areas closer and within downtown Laval `r map_tenant_hh`, such as Souvenir-Labelle and Concorde-Bois-de-Boulogne, see a higher proportion and amount of tenant households.
+
+```{r table_4_1_1_1, include=TRUE, fig.cap="Composition des ménages par district électorale", fig.align = 'center'}
+table_4_1_1_1
+```
+
+```{r map_total_hh, include=TRUE, fig.cap="Nombre total de ménages par district électorale", fig.align = 'center'}
+map_total_hh
+```
+
+```{r map_owner_hh, include=TRUE, fig.cap="Ménages propriétaires par district électorale", fig.align = 'center'}
+map_owner_hh
+```
+
+```{r map_tenant_hh, include=TRUE, fig.cap="Ménages locataires par district électorale", fig.align = 'center'}
+map_tenant_hh
 ```
