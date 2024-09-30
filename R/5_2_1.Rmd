@@ -79,7 +79,7 @@ three_2019 <- scales::dollar(rent_years$`3 Bedroom +`[7])
 
 ```
 
-In the 1990s, average rents in purpose-built rental buildings in Laval were stagnant; in 1990 the average monthly rent across all bedroom types was `r rent_90s[1]`, and by 1999 it had only increased slightly to `r rent_90s[2]`. Rents started to increase in the early 2000s, and since 2010 in particular, average rents have been rising rapidly across all bedroom types.
+In the 1990s, average rents in purpose-built rental buildings in Laval were stagnant; in 1990 the average monthly rent across all bedroom types was `r rent_90s[1]`, and by 1999 it had only increased slightly to `r rent_90s[2]`. In inflation-adjusted terms, rents actually declined city-wide in the 1990s. Rents started to increase in the early 2000s, and since 2010 in particular, average rents have been rising rapidly across all bedroom types.
 
 ```{r plot_5_2_1_6_facet}
 plot_5_2_1_6_facet
@@ -123,6 +123,53 @@ table_5_2_1_6_construction_five_year
 ```
 
 # 5.2.1.7 Taux d'inoccupation (différenciation entre vacants et occupés) selon le nombre de chambres à coucher et le prix
+
+```{r vacancy_by_bedroom}
+three_br_vacancy <- 
+  vacancy_by_bedroom |> 
+  filter(is.na(zone), bedroom == "3 Bedroom +", year >= 2019) |> 
+  pull(value) |> 
+  mean(na.rm = TRUE) |> 
+  scales::percent(accuracy = 0.1, scale = 1)
+```
+The evolution of the vacancy rate in purpose-built rental buildings since 1990 is the inverse of the change in average rents documented in the last section. Vacancy rates were high in the 1990s, indicating a loose rental market where the supply of available rental housing was plentiful in comparison to the number of prospective tenants looking for apartments. A common rule of thumb for a neutral vacancy rate is 3%; when the rate is lower than 3%, rents tend to increase, and when the rate is higher than 3%, rents tend to be flat or decreasing. The city-wide vacancy rate exceeded 3% for most of the 1990s, corresponding to the decade of stagnating rents. In the late 1990s, the vacancy rate began a steep decline, and dipped below 1% in the early 2000s. For the last 20 years, the vacancy rate has never reached the 3% neutral point. This indicates a tight rental market where landlords are able to charge higher rents because there are many prospective tenants in relation to the supply of available rental units.
+
+Vacancy rates have consistently been higher for smaller bedroom types—bachelor and one-bedroom apartments—and lower for family-sized units with two or more bedrooms. In fact, the vacancy rate for three-and-more-bedroom apartments in the last five years (2019-2023) was only `r three_br_vacancy`.
+
+```{r plot_5_2_1_7_facet}
+plot_5_2_1_7_facet
+```
+
+```{r table_5_2_1_7_five_year}
+table_5_2_1_7_five_year
+```
+
+Over the last five years, the vacancy rate has been particularly low in the central part of the city: the Laval-des-Rapides and Vimont/Auteuil zones. The somewhat higher vacancy rate in the Chomedey/Sainte-Dorothée zone is likely a compositional effect of higher-rent units in that zone, as we explore momentarily.
+
+```{r map_5_2_1_7_annual}
+map_5_2_1_7_annual
+```
+
+From 2012 through 2017 (CMHC does not have earlier data), there was very little difference in the vacancy when broken down among different rent levels. For example, from 2012-2015, all four quartiles of rent had vacancy rates between 2.2% and 2.7%. From 2018 onwards, however, high rent buildings have diverged from the others. The vacancy rate among top-quartile buildings has increased substantially—to an average of 5.5% in 2020-2023—at the same time as the vacancy rate among the other three quartiles has remained steady or even decreased. This pattern suggests that demand for higher-end rentals has slackened, and further analysis suggests it is specifically newly-constructed rental buildings which have seen vacancy rates climb.
+
+```{r plot_5_2_1_7_rent_facet}
+plot_5_2_1_7_rent_facet
+```
+
+```{r table_5_2_1_7_rent_five_year}
+table_5_2_1_7_rent_five_year
+```
+
+```{r plot_5_2_1_7_construction_facet}
+plot_5_2_1_7_construction_facet
+```
+
+High vacancy rates among newly constructed and high-rent apartment buildings are particularly noticeable in the Chomedey/Sainte-Dorothée zone, where there are not only an over-representation of this type of renetal unit, but where the vacancy rate within this submarket is higher than elsewhere in the city. This suggests that a spatial equilibrium in rental supply and demand has not been reached with newly constructed rental units. New rental units are coming on to the market disproportionately in Chomedey/Sainte-Dorothée (as we discuss in section 6.1), at high rents, and are remaining vacant at much higher than expected rates. Meanwhile, elsewhere in the city the vacancy rate for older and more modestly priced rental units is historically low. If this pattern continues into the future, a softening in rents in newer buildings in Chomedey/Sainte-Dorothée should be expected, alongside continued high rates of rent growth in other buildings.
+
+```{r map_5_2_1_7_rent_annual}
+map_5_2_1_7_rent_annual
+```
+
 
 # 5.2.1.8 Valeur foncière (secteur lucratif, secteur non lucratif)
 

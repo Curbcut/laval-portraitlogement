@@ -570,6 +570,52 @@ map_5_2_1_7_rent_annual <-
   theme(legend.position = "bottom",
         legend.key.width = unit(60, "points"))
 
+vacancy_by_construction <- 
+  map(1990:2023, \(x) {
+    get_cmhc(
+      survey = "Rms",
+      series = "Vacancy Rate", 
+      dimension = "Year of Construction",
+      breakdown = "Survey Zones", 
+      geo_uid = "2465005",
+      year = x)}) |> 
+  bind_rows() |> 
+  set_names(c("zone", "construction", "value", "quality", "date", "year", "survey", 
+              "series"))
+
+vacancy_by_construction_z <- 
+  map(1990:2023, \(x) {
+    get_cmhc(
+      survey = "Rms",
+      series = "Vacancy Rate", 
+      dimension = "Year of Construction",
+      breakdown = "Survey Zones", 
+      geo_uid = "24462",
+      year = x)}) |> 
+  bind_rows() |> 
+  set_names(c("zone", "construction", "value", "quality", "geog", "date", "year",
+              "survey", "series")) |> 
+  select(-geog) |> 
+  filter(zone %in% cmhc_zones$zone)
+
+vacancy_by_construction <- 
+  vacancy_by_construction |> 
+  bind_rows(vacancy_by_construction_z)
+
+plot_5_2_1_7_construction_facet <-
+  vacancy_by_construction |> 
+  filter(is.na(zone), !is.na(value)) |>
+  ggplot(aes(year, value / 100, group = construction)) +
+  geom_line() +
+  gghighlight::gghighlight(use_direct_label = FALSE) +
+  scale_y_continuous("Average vacancy rate", labels = scales::percent) +
+  scale_x_continuous("Year") +
+  facet_wrap(~construction) +
+  ggtitle("Vacancy rate for purpose-built rentals, by year of construction") +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  graph_theme
+
 
 # 6.1.12 Valeur foncière --------------------------------------------------
 
@@ -679,10 +725,12 @@ qs::qsavem(#prix_sur_marche_table,
            map_5_2_1_6_annual, rent_by_construction,
            plot_5_2_1_6_construction_facet, 
            table_5_2_1_6_construction_five_year, 
-           map_5_2_1_6_construction_annual, plot_5_2_1_7_facet, 
+           map_5_2_1_6_construction_annual, vacancy_by_bedroom, vacancy_by_rent,
+           plot_5_2_1_7_facet, 
            table_5_2_1_7_five_year,
            map_5_2_1_7_annual, plot_5_2_1_7_rent_facet, 
            table_5_2_1_7_rent_five_year, map_5_2_1_7_rent_annual, 
+           plot_5_2_1_7_construction_facet,
            uef, map_6_1_12, plot_6_1_12_boxplot,
            plot_6_1_12_year_property, plot_6_1_12_year_unit, 
            file = "data/section_5_2_1.qsm")
