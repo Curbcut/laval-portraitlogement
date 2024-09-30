@@ -6,10 +6,24 @@ output: html_document
 
 ```{r setup_5_1_1, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+library(tidyverse)
+library(gt)
 qs::qload(here::here("data", "section_5_1_1.qsm"))
 ```
 
 # 5.1.1.1 Répartition des logements selon le typologie
+
+_Data source: Canadian Census_
+
+
+
+```{r plot_5_1_1_1_facet}
+plot_5_1_1_1_facet
+```
+
+```{r map_5_1_1_1_single}
+map_5_1_1_1_single
+```
 
 # 5.1.1.2 Répartition des logements selon le mode d'occupation
 

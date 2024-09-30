@@ -203,8 +203,38 @@ housing <-
 
 # 5.1.1.1 Répartition des logements selon le typologie --------------------
 
+plot_5_1_1_1_facet <- 
+  housing |> 
+  st_drop_geometry() |> 
+  select(GeoUID:type_movable) |> 
+  summarize(across(type_total:type_movable, sum, na.rm = TRUE), .by = year) |> 
+  mutate(across(type_single:type_movable, \(x) x / type_total)) |> 
+  select(-type_other_single, -type_movable) |> 
+  pivot_longer(type_single:type_apart_large) |> 
+  mutate(name = str_remove(name, "type_")) |> 
+  ggplot(aes(year, value, colour = name)) +
+  geom_point() +
+  geom_line() +
+  gghighlight::gghighlight(use_direct_label = FALSE) +
+  scale_y_continuous("Share of all private dwelling units",
+                     limits = c(0, 0.5), labels = scales::percent) +
+  scale_x_continuous("Year") +
+  facet_wrap(vars(name)) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
 
-
+map_5_1_1_1_single <-
+  housing |> 
+    select(GeoUID:type_single, geometry) |> 
+    mutate(single_pct = type_single / type_total) |> 
+    ggplot(aes(fill = single_pct)) +
+    geom_sf(colour = "white", lwd = 0.1) +
+    scale_fill_viridis_b(
+      "Share of all private dwelling units which are single-detached homes",
+      labels = scales::percent, n.breaks = 6) +
+    facet_wrap(vars(year)) +
+    theme_void() +
+    theme(legend.position = "bottom", legend.key.width = unit(40, "points"))
 
 
 
@@ -224,4 +254,5 @@ housing <-
 
 # Save --------------------------------------------------------------------
 
-qs::qsavem(file = "data/5_1_1.qsm")
+qs::qsavem(plot_5_1_1_1_facet, map_5_1_1_1_single, 
+           file = "data/section_5_1_1.qsm")
