@@ -13,11 +13,11 @@ qs::qload(here::here("data", "section_5_1_1.qsm"))
 
 # 5.1.1.1 Répartition des logements selon le typologie
 
-```{r housing_figures}
+```{r housing_type_figures}
 
 single_shares <- 
   housing |> 
-  st_drop_geometry() |> 
+  sf::st_drop_geometry() |> 
   summarize(total = sum(type_total, na.rm = TRUE),
             single = sum(type_single, na.rm = TRUE),.by = year) |> 
   mutate(pct = single / total) |> 
@@ -46,9 +46,43 @@ map_5_1_1_1_single
 
 # 5.1.1.2 Répartition des logements selon le mode d'occupation
 
+```{r housing_tenure_figures}
+
+owner_shares <- 
+  housing |> 
+  sf::st_drop_geometry() |> 
+  summarize(total = sum(tenure_total, na.rm = TRUE),
+            owner = sum(tenure_owner, na.rm = TRUE),.by = year) |> 
+  mutate(pct = owner / total) |> 
+  pull(pct) |> 
+  scales::percent(0.1)
+
+```
+
+_Data source: Canadian Census_
+
+Homeownership rates have been very steady in Laval since 2001; the share of total occupied private dwellings occupied by owner households was `r owner_shares[1]` in 2001 and was also `r owner_shares[5]` in 2021, and in the intervening years never rose higher than `r owner_shares[3]`. Put differently, although the last ten years have seen a steady uptick in the total proportion of the city's housing stock occupied by renters (corresponding to an increase in apartment construction discussed in section 6, below), this uptick has simply cancelled out a similar decline in the renter share households which occurred from 2001 to 2011. 
+```{r plot_5_1_1_2_facet}
+plot_5_1_1_2_facet
+```
+
+```{r table_5_1_1_2}
+table_5_1_1_2
+```
+
+The spatial patterns of owner-occupied dwellings in Laval closely mirror the patterns of single-family homes analyzed in the previous section; southern sectors have low rates (< 50%) of owner-occupied dwellings, while the west and north-eastern areas of the island have high rates (> 80%).
+
+```{r map_5_1_1_2_owner}
+map_5_1_1_2_owner
+```
+
 # 5.1.1.3 Répartition des logements selon le nombre de chambres à coucher
 
+_Data source: Canadian Census_
+
 # 5.1.1.4 Répartition des logements selon l'âge du cadre bâti
+
+_Data source: Canadian Census_
 
 # 5.1.1.5 Répartition des logements selon le type de parc : privé lucratif, non lucratif (privé ou public)
 

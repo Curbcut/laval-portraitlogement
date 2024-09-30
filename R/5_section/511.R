@@ -15,7 +15,7 @@ vec_2001_511 <- c(
   type_movable = "v_CA01_120",
   tenure_total = "v_CA01_96",
   tenure_owner = "v_CA01_99",
-  tenure_renter = "v_CA01_10",
+  tenure_renter = "v_CA01_100",
   # age_total = "v_CA01_96", # Same as tenure parent, so just duplicate
   age_1946 = "v_CA01_105",
   age_1960 = "v_CA01_106",
@@ -275,6 +275,48 @@ map_5_1_1_1_single <-
 
 # 5.1.1.2 -------------------------------------------------------------------
 
+plot_5_1_1_2_facet <-
+  housing |> 
+  st_drop_geometry() |> 
+  summarize(across(tenure_total:tenure_renter, sum, na.rm = TRUE), 
+            .by = year) |> 
+  mutate(across(tenure_owner:tenure_renter, \(x) x / tenure_total)) |> 
+  pivot_longer(tenure_owner:tenure_renter) |> 
+  mutate(name = str_remove(name, "tenure_")) |> 
+  ggplot(aes(year, value, colour = name)) +
+  geom_point() +
+  geom_line() +
+  scale_y_continuous("Share of all private dwelling units",
+                     limits = c(0.2, 0.8), labels = scales::percent) +
+  scale_x_continuous("Year") +
+  scale_colour_discrete("Tenure") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+table_5_1_1_2 <-
+  housing |> 
+  st_drop_geometry() |> 
+  summarize(across(tenure_total:tenure_renter, sum, na.rm = TRUE), 
+            .by = year) |> 
+  mutate(across(tenure_owner:tenure_renter, \(x) paste0(
+    scales::comma(x, 10), " (", scales::percent(x / tenure_total, 0.1), ")"))) |> 
+  mutate(tenure_total = scales::comma(tenure_total, 10)) |> 
+  set_names(c("Year", "Total", "Owner-occupied", "Tenant-occupied")) |> 
+  gt::gt() |> 
+  gt::tab_header("Privately occupied dwelling units by tenure")
+
+map_5_1_1_2_owner <-
+  housing |> 
+  mutate(owner_pct = tenure_owner / tenure_total) |> 
+  ggplot(aes(fill = owner_pct)) +
+  geom_sf(colour = "white", lwd = 0.1) +
+  scale_fill_viridis_b(
+    "Share of all private dwelling units which are owner-occupied",
+    labels = scales::percent, n.breaks = 6) +
+  facet_wrap(vars(year)) +
+  theme_void() +
+  theme(legend.position = "bottom", legend.key.width = unit(40, "points"))
+
 
 # 5.1.1.3 -------------------------------------------------------------------
 
@@ -289,4 +331,5 @@ map_5_1_1_1_single <-
 # Save --------------------------------------------------------------------
 
 qs::qsavem(housing, plot_5_1_1_1_facet, table_5_1_1_1, map_5_1_1_1_single, 
+           plot_5_1_1_2_facet, table_5_1_1_2, map_5_1_1_2_owner,
            file = "data/section_5_1_1.qsm")
