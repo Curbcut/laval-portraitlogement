@@ -3,69 +3,51 @@ source("R/startup.R")
 
 # Census vectors ----------------------------------------------------------
 
-list_census_vectors("CA11") |> view()
-
 vec_2001_511 <- c(
-  type_total = "v_CA21_434",
-  type_single = "v_CA21_435",
-  type_semi = "v_CA21_436",
-  type_row = "v_CA21_437",
-  type_duplex = "v_CA21_438",
-  type_apart_small = "v_CA21_439",
-  type_apart_large = "v_CA21_440",
-  type_other_single = "v_CA21_441",
-  type_movable = "v_CA21_442",
-  condo_total = "v_CA21_4241",
-  condo_condo = "v_CA21_4242",
-  bedroom_total = "v_CA21_4244",
-  bedroom_zero = "v_CA21_4245",
-  bedroom_one = "v_CA21_4246",
-  bedroom_two = "v_CA21_4247",
-  bedroom_three = "v_CA21_4248",
-  bedroom_four = "v_CA21_4249",
-  tenure_total = "v_CA21_4237",
-  tenure_owner = "v_CA21_4238",
-  tenure_renter = "v_CA21_4239",
-  age_total = "v_CA21_4263",
-  age_1960 = "v_CA21_4264",
-  age_1980 = "v_CA21_4265",
-  age_1990 = "v_CA21_4266",
-  age_2000 = "v_CA21_4267",
-  age_2005 = "v_CA21_4268",
-  age_2010 = "v_CA21_4269",
-  age_2015 = "v_CA21_4270",
-  age_2021 = "v_CA21_4271")
+  type_total = "v_CA01_112",
+  type_single = "v_CA01_113",
+  type_semi = "v_CA01_114",
+  type_row = "v_CA01_115",
+  type_duplex = "v_CA01_116",
+  type_apart_small = "v_CA01_118",
+  type_apart_large = "v_CA01_117",
+  type_other_single = "v_CA01_119",
+  type_movable = "v_CA01_120",
+  tenure_total = "v_CA01_96",
+  tenure_owner = "v_CA01_99",
+  tenure_renter = "v_CA01_10",
+  # age_total = "v_CA01_96", # Same as tenure parent, so just duplicate
+  age_1946 = "v_CA01_105",
+  age_1960 = "v_CA01_106",
+  age_1970 = "v_CA01_107",
+  age_1980 = "v_CA01_108",
+  age_1990 = "v_CA01_109",
+  age_1995 = "v_CA01_110",
+  age_2000 = "v_CA01_111")
 
 vec_2006_511 <- c(
-  type_total = "v_CA21_434",
-  type_single = "v_CA21_435",
-  type_semi = "v_CA21_436",
-  type_row = "v_CA21_437",
-  type_duplex = "v_CA21_438",
-  type_apart_small = "v_CA21_439",
-  type_apart_large = "v_CA21_440",
-  type_other_single = "v_CA21_441",
-  type_movable = "v_CA21_442",
-  condo_total = "v_CA21_4241",
-  condo_condo = "v_CA21_4242",
-  bedroom_total = "v_CA21_4244",
-  bedroom_zero = "v_CA21_4245",
-  bedroom_one = "v_CA21_4246",
-  bedroom_two = "v_CA21_4247",
-  bedroom_three = "v_CA21_4248",
-  bedroom_four = "v_CA21_4249",
-  tenure_total = "v_CA21_4237",
-  tenure_owner = "v_CA21_4238",
-  tenure_renter = "v_CA21_4239",
-  age_total = "v_CA21_4263",
-  age_1960 = "v_CA21_4264",
-  age_1980 = "v_CA21_4265",
-  age_1990 = "v_CA21_4266",
-  age_2000 = "v_CA21_4267",
-  age_2005 = "v_CA21_4268",
-  age_2010 = "v_CA21_4269",
-  age_2015 = "v_CA21_4270",
-  age_2021 = "v_CA21_4271")
+  type_total = "v_CA06_119",
+  type_single = "v_CA06_120",
+  type_semi = "v_CA06_121",
+  type_row = "v_CA06_122",
+  type_duplex = "v_CA06_123",
+  type_apart_small = "v_CA06_125",
+  type_apart_large = "v_CA06_124",
+  type_other_single = "v_CA06_126",
+  type_movable = "v_CA06_127",
+  tenure_total = "v_CA06_101",
+  tenure_owner = "v_CA06_102",
+  tenure_renter = "v_CA06_103",
+  age_total = "v_CA06_109",
+  age_1946 = "v_CA06_110",
+  age_1960 = "v_CA06_111",
+  age_1970 = "v_CA06_112",
+  age_1980 = "v_CA06_113",
+  age_1985 = "v_CA06_114",
+  age_1990 = "v_CA06_115",
+  age_1995 = "v_CA06_116",
+  age_2000 = "v_CA06_117",
+  age_2005 = "v_CA06_118")
 
 vec_2011_511 <- c(
   type_total = "v_CA11F_199",
@@ -161,32 +143,62 @@ vec_2021_511 <- c(
 
 housing_01 <- get_census("CA01", regions = list(CSD = "2465005"), level = "DA",
                          vectors = vec_2001_511, geo_format = "sf") |> 
-  mutate(year = 2001, .after = GeoUID)
+  mutate(year = 2001, .after = GeoUID) |> 
+  mutate(age_total = tenure_total, .before = age_1946) |> 
+  mutate(age_2005 = age_2000 / 6, .after = age_2000) |> 
+  mutate(age_2000 = age_2000 * 5 / 6)
 
 housing_06 <- get_census("CA06", regions = list(CSD = "2465005"), level = "DA",
                          vectors = vec_2006_511, geo_format = "sf") |> 
-  mutate(year = 2006, .after = GeoUID)
+  mutate(year = 2006, .after = GeoUID) |> 
+  mutate(age_2010 = age_2005 / 6, .after = age_2005) |> 
+  mutate(age_2005 = age_2005 * 5 / 6)
 
 housing_11 <- get_census("CA11", regions = list(CSD = "2465005"), level = "DA",
                          vectors = vec_2011_511, geo_format = "sf") |> 
-  mutate(year = 2011, .after = GeoUID)
+  mutate(year = 2011, .after = GeoUID) |> 
+  mutate(age_2015 = age_2010 / 6, .after = age_2010) |> 
+  mutate(age_2010 = age_2010 * 5 / 6)
 
 housing_16 <- get_census("CA16", regions = list(CSD = "2465005"), level = "DA",
                          vectors = vec_2016_511, geo_format = "sf") |> 
-  mutate(year = 2016, .after = GeoUID)
+  mutate(year = 2016, .after = GeoUID) |> 
+  mutate(age_2021 = age_2015 / 6, .after = age_2015) |> 
+  mutate(age_2015 = age_2015 * 5 / 6)
 
 housing_21 <- get_census("CA21", regions = list(CSD = "2465005"), level = "DA",
                          vectors = vec_2021_511, geo_format = "sf") |> 
   mutate(year = 2021, .after = GeoUID)
 
-bind_rows(housing_11, housing_16, housing_21) |> 
+housing <-
+  bind_rows(housing_01, housing_06, housing_11, housing_16, housing_21) |> 
   as_tibble() |> 
   st_as_sf() |> 
-  select(-`NHS Non-Return Rate`, -`NHS Non Return Rate`, -`Shape Area`, -Type, 
-         -Households, -`Quality Flags`, -name, -CSD_UID, -Population, -CT_UID, 
-         -c(CD_UID:`Area (sq km)`)) |> 
+  select(-key, -`NHS Non-Return Rate`, -`NHS Non Return Rate`, -`Shape Area`, 
+         -Type, -Households, -`Quality Flags`, -name, -CSD_UID, -Population, 
+         -CT_UID, -c(CD_UID:`Area (sq km)`)) |> 
   rename(dwellings = Dwellings) |> 
-  relocate(dwellings, .after = year)
+  relocate(dwellings, .after = year) |> 
+  relocate(age_2005, age_2010, age_2015, age_2021, .after = age_2000) |> 
+  relocate(bedroom_one, .after = bedroom_zero) |>
+  relocate(bedroom_four, .after = bedroom_three) |> 
+  mutate(age_1960 = age_1946 + age_1960,
+         age_1980 = age_1970 + age_1980,
+         age_1990 = age_1985 + age_1990,
+         age_2000 = age_1995 + age_2000) |> 
+  select(-age_1946, -age_1970, -age_1985, -age_1995)
+
+# Interpolate
+housing <- 
+  housing |> 
+  interpolate(additive_vars = c(
+    "dwellings", "type_total", "type_single", "type_semi", "type_row", 
+    "type_duplex", "type_apart_small", "type_apart_large", "type_other_single",
+    "type_movable", "age_total", "age_1960", "age_1980", "age_1990", "age_2000", 
+    "age_2005", "age_2010", "age_2015", "age_2021", "tenure_total", 
+    "tenure_owner", "tenure_renter", "condo_total", "condo_condo", 
+    "bedroom_total", "bedroom_zero", "bedroom_one", "bedroom_two", 
+    "bedroom_three", "bedroom_four"))
 
 
 # 5.1.1.1 Répartition des logements selon le typologie --------------------
