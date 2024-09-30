@@ -203,6 +203,26 @@ housing <-
 
 # 5.1.1.1 Répartition des logements selon le typologie --------------------
 
+can_dwellings <- 
+  bind_rows(
+  get_census("CA01", regions = list(C = "1")),
+  get_census("CA06", regions = list(C = "1")),
+  get_census("CA11", regions = list(C = "1")),
+  get_census("CA16", regions = list(C = "1")),
+  get_census("CA21", regions = list(C = "1"))) |> 
+  select(dwellings = Dwellings) |> 
+  mutate(yoy = scales::percent(slider::slide_dbl(
+    dwellings, \(x) (x[2] - x[1]) / x[1], .before = 1, .complete = TRUE), 0.1))
+  
+can_dwellings$dwellings[5] - can_dwellings$dwellings[1] * 1.0131 ^ 20
+
+laval_dwellings <- 
+  housing |> 
+  st_drop_geometry() |> 
+  summarize(dwellings = sum(dwellings, na.rm = TRUE), .by = year)
+
+laval_dwellings$dwellings[5] - laval_dwellings$dwellings[1] * 1.0132 ^ 20
+
 plot_5_1_1_1_facet <-
   housing |> 
   st_drop_geometry() |> 
@@ -222,23 +242,23 @@ plot_5_1_1_1_facet <-
   theme_minimal() +
   theme(legend.position = "bottom")
 
-# table_5_2_1_1 <-
+table_5_1_1_1 <-
   housing |> 
   st_drop_geometry() |> 
-  select(GeoUID:type_movable) |> 
-    
-  filter(is.na(zone)) |>
-  mutate("Date Range" = case_when(
-    year >= 2020 ~ "2020-2023",
-    year >= 2016 ~ "2016-2019",
-    year >= 2012 ~ "2012-2015")) |> 
-  summarize(avg = mean(value, na.rm = TRUE) / 100, 
-            .by = c(`Date Range`, quartile)) |> 
-  pivot_wider(names_from = quartile, values_from = avg) |> 
-  mutate(across(-`Date Range`, round, 3)) |>
-  mutate(across(-`Date Range`, scales::percent)) |> 
+  summarize(across(type_total:type_movable, sum, na.rm = TRUE), .by = year) |> 
+  mutate(across(type_single:type_movable, \(x) paste0(
+    scales::comma(x, 10), " (", scales::percent(x / type_total, 0.1), ")"))) |> 
+  select(-type_other_single, -type_movable) |>
+  mutate(yoy = scales::percent(slider::slide_dbl(
+    type_total, \(x) (x[2] - x[1]) / x[1], .before = 1, .complete = TRUE), 0.1), 
+    .after = type_total) |> 
+  mutate(type_total = scales::comma(type_total, 10)) |> 
+  set_names(c("Year", "Total", "Inter-census growth", "Single-detached", 
+              "Semi-detached", "Row", "Duplex"), 
+            "Apartment (fewer than 5 storeys)", 
+            "Apartment (5 or more storeys)") |> 
   gt::gt() |> 
-  gt::tab_header("Vacancy rate for purpose-built rentals by bedroom type")
+  gt::tab_header("Privately occupied dwelling units by type")
 
 map_5_1_1_1_single <-
   housing |> 
@@ -268,5 +288,5 @@ map_5_1_1_1_single <-
 
 # Save --------------------------------------------------------------------
 
-qs::qsavem(plot_5_1_1_1_facet, map_5_1_1_1_single, 
+qs::qsavem(housing, plot_5_1_1_1_facet, table_5_1_1_1, map_5_1_1_1_single, 
            file = "data/section_5_1_1.qsm")

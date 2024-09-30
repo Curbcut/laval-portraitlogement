@@ -13,13 +13,32 @@ qs::qload(here::here("data", "section_5_1_1.qsm"))
 
 # 5.1.1.1 Répartition des logements selon le typologie
 
+```{r housing_figures}
+
+single_shares <- 
+  housing |> 
+  st_drop_geometry() |> 
+  summarize(total = sum(type_total, na.rm = TRUE),
+            single = sum(type_single, na.rm = TRUE),.by = year) |> 
+  mutate(pct = single / total) |> 
+  pull(pct) |> 
+  scales::percent(0.1)
+
+```
+
 _Data source: Canadian Census_
 
-
+From 2001 to 2021, the total number of privately occupied dwelling units in the City of Laval has grown at an average rate of 1.32% per year, almost identical to the Canadian average (1.31%). In all five census periods, single-detached dwellings have represented a plurality of all dwellings, although this share has been declining, from `r single_shares[1]` in 2001 to `r single_shares[5]` in 2021. This decline has been met with an increase in low-rise apartments in the early 2000s and then an increase in medium-rise and high-rise apartments in the last census period. In both proportional and absolute terms, semi-detached and duplex housing types have experienced steady declines, while the count of row houses has grown in absolute terms although it has remained mostly constant as a share of all dwelling units.
 
 ```{r plot_5_1_1_1_facet}
 plot_5_1_1_1_facet
 ```
+
+```{r table_5_1_1_1}
+table_5_1_1_1
+```
+
+The share of all private dwelling units which are single-family homes is lowest in the southern part of the island; in the Marigot, Souvenir-Labelle, Concorde-Bois-de-Boulogne, L'Abord-à-Plouffe, Laval-des-Rapides, and Renaud electoral districts, single-family homes make up fewer than one in four total occupied private dwellings. This proportion is far higher in the west and north-east portions of the city; in the Laval-les-Îles, Auteuil, L'Orée-des-Bois, Saint-François, Sainte-Dorothée, Marc-Aurèle-Fortin, and Val-des-Arbres electoral districts more than six homes in ten are single-detached.
 
 ```{r map_5_1_1_1_single}
 map_5_1_1_1_single
