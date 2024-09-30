@@ -1304,16 +1304,120 @@ gtsave(table_4_1_2_3_1, "outputs/4/table_4_1_2_3_1.png", vwidth = 2400)
 sheet_4_1_2_3_2 <- read_excel("data/4/4_1_2_3_2.xlsx")
 
 data_4_1_2_3_2 <- sheet_4_1_2_3_2 |> #Separate data frame so loading from the spreadsheet constantly isn't needed
-  select(-`Composantes démographiques projetées, scénario Référence A2022, régions administratives du Québec, 2021-2041`,
-         -`...2`, -`...3`, -`...6`, -`...9`, -`...14`, -`...16`, -`...20`, -`...24`, -`...28`, -`...29`, -`...30`,
-         -`...34`, -`...35`, -`...36`, -`...37`, -`...38`, -`...39`)|> 
-  slice(-c(278:370)) |> 
-  slice(-c(6:257)) |> 
-  rename("Année" = `...4`, "Population" = `...5`, "Births" = `...7`, "Fertility Rate" = `...8`,
-         "Deaths" = `...10`, "Life Expectancy (m)" = `...11`, "Life Expectancy (f)" = `...12`,
-         "Life Expectancy (total)" = `...13`, "Natural Change" = `...15`, "International Immigration" = `...17`,
-         "International Emmigration" = `...18`, "International Change" = `...19`)
+  select(-`Composantes démographiques projetées, scénario Référence A2022, régions administratives du Québec, 2021-2041`)|> 
+  slice(-c(279:370)) |> 
+  slice(-c(1:257)) |> 
+  rename(`Année` = `...4`, `Population (n)` = `...5`, `Naissances (n)` = `...7`,
+         `Indice synthétique de fécondité` = `...8`, `Décès (n)` = `...10`,
+         `Espérance de vie - Hommes` = `...11`,
+         `Espérance de vie - Femmes` = `...12`,
+         `Espérance de vie - Total` = `...13`,
+         `Accroissement naturel (n)` = `...15`, `Immigrants (n)` = `...17`,
+         `Émigration (n)` = `...18`, `Solde migratoire international (n)` = `...19`,
+         `Cette année (n)` = `...21`, `L'année prochaine (n)` = `...22`,
+         `Solde résidents non permanents (n)` = `...23`, `Entrants (n)` = `...25`,
+         `Sortants (n)` = `...26`, `Solde migration interprovinciale (n)` = `...27`, `Solde (n)` = `...31`,
+         `Solde interne des naissances (n)` = `...32`, `Solde interne total (n)` = `...33`,
+         `Ajustement et résidu d'arrondissement (n)` = `...37`, `Accroissement total (n)` = `...38`) |> 
+  select(-starts_with("...")) |> 
+  mutate(across(-`Année`, ~ suppressWarnings(as.numeric(.))))
+  
 
+table_4_1_2_3_2 <- data_4_1_2_3_2 |> 
+  gt() |>
+  tab_style(
+    style = cell_fill(color = "#f0f0f0"),
+    locations = cells_body(rows = seq(2, nrow(data_4_1_2_3_2), by = 2))
+  ) |> 
+  tab_style(
+    style = cell_borders(sides = "right", color = "lightgrey", weight = px(2)),
+    locations = cells_body(columns = c(2, 4, 8, 9, 12, 15, 18, 21))
+  ) |> 
+  fmt(columns = c(2:22), fns = convert_number) |>
+  tab_spanner(
+    label = "Fécondité",
+    columns = c(3:4),
+  ) |>
+  tab_spanner(
+    label = "Mortalité",
+    columns = c(5:8)
+  ) |>
+  tab_spanner(
+    label = "Migration internationale",
+    columns = c(10:12)
+  ) |>
+  tab_spanner(
+    label = "Résidents non permanents",
+    columns = c(13:15)
+  ) |>
+  tab_spanner(
+    label = "Migration interprovinciale",
+    columns = c(16:18)
+  ) |>
+  tab_spanner(
+    label = "Migration interne",
+    columns = c(19:21)
+  ) |>
+  tab_style(
+    style = cell_text(font = "KMR Apparat Regular", size = px(13)),
+    locations = cells_body()) |>
+  tab_style(
+    style = cell_text(font = "KMR Apparat Regular", size = px(14)),
+    locations = cells_column_labels()) |>
+  tab_style(
+    style = cell_text(size = px(15)),
+    locations = cells_column_spanners()
+  ) |> 
+  cols_width(
+    c(1) ~ px(60),
+    c(2) ~ px(100),
+    c(4) ~ px(130),
+    c(12) ~ px(120),
+    c(15) ~ px(135),
+    c(18) ~ px(130),
+    c(20) ~ px(125),
+    c(22) ~ px(140),
+    everything() ~ px(110)
+  ) |> 
+  fmt_missing(
+    columns = c(2:22),
+    missing_text = "-"
+  )
+
+data_4_1_2_3_2_plot <- sheet_4_1_2_3_2 |> #Separate data frame so loading from the spreadsheet constantly isn't needed
+  select(-`Composantes démographiques projetées, scénario Référence A2022, régions administratives du Québec, 2021-2041`)|> 
+  slice(-c(279:370)) |> 
+  slice(-c(1:257)) |> 
+  rename(`Année` = `...4`, `Accroissement naturel` = `...15`, `Solde migratoire international` = `...19`,
+         `Solde résidents non permanents` = `...23`, `Solde migration interprovinciale` = `...27`,
+         `Solde interne total` = `...33`) |> 
+  select(-starts_with("...")) |> 
+  mutate(across(-c(`Année`), ~ lag(.))) |> 
+  mutate(across(-`Année`, ~ suppressWarnings(as.numeric(.)))) |> 
+  pivot_longer(
+    cols = -`Année`,
+    names_to = "Change",
+    values_to = "Value"
+  ) |> 
+  filter(is.finite(Value))
+
+plot_4_1_2_3_2 <- ggplot(data_4_1_2_3_2_plot, aes(x = `Année`, y = Value, fill = Change)) +
+  geom_bar(stat = "identity") +
+  labs(title = "", x = "", y = "Variation nette de la population par\nrapport à l'année précédente (n)") +
+  scale_fill_manual(values = c(
+    "Accroissement naturel" = "#A3B0D1",
+    "Solde migratoire international" = "#73AD80",
+    "Solde résidents non permanents" = "#E08565",
+    "Solde migration interprovinciale" = "#9E9090", 
+    "Solde interne total" = "#F5D574"
+  )) +
+  scale_y_continuous(labels = function(x) convert_number(x)) +
+  graph_theme +
+  theme(axis.text.x = element_text(angle = 315, hjust = 1)) +
+  guides(fill = guide_legend(nrow = 2))
+
+ggsave(plot = plot_4_1_2_3_2, "outputs/4/plot_4_1_2_3_2.pdf", width = 7.5, height = 6)
+gtsave(table_4_1_2_3_2, "outputs/4/table_4_1_2_3_2.png", vwidth = 3200)
 # R Markdown --------------------------------------------------------------
 qs::qsavem(plot_4_1_1_1, map_total_hh, map_owner_hh, map_tenant_hh, table_4_1_1_1,
            owner_count_diff, tenant_count_diff, owner_growth, tenant_growth,
@@ -1322,5 +1426,5 @@ qs::qsavem(plot_4_1_1_1, map_total_hh, map_owner_hh, map_tenant_hh, table_4_1_1_
            table_4_1_1_3_comp_ed, plot_4_1_1_4, plot_4_1_1_5, renter_15, renter_25, plot_4_1_1_6,
            table_4_1_1_6, sfh_laval, sfh_owner, apt_laval, diff_2011_2021, diff_2021_2041,
            year_2011, year_2021, year_2028, year_2032, year_2036, year_2041, plot_4_1_2_1,
-           table_4_1_2_3_1, change_59, change_84, change_85,
+           table_4_1_2_3_1, change_59, change_84, change_85, plot_4_1_2_3_2, table_4_1_2_3_2,
            file = "data/section_4_1.qsm")

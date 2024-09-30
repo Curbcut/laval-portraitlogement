@@ -136,3 +136,16 @@ While Laval as a whole is projected to grow from 2021 to 2041, this growth is no
 ```{r table_4_1_2_3_1, include=TRUE, fig.cap="Projections des ménages par groupe d'âge de 2021 à 2041", fig.align = 'center'}
 table_4_1_2_3_1
 ```
+
+#### Composantes de la croissance démographique annuelle (fécondité, mortalité, immigration)
+_Source: ISQ 2022
+
+As mentioned in previous sections, Laval is projected to have an increase in population from 2021 to 2041. However, as shown in `r plot_4_1_2_3_2` and `r table_4_1_2_3_2`, Laval is already experiencing a decline of residents due to inter-provincial and internal migration, with growth in Laval being driven by international immigration, births outpacing deaths, and non-permanent resident growth. However, beginning in 2031, Laval is expected to no longer have growth from permanent residents, and beginning in 2035, deaths in Laval begins outpacing births. From that point onward, growth in Laval is projected to be driven by only international immigration.
+
+```{r plot_4_1_2_3_2, include=TRUE, fig.cap="Évolution nette de la population 2021-2041", fig.align = 'center'}
+plot_4_1_2_3_2
+```
+
+```{r table_4_1_2_3_2, include=TRUE, fig.cap="Composantes de la croissance démographique annuelle 2021-2041", fig.align = 'center'}
+table_4_1_2_3_2
+```
