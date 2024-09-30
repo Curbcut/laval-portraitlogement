@@ -9,15 +9,15 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 qs::qload(here::here("data", "section_5_1_1.qsm"))
 ```
 
-# 5.1.1 Répartition des logements selon le typologie
+# 5.1.1.1 Répartition des logements selon le typologie
 
-# 5.1.2 Répartition des logements selon le mode d'occupation
+# 5.1.1.2 Répartition des logements selon le mode d'occupation
 
-# 5.1.3 Répartition des logements selon le nombre de chambres à coucher
+# 5.1.1.3 Répartition des logements selon le nombre de chambres à coucher
 
-# 5.1.4 Répartition des logements selon l'âge du cadre bâti
+# 5.1.1.4 Répartition des logements selon l'âge du cadre bâti
 
-# 5.1.5 Répartition des logements selon le type de parc : privé lucratif, non lucratif (privé ou public)
+# 5.1.1.5 Répartition des logements selon le type de parc : privé lucratif, non lucratif (privé ou public)
 
 
 
