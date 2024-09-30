@@ -1,4 +1,46 @@
+#### 5.2.1 #####################################################################
+
 source("R/utils/startup.R")
+
+# Process CMHC zones ------------------------------------------------------
+
+qs::qload("data/cmhc_shp.qsm")
+
+cmhc_zones <-
+  cmhc_nbhd_2022 |> 
+  filter(METCODE == "1060",
+         NBHDCODE %in% c("370", "380", "390", "400", "410", "420", "430", "440", 
+                         "450", "460", "470", "480")) |> 
+  summarize(geometry = st_union(geometry), .by = ZONECODE) |> 
+  mutate(zone = case_when(
+    ZONECODE == 19 ~ "Chomedey/Sainte-Dorothée",
+    ZONECODE == 20 ~ "Laval-des-Rapides",
+    ZONECODE == 21 ~ "Pont-Viau",
+    ZONECODE == 22 ~ "St-François/St-Vincent/Duvernay",
+    ZONECODE == 23 ~ "Vimont/Auteuil",
+    ZONECODE == 24 ~ "Laval-Ouest/Fabreville/Ste-Rose"), .after = ZONECODE) |> 
+  rename(zone_code = ZONECODE) |> 
+  st_transform(32618)
+
+# Get 2021 dwelling counts
+dwellings <- 
+  get_census("CA21", regions = list(CSD = 2465005), level = "DB", 
+             geo_format = "sf") |> 
+  as_tibble() |> 
+  st_as_sf() |> 
+  select(dwellings = Dwellings, geometry) |> 
+  st_transform(32618)
+
+# Add to cmhc_zones
+cmhc_zones <- 
+  cmhc_zones |> 
+  mutate(dwellings = 
+           sf::st_interpolate_aw(dwellings, cmhc_zones, extensive = TRUE) |> 
+           pull(dwellings))
+
+rm(cmhc_nbhd_2016, cmhc_nbhd_2017, cmhc_nbhd_2018, cmhc_nbhd_2019,
+   cmhc_nbhd_2020, cmhc_nbhd_2021, cmhc_nbhd_2022, dwellings)
+
 
 # 5.2.1.1 -----------------------------------------------------------------
 
@@ -201,6 +243,27 @@ plot_5_2_1_6_facet <-
   theme(legend.position = "bottom") +
   graph_theme
 
+plot_5_2_1_6_change_facet <-
+  rent_by_bedroom |> 
+    arrange(zone, bedroom, year) |> 
+  mutate(value = slider::slide_dbl(value, \(x) x[2] - x[1], .before = 1, 
+                                   .complete = TRUE),
+         .by = zone, bedroom) |> 
+  filter(is.na(zone)) |>
+  filter(year >= 1991) |> 
+  ggplot(aes(year, value, group = bedroom)) +
+  geom_line() +
+  gghighlight::gghighlight(use_direct_label = FALSE) +
+  scale_y_continuous("Average monthly rent", labels = scales::dollar) +
+  scale_x_continuous("Year") +
+  facet_wrap(~bedroom) +
+  ggtitle(
+      "Year-over-year change in average monthly rent for purpose-built rentals, by bedroom type") +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  graph_theme
+
+
 # Table with 5-year aggregations
 table_5_2_1_6_five_year <- 
   rent_by_bedroom |> 
@@ -235,6 +298,95 @@ map_5_2_1_6_annual <-
   ggplot(aes(fill = avg)) +
   geom_sf(colour = "white", lwd = 0.5) +
   facet_grid(rows = vars(bedroom), cols = vars(date)) +
+  scale_fill_viridis_b("Average monthly rent", labels = scales::dollar, 
+                       n.breaks = 6) +
+  theme_void() +
+  theme(legend.position = "bottom",
+        legend.key.width = unit(60, "points"))
+
+rent_by_construction <- 
+  map(1990:2023, \(x) {
+    get_cmhc(
+      survey = "Rms",
+      series = "Average Rent", 
+      dimension = "Year of Construction",
+      breakdown = "Survey Zones", 
+      geo_uid = "2465005",
+      year = x)}) |> 
+  bind_rows() |> 
+  set_names(c("zone", "construction", "value", "quality", "date", "year", 
+              "survey", "series"))
+
+rent_by_construction_z <- 
+  map(1990:2023, \(x) {
+    get_cmhc(
+      survey = "Rms",
+      series = "Average Rent", 
+      dimension = "Year of Construction",
+      breakdown = "Survey Zones", 
+      geo_uid = "24462",
+      year = x)}) |> 
+  bind_rows() |> 
+  set_names(c("zone", "construction", "value", "quality", "geog", "date", "year",
+              "survey", "series")) |> 
+  select(-geog) |> 
+  filter(zone %in% cmhc_zones$zone)
+
+rent_by_construction <- 
+  rent_by_construction |> 
+  bind_rows(rent_by_construction_z)
+
+plot_5_2_1_6_construction_facet <-
+  rent_by_construction |> 
+  filter(is.na(zone), !is.na(value)) |>
+  ggplot(aes(year, value, group = construction)) +
+  geom_line() +
+  gghighlight::gghighlight(use_direct_label = FALSE) +
+  scale_y_continuous("Average monthly rent", labels = scales::dollar) +
+  scale_x_continuous("Year") +
+  facet_wrap(~construction) +
+  ggtitle(
+    "Average monthly rent for purpose-built rentals, by year of construction") +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  graph_theme
+
+# Table with 5-year aggregations
+table_5_2_1_6_construction_five_year <- 
+  rent_by_construction |> 
+  filter(is.na(zone), !is.na(value)) |>
+  mutate("Date Range" = case_when(
+    year >= 2019 ~ "2019-2023",
+    year >= 2014 ~ "2014-2018",
+    year >= 2009 ~ "2009-2013",
+    year >= 2004 ~ "2004-2008",
+    year >= 1999 ~ "1999-2003",
+    year >= 1994 ~ "1994-1998",
+    year >= 1990 ~ "1990-1993")) |> 
+  summarize(avg = mean(value), .by = c(`Date Range`, construction)) |> 
+  pivot_wider(names_from = construction, values_from = avg) |> 
+  relocate(Total, .after = `Date Range`) |> 
+  mutate(across(-`Date Range`, round)) |> 
+  mutate(across(-`Date Range`, scales::dollar)) |> 
+  gt::gt() |> 
+  gt::tab_header(
+    "Average monthly rent for purpose-built rentals by year of construction")
+
+# Map of average rents by five-year chunk
+map_5_2_1_6_construction_annual <-
+  rent_by_construction |> 
+  filter(!is.na(zone)) |>
+  mutate(date = case_when(
+    year >= 2019 ~ "2019-2023",
+    year >= 2014 ~ "2014-2018",
+    year >= 2010 ~ "2009-2013")) |> 
+  summarize(avg = mean(value, na.rm = TRUE), 
+            .by = c(date, zone, construction)) |> 
+  inner_join(cmhc_zones) |> 
+  st_as_sf() |> 
+  ggplot(aes(fill = avg)) +
+  geom_sf(colour = "white", lwd = 0.5) +
+  facet_grid(rows = vars(construction), cols = vars(date)) +
   scale_fill_viridis_b("Average monthly rent", labels = scales::dollar, 
                        n.breaks = 6) +
   theme_void() +
@@ -491,7 +643,7 @@ plot_6_1_12_year_property <-
   ggplot(aes(year_built, value, size = n, fill = type, 
              colour = after_scale(alpha(fill, 0.6)))) +
   geom_point() +
-  gghighlight() +
+  gghighlight::gghighlight() +
   facet_wrap(~type) +
   scale_y_continuous("Assessed value", labels = scales::dollar) +
   scale_x_continuous("Year of construction") +
@@ -509,7 +661,7 @@ plot_6_1_12_year_unit <-
   ggplot(aes(year_built, value, size = n, fill = type, 
              colour = after_scale(alpha(fill, 0.6)))) +
   geom_point() +
-  gghighlight() +
+  gghighlight::gghighlight() +
   facet_wrap(~type) +
   scale_y_continuous("Assessed value", labels = scales::dollar) +
   scale_x_continuous("Year of construction") +
@@ -519,13 +671,18 @@ plot_6_1_12_year_unit <-
   theme(legend.position = "bottom")
 
 
-
 # Save --------------------------------------------------------------------
 
-qs::qsavem(prix_sur_marche_table, plot_5_2_1_6_facet, table_5_2_1_6_five_year,
-           map_5_2_1_6_annual, plot_5_2_1_7_facet, table_5_2_1_7_five_year,
+qs::qsavem(#prix_sur_marche_table, 
+           rent_by_bedroom, plot_5_2_1_6_facet, plot_5_2_1_6_change_facet,
+           table_5_2_1_6_five_year,
+           map_5_2_1_6_annual, rent_by_construction,
+           plot_5_2_1_6_construction_facet, 
+           table_5_2_1_6_construction_five_year, 
+           map_5_2_1_6_construction_annual, plot_5_2_1_7_facet, 
+           table_5_2_1_7_five_year,
            map_5_2_1_7_annual, plot_5_2_1_7_rent_facet, 
            table_5_2_1_7_rent_five_year, map_5_2_1_7_rent_annual, 
            uef, map_6_1_12, plot_6_1_12_boxplot,
            plot_6_1_12_year_property, plot_6_1_12_year_unit, 
-           file = "data/5_2_1.qsm")
+           file = "data/section_5_2_1.qsm")
