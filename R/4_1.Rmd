@@ -45,3 +45,94 @@ map_owner_hh
 ```{r map_tenant_hh, include=TRUE, fig.cap="Ménages locataires par district électorale", fig.align = 'center'}
 map_tenant_hh
 ```
+
+#### Catégorie de revenu et mode d'occupation
+_Source: Crosstab
+
+While in 2021, the most of the households present in Laval were owner households, the majority of households making under 60 000 \$ were tenant households, with over 90 % of households making under 20 000 \$ renting, as shown in `r plot_4_1_1_2` and `r table_4_1_1_2_2`. Conversely, the majority of Laval households making at least 60 000 \$ a year were owner households, with over 95 % of households making more than 125 000 \$.
+
+```{r plot_4_1_1_2, include=TRUE, fig.cap="Type de ménage par tranche de revenu", fig.align = 'center'}
+plot_4_1_1_2
+```
+
+```{r table_4_1_1_2_2, include=TRUE, fig.cap="Ménages propriétaires par district électorale. Remarque : les pourcentages concernent le support lui-même", fig.align = 'center'}
+table_4_1_1_2_2
+```
+
+When looking at the data at the electoral district level, the general trend of household ownership remains the same, the higher a household's income is, the more likely they are to own the home they live in. However, the income threshold in which form of household ownership shifts based on the electoral district. For example, as seen in `r table_4_1_1_2`, electoral districts such as Sainte-Rose and Marc-Aurèle-Fortin saw the majority of households in lower income brackets live in owner households compared to the city, with some districts such as Auteuil seeing the majority of households living in their own home at all income levels. Conversely, districts such as Laval-des-Rapides saw more households renting in higher income brackets compared to city-wide statistics, seeing a majority of tenant households in households earning under 80 000 \$.
+
+```{r table_4_1_1_2, include=TRUE, fig.cap="Ménages locataires par district électorale. Remarque : les pourcentages concernent le support lui-même", fig.align = 'center'}
+table_4_1_1_2
+```
+
+#### Type de ménage (taille et composition) selon mode d'occupation
+_Source: Crosstab
+
+Shown in `r plot_4_1_1_3_comp` and `r table_4_1_1_3_comp`, the majority of households that are composed of census or multi-generational families lived in owner households. This is especially true for couples with children and multi-generational households, which saw 85,5 % and 97,2 % of their households composed of owner households, respectively. Conversely, non-census family households composing of one or more people had more people renting than owning their home. While single-person households saw a relatively even amount of people owning or renting their home, at 44,0 % and 56,0 % respectively, non-census family households composed of two people or more saw 88,9 % of households renting.
+
+```{r plot_4_1_1_3_comp, include=TRUE, fig.cap="Nombre de ménages par composition", fig.align = 'center'}
+plot_4_1_1_3_comp
+```
+
+```{r table_4_1_1_3_comp, include=TRUE, fig.cap="Nombre de ménages par composition et type. Remarque : les pourcentages sont exprimés selon la composition du ménage", fig.align = 'center'}
+table_4_1_1_3_comp
+```
+
+The distribution of these household compositions are not even across Laval, however. For example, while couples with infants make up the plurality of households for the entire city, such as in districts such as Sainte-Dorothée and Saint-Martin, they don't hold true in other districts such as Laval-des-Rapides and Souvenir-Labelle, which instead saw more single-person households than any other type `r table_4_1_1_3_comp_ed`.
+
+```{r table_4_1_1_3_comp_ed, include=TRUE, fig.cap="Composition des ménages par district électorale. Remarque : les pourcentages concernent chaque district électorale", fig.align = 'center'}
+table_4_1_1_3_comp_ed
+```
+
+#### Statut d'immigrant selon mode d'occupation
+_Source: 2016 Census
+
+According to the latest data from the 2016 census and the 2022 version of "Portrait de l'habitation dans le grand Montréal," the majority households of all immigrant statuses are tenant households, with the proportion reaching as high as 93,0 % for non-permanent residents `r plot_4_1_1_4`. One exception to this are households of immigrants who arrived before 2006, which saw a larger amount of owner households, albeit only slightly higher, than tenant households, at 51,0 % and 49,0 % of households respectively.
+
+```{r plot_4_1_1_4, include=TRUE, fig.cap="Proportion des ménages selon le statut d'immigrant", fig.align = 'center'}
+plot_4_1_1_4
+```
+
+#### Âge du principal soutien du ménage selon mote d'occupation
+_Source: 2021 Census
+
+In Laval, the vast majority of households where the primary earner for the household is between 15 and 24 years old are tenant households, making up `r renter_15` of households for that age group. This trend continues for the next age group, where the primary earner for the household is between 25 and 34 years old, in which there are more tenant households than owner households, except that the difference between the two are significantly smaller, with tenant households making up only `r renter_25` of households in that age group.
+
+After the 25 to 34 year old age group, owner households make up a higher proportion of households for every age group afterward, as seen in `r plot_4_1_1_5`, peaking at `r owner_45` before the difference between the two types of households begins shrinking again.
+
+```{r plot_4_1_1_5, include=TRUE, fig.cap="Âge du principal soutien du ménage selon mote d'occupation", fig.align = 'center'}
+plot_4_1_1_5
+```
+
+#### Typologie (unifamilial, multi logement, etc.) selon mode d'occupation
+_Source: 2021 Census
+
+As of the 2021 census, `r sfh_laval` of all Laval households live in single-detached houses, with households in apartment buildings that are less than 5 stories tall following closely behind at `r apt_laval`, shown in `r table_4_1_1_6`. The mode of occupation for each kind of housing typology differs significantly proportionately, however. As `r plot_4_1_1_6` and the aforementioned table shows, the vast majority (`r sfh_owner`) of owner households live in single-detached housing, while tenant households primarily lived in apartment buildings, especially those that were less than 5 stories tall.
+
+```{r plot_4_1_1_6, include=TRUE, fig.cap="Typologie de l'habitat et mode d'occupation.", fig.align = 'center'}
+plot_4_1_1_6
+```
+
+```{r table_4_1_1_6, include=TRUE, fig.cap="Typologie des logements et mode d'occupation. Note : Les pourcentages sont basés sur le total pour ce mode d'occupation.", fig.align = 'center'}
+table_4_1_1_6
+```
+
+### Projection
+
+#### Projection des ménages
+_Source: 2011-2021 Census and ISQ
+
+From 2011 to 2021, the city of Laval has seen the number of households grow `r diff_2011_2021`, from `r year_2011` to `r year_2021`. In the next 20 years, Laval is expected to see the growth of households slow down, seeing only `r diff_2021_2041` growth in the number of households, to `r year_2041` households in 2041. The city is expected to hit `r year_2028` households in 2028, the first time it will have over 180 000 households, with the city seeing `r year_2032` and `r year_2036` households in 2032 and 2036 respectively.
+
+```{r plot_4_1_2_1, include=TRUE, fig.cap="Projection des ménages de 2021 à 2041.", fig.align = 'center'}
+plot_4_1_2_1
+```
+
+#### Croissance prévue des ménages
+_Source: ISQ
+
+While Laval as a whole is projected to grow from 2021 to 2041, this growth is not evenly spread by "age group of the reference-person". While some age groups, such as the 20-24, 25-29, and 45-49 year cohort all see growth under 10 %, some groups, such as 80-84 and 85+ year cohort, all see significant amounts of growth, doubling in population at `r change_84` and `r change_85` respectively, which is representative of Laval's aging population. Conversely, some groups, such as the 35-39 and 50-54 year cohorts for example, see some level of decline in their population. However, the 55-59 year cohort will see the largest decline out of all age groups, with the age group expecting to decline `r change_59`.
+
+```{r table_4_1_2_3_1, include=TRUE, fig.cap="Projections des ménages par groupe d'âge de 2021 à 2041", fig.align = 'center'}
+table_4_1_2_3_1
+```

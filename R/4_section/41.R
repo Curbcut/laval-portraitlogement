@@ -296,44 +296,213 @@ plot_4_1_1_2 <- ggplot(data_4_1_1_2, aes(x = income, y = count, fill = type)) +
     graph_theme +
     theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-map_data_4_1_1_2_pre <- crosstab_get(mode_occupation = mode_occupation, revenu = c(medrev = "Revenu total médian ($)")) |> 
-  rename("GeoUID" = "DA_ID")
+data_4_1_1_2_2_table <- data_4_1_1_2 |>
+  pivot_wider(names_from = income, values_from = count) |>
+  mutate("< 19 999 $ (n)" = `< 19 999 $`,
+         "< 19 999 $ (%)" = `< 19 999 $` / sum(`< 19 999 $`, na.rm = TRUE),
+         "20 - 39 999 $ (n)" = `20 - 39 999 $`,
+         "20 - 39 999 $ (%)" = `20 - 39 999 $` / sum(`20 - 39 999 $`, na.rm = TRUE),
+         "40 - 59 999 $ (n)" = `40 - 59 999 $`,
+         "40 - 59 999 $ (%)" = `40 - 59 999 $` / sum(`40 - 59 999 $`, na.rm = TRUE),
+         "60 - 79 999 $ (n)" = `60 - 79 999 $`,
+         "60 - 79 999 $ (%)" = `60 - 79 999 $` / sum(`60 - 79 999 $`, na.rm = TRUE),
+         "80 - 99 999 $ (n)" = `80 - 99 999 $`,
+         "80 - 99 999 $ (%)" = `80 - 99 999 $` / sum(`80 - 99 999 $`, na.rm = TRUE),
+         "100 - 124 999 $ (n)" = `100 - 124 999 $`,
+         "100 - 124 999 $ (%)" = `100 - 124 999 $` / sum(`100 - 124 999 $`, na.rm = TRUE),
+         "> 125 000 $ (n)" = `> 125 000 $`,
+         "> 125 000 $ (%)" = `> 125 000 $` / sum(`> 125 000 $`, na.rm = TRUE)) |>
+  select(type, "< 19 999 $ (n)", "< 19 999 $ (%)", "20 - 39 999 $ (n)",
+         "20 - 39 999 $ (%)", "40 - 59 999 $ (n)", "40 - 59 999 $ (%)",
+         "60 - 79 999 $ (n)", "60 - 79 999 $ (%)", "80 - 99 999 $ (n)",
+         "80 - 99 999 $ (%)","100 - 124 999 $ (n)", "100 - 124 999 $ (%)",
+         "> 125 000 $ (n)", "> 125 000 $ (%)") |>
+  rename("Type de ménage" = type)
 
-map_data_4_1_1_2 <- full_join(laval_da, map_data_4_1_1_2_pre, by = "GeoUID") |> 
-  drop_na()
+table_4_1_1_2_2 <- data_4_1_1_2_2_table |>
+  gt() |>
+  data_color(
+    columns = c(3,5,7,9,11,13,15),
+    colors = scales::col_numeric(
+      palette = c("white", color_theme("purpletransport")),
+      domain = NULL
+    )
+  ) |>
+  fmt(columns = c(2,4,6,8,10,12,14), fns = convert_number) |>
+  fmt(columns = c(3,5,7,9,11,13,15), fns = convert_pct) |>
+  tab_spanner(
+    label = "Tranche de revenu",
+    columns = c(3:15)
+  ) |>
+  tab_style(
+    style = cell_text(font = "KMR Apparat Regular", size = px(13)),
+    locations = cells_body()) |>
+  tab_style(
+    style = cell_text(font = "KMR Apparat Regular"),
+    locations = cells_column_labels()) |>
+  tab_style(
+    style = cell_text(size = px(15)),
+    locations = cells_column_spanners(spanners = "Tranche de revenu")
+  ) |>
+  tab_options(
+    table.font.size = 13,
+    table.width = px(6 * 208)
+  ) |>
+  cols_width(
+    columns = c(1) ~ px(70),
+    everything() ~ px(72)
+  )
+  
 
-#list(classInt::classIntervals(map_data_4_1_1_2$owner_medrev, n = 5, style = "fisher")$brks)
-`4_1_1_2_owner_breaks` <- c(-Inf, 21000, 83000, 107500, 137500, Inf)
-`4_1_1_2_owner_breaks_labels` <- c("< 21000", "21000 - 83000", "83000 - 107500", "107500 - 137500", "> 137500")
-#list(classInt::classIntervals(map_data_4_1_1_2$tenant_medrev, n = 5, style = "fisher")$brks)
-`4_1_1_2_tenant_breaks` <- c(-Inf, 11000, 43000, 56000, 70000, Inf)
-`4_1_1_2_tenant_breaks_labels` <- c("< 11000", "11000 - 43000", "43000 - 56000", "56000 - 70000", "> 70000")
+data_4_1_1_2_table_pre <- crosstab_get(mode_occupation = mode_occupation, revenu = revenu) |> 
+  mutate(owner_20 = owner_none + owner_10 + owner_2,
+         tenant_20 = tenant_none + tenant_10 + tenant_2) |> 
+  select(-owner_none, -tenant_none, -owner_10, -tenant_10, -owner_2, -tenant_2) |> 
+  rename("GeoUID" = "DA_ID") |> 
+  full_join(laval_da, by = "GeoUID") |> 
+  st_as_sf() |> 
+  st_transform(crs = 32618)
 
-map_data_4_1_1_2 <- map_data_4_1_1_2 |> 
-  mutate("owner_quant" = cut(owner_medrev, breaks = `4_1_1_2_owner_breaks`, include.lowest = TRUE, labels = `4_1_1_2_owner_breaks_labels`),
-         "tenant_quant" = cut(tenant_medrev, breaks = `4_1_1_2_tenant_breaks`, include.lowest = TRUE, labels = `4_1_1_2_tenant_breaks_labels`))
+data_4_1_1_2_table <- interpolate(data_4_1_1_2_table_pre, additive_vars = c("owner_20", "tenant_20", "owner_40", "tenant_40",
+                                             "owner_60", "tenant_60", "owner_80", "tenant_80",
+                                             "owner_100", "tenant_100", "owner_124", "tenant_124",
+                                             "owner_125", "tenant_125")) |> 
+  mutate(across(c("owner_20", "tenant_20", "owner_40", "tenant_40",
+                  "owner_60", "tenant_60", "owner_80", "tenant_80",
+                  "owner_100", "tenant_100", "owner_124", "tenant_124",
+                  "owner_125", "tenant_125"), round)) |> 
+  st_drop_geometry() |> 
+  select(-ID) |> 
+  pivot_longer(
+    cols = starts_with("owner") | starts_with("tenant"), 
+    names_to = c("type", "income"),
+    names_pattern = "(owner|tenant)_(.*)",
+    values_to = "count"
+  ) |> 
+  pivot_wider(names_from = income, values_from = count) |> 
+  mutate(total = `20` + `40` + `60` + `80` + `100` + `124` + `125`) |> 
+  mutate(
+    "< 19 999 $ (n)" = `20`,
+    "20 - 39 999 $ (n)" = `40`,
+    "40 - 59 999 $ (n)" = `60`,
+    "60 - 79 999 $ (n)" = `80`,
+    "80 - 99 999 $ (n)" = `100`,
+    "100 - 124 999 $ (n)" = `124`,
+    "> 125 000 $ (n)" = `125`,
+  ) |> 
+  group_by(NOM) |>
+  mutate(
+    "< 19 999 $ (%)" = `< 19 999 $ (n)` / sum(`< 19 999 $ (n)`, na.rm = TRUE),
+    "20 - 39 999 $ (%)" = `20 - 39 999 $ (n)` / sum(`20 - 39 999 $ (n)`, na.rm = TRUE),
+    "40 - 59 999 $ (%)" = `40 - 59 999 $ (n)` / sum(`40 - 59 999 $ (n)`, na.rm = TRUE),
+    "60 - 79 999 $ (%)" = `60 - 79 999 $ (n)` / sum(`60 - 79 999 $ (n)`, na.rm = TRUE),
+    "80 - 99 999 $ (%)" = `80 - 99 999 $ (n)` / sum(`80 - 99 999 $ (n)`, na.rm = TRUE),
+    "100 - 124 999 $ (%)" = `100 - 124 999 $ (n)` / sum(`100 - 124 999 $ (n)`, na.rm = TRUE),
+    "> 125 000 $ (%)" = `> 125 000 $ (n)` / sum(`> 125 000 $ (n)`, na.rm = TRUE)
+  ) |>
+  ungroup() |>
+  mutate(across(where(is.numeric), ~ ifelse(is.nan(.), 0, .))) |>
+  mutate(type = case_when(
+    type == "owner" ~ "Propriétaire",
+    type == "tenant" ~ "Locataire",
+    TRUE ~ type
+  )) |> 
+  select(NOM, type, total, "< 19 999 $ (n)", "< 19 999 $ (%)", "20 - 39 999 $ (n)",
+         "20 - 39 999 $ (%)", "40 - 59 999 $ (n)", "40 - 59 999 $ (%)", 
+         "60 - 79 999 $ (n)", "60 - 79 999 $ (%)", "80 - 99 999 $ (n)",
+         "80 - 99 999 $ (%)","100 - 124 999 $ (n)", "100 - 124 999 $ (%)", 
+         "> 125 000 $ (n)", "> 125 000 $ (%)") |> 
+  rename("Type de ménage" = type,
+         "Nombre total de ménages (n)" = total,
+         "District électorale" = NOM)
 
-map_4_1_1_2_owner <- ggplot(data = map_data_4_1_1_2) +
-  gg_cc_tiles +
-  geom_sf(aes(geometry = geometry, fill = `owner_quant`), alpha = 0.9, color = "transparent") +
-  scale_fill_manual(values = curbcut_scale,
-                      name = "Revenu médian des ménages propriétaires ($)") +
-  gg_cc_theme +
-  guides(fill = guide_legend(title.position = "top", title.hjust = 0.5))
+table_4_1_1_2 <- data_4_1_1_2_table |> 
+  gt() |> 
+  tab_style(
+    style = cell_fill(color = "#f0f0f0"),
+    locations = cells_body(
+      rows = seq(2, nrow(data_4_1_1_2_table), by = 2)
+    )
+  ) |> 
+  tab_style(
+    style = list(
+      cell_fill(color = "#f0f0f0"),
+      cell_text(color = "transparent")
+    ),
+    locations = cells_body(
+      columns = 1,
+      rows = seq(2, nrow(data_4_1_1_2_table), by = 2) # Every other row
+    )
+  ) |> 
+  data_color(
+    columns = c(5,7,9,11,13,15,17),
+    colors = scales::col_numeric(
+      palette = c("white", color_theme("purpletransport")),
+      domain = NULL
+    )) |> 
+  fmt(columns = c(3,4,6,8,10,12,14,16), fns = convert_number) |> 
+  fmt(columns = c(5,7,9,11,13,15,17), fns = convert_pct) |> 
+  tab_spanner(
+    label = "Tranche de revenu",
+    columns = c(4:17)
+  ) |> 
+  tab_style(
+    style = cell_text(font = "KMR Apparat Regular", size = px(13)),
+    locations = cells_body()) |> 
+  tab_style(
+    style = cell_text(font = "KMR Apparat Regular"),
+    locations = cells_column_labels()) |> 
+  tab_style(
+    style = cell_text(size = px(14)),
+    locations = cells_column_spanners(spanners = "Tranche de revenu")
+  ) |> 
+  tab_options(
+    table.font.size = 13,
+    table.width = px(6 * 208)
+  ) |> 
+  cols_width(
+    columns = c(1) ~ px(100),
+    columns = c(3) ~ px(102),
+    everything() ~ px(72)
+  )
 
-map_4_1_1_2_tenant <- ggplot(data = map_data_4_1_1_2) +
-  gg_cc_tiles +
-  geom_sf(aes(geometry = geometry, fill = `tenant_quant`), alpha = 0.9, color = "transparent") +
-  scale_fill_manual(values = curbcut_scale,
-                    name = "Revenu médian des ménages locataires ($)") +
-  gg_cc_theme +
-  guides(fill = guide_legend(title.position = "top", title.hjust = 0.5))
+# map_data_4_1_1_2_pre <- crosstab_get(mode_occupation = mode_occupation, revenu = c(medrev = "Revenu total médian ($)")) |> 
+#   rename("GeoUID" = "DA_ID")
+# 
+# map_data_4_1_1_2 <- full_join(laval_da, map_data_4_1_1_2_pre, by = "GeoUID") |> 
+#   drop_na()
+# 
+# #list(classInt::classIntervals(map_data_4_1_1_2$owner_medrev, n = 5, style = "fisher")$brks)
+# `4_1_1_2_owner_breaks` <- c(-Inf, 21000, 83000, 107500, 137500, Inf)
+# `4_1_1_2_owner_breaks_labels` <- c("< 21000", "21000 - 83000", "83000 - 107500", "107500 - 137500", "> 137500")
+# #list(classInt::classIntervals(map_data_4_1_1_2$tenant_medrev, n = 5, style = "fisher")$brks)
+# `4_1_1_2_tenant_breaks` <- c(-Inf, 11000, 43000, 56000, 70000, Inf)
+# `4_1_1_2_tenant_breaks_labels` <- c("< 11000", "11000 - 43000", "43000 - 56000", "56000 - 70000", "> 70000")
+# 
+# map_data_4_1_1_2 <- map_data_4_1_1_2 |> 
+#   mutate("owner_quant" = cut(owner_medrev, breaks = `4_1_1_2_owner_breaks`, include.lowest = TRUE, labels = `4_1_1_2_owner_breaks_labels`),
+#          "tenant_quant" = cut(tenant_medrev, breaks = `4_1_1_2_tenant_breaks`, include.lowest = TRUE, labels = `4_1_1_2_tenant_breaks_labels`))
+# 
+# map_4_1_1_2_owner <- ggplot(data = map_data_4_1_1_2) +
+#   gg_cc_tiles +
+#   geom_sf(aes(geometry = geometry, fill = `owner_quant`), alpha = 0.9, color = "transparent") +
+#   scale_fill_manual(values = curbcut_scale,
+#                       name = "Revenu médian des ménages propriétaires ($)") +
+#   gg_cc_theme +
+#   guides(fill = guide_legend(title.position = "top", title.hjust = 0.5))
+# 
+# map_4_1_1_2_tenant <- ggplot(data = map_data_4_1_1_2) +
+#   gg_cc_tiles +
+#   geom_sf(aes(geometry = geometry, fill = `tenant_quant`), alpha = 0.9, color = "transparent") +
+#   scale_fill_manual(values = curbcut_scale,
+#                     name = "Revenu médian des ménages locataires ($)") +
+#   gg_cc_theme +
+#   guides(fill = guide_legend(title.position = "top", title.hjust = 0.5))
 
 #Saving the visuals as images
-ggsave("outputs/4/plot_4_1_1_2.png", plot = plot_4_1_1_2, width = 800/72, height = 600/72, dpi = 72)
-ggsave("outputs/4/map_4_1_1_2_owner.png", plot = map_4_1_1_2_owner, width = 800/72, height = 600/72, dpi = 72)
-ggsave("outputs/4/map_4_1_1_2_tenant.png", plot = map_4_1_1_2_tenant, width = 800/72, height = 600/72, dpi = 72)
-
+ggsave(plot = plot_4_1_1_2, "outputs/4/plot_4_1_1_2.pdf", width = 7.5, height = 6)
+gtsave(table_4_1_1_2_2, "outputs/4/table_4_1_1_2_2.png", vwidth = 2400)
+gtsave(table_4_1_1_2, "outputs/4/table_4_1_1_2.png", vwidth = 2400)
 #Data frame for the plot
 # data_4_1_2 <- read_excel("data/4/mode_occupation_revenu_SR.xlsx") |> #Edited version of the spreadsheet
 #   select(-GeoUID) |> 
@@ -488,6 +657,11 @@ ggsave("outputs/4/map_4_1_1_2_tenant.png", plot = map_4_1_1_2_tenant, width = 80
 # ggsave("outputs/4/map_4_1_2_125000.png", plot = map_4_1_2_125000, width = 800/72, height = 600/72, dpi = 72)
 
 # 4.1.1.3 Type de ménage (taille et composition) selon mode d'occupation --------
+#Size cannot be cross-tabbed at the moment, to be looked at in the future
+# hh_size <- c("hhsize" = "Nombre de personnes dans les ménages privés")
+# 
+# data_4_1_1_3_size <- crosstab_get(mode_occupation = mode_occupation, characteristic = hh_size)
+
 composition <- c("wo_kids"= "  Ménage comptant une seule famille de recensement, sans personnes additionnelles : couple sans enfants",
                  "w_kids" = "  Ménage comptant une seule famille de recensement, sans personnes additionnelles : couple avec enfants",
                  "mono" = "  Ménage comptant une seule famille de recensement, sans personnes additionnelles : famille monoparentale",
@@ -495,7 +669,7 @@ composition <- c("wo_kids"= "  Ménage comptant une seule famille de recensement
                  "solo" = "Ménage composé d'une seule personne",
                  "other" = "  Ménage sans famille de recensement, composé de deux personnes ou plus")
 
-data_4_1_1_3 <- crosstab_get(mode_occupation = mode_occupation, composition = composition) |> 
+data_4_1_1_3_comp <- crosstab_get(mode_occupation = mode_occupation, composition = composition) |> 
   select(-DA_ID) |> 
   summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
   pivot_longer(cols = everything(), names_to = "type", values_to = "count") |> 
@@ -523,7 +697,7 @@ data_4_1_1_3 <- crosstab_get(mode_occupation = mode_occupation, composition = co
       "Seule personne",
       "Deux personnes ou plus")))
 
-plot_4_1_1_3 <- ggplot(data_4_1_1_3, aes(x = comp, y = count, fill = type)) +
+plot_4_1_1_3_comp <- ggplot(data_4_1_1_3_comp, aes(x = comp, y = count, fill = type)) +
   geom_bar(stat = "identity", position = "dodge") +
   labs(x = "", y = "Nombre de ménages (n)", title = "", caption = "*Ménage comptant une seule famille de recensement, sans personnes additionnelles") +
   scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
@@ -533,7 +707,7 @@ plot_4_1_1_3 <- ggplot(data_4_1_1_3, aes(x = comp, y = count, fill = type)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         plot.caption = element_text(hjust = 0))
 
-table_data_4_1_1_3 <- crosstab_get(mode_occupation = mode_occupation, composition = composition) |> 
+table_data_4_1_1_3_comp <- crosstab_get(mode_occupation = mode_occupation, composition = composition) |> 
   select(-DA_ID) |> 
   summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
   rename_with(~ gsub("^owner_", "Propriétaire_", .x), starts_with("owner_")) |>  # Rename owner_ to Propriétaire_
@@ -544,20 +718,20 @@ table_data_4_1_1_3 <- crosstab_get(mode_occupation = mode_occupation, compositio
     names_pattern = "(Propriétaire|Locataire)_(.*)") |> 
   mutate(total = wo_kids + w_kids + mono + multi + solo + other) |> 
   mutate("Couple sans enfants (n)" = wo_kids,
-         "Couple sans enfants (%)" = wo_kids / total,
+         "Couple sans enfants (%)" = wo_kids / sum(wo_kids, na.rm = TRUE),
          "Couple avec enfants (n)" = w_kids,
-         "Couple avec enfants (%)" = w_kids / total,
+         "Couple avec enfants (%)" = w_kids / sum(w_kids, na.rm = TRUE),
          "Famille monoparentale (n)" = mono,
-         "Famille monoparentale (%)" = mono / total,
+         "Famille monoparentale (%)" = mono / sum(mono, na.rm = TRUE),
          "Ménage multigénérationnel (n)" = multi,
-         "Ménage multigénérationnel (%)" = multi / total,
+         "Ménage multigénérationnel (%)" = multi / sum(multi, na.rm = TRUE),
          "Seule personne (n)" = solo,
-         "Seule personne (%)" = solo / total,
+         "Seule personne (%)" = solo / sum(solo, na.rm = TRUE),
          "Deux personnes ou plus (n)" = other,
-         "Deux personnes ou plus (%)" = other / total) |> 
+         "Deux personnes ou plus (%)" = other / sum(other, na.rm = TRUE)) |> 
   select(-total, -wo_kids, -w_kids, -mono, -multi, -solo, -other)
 
-table_4_1_1_3 <- table_data_4_1_1_3 |> 
+table_4_1_1_3_comp <- table_data_4_1_1_3_comp |> 
   gt() |>
   cols_label(
     `Couple sans enfants (n)` = html("<div style='width:95px;'>Couple sans enfants (n)</div>"),
@@ -577,12 +751,77 @@ table_4_1_1_3 <- table_data_4_1_1_3 |>
   fmt(columns = c(2,4,6,8,10,12), fns = convert_number) |> 
   fmt(columns = c(3,5,7,9,11,13), fns = convert_pct) |> 
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular", size = px(15)),
+    style = cell_text(font = "KMR Apparat Regular", size = px(13)),
     locations = cells_body()) |> 
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular"),
+    style = cell_text(font = "KMR Apparat Regular", size = px(15)),
     locations = cells_column_labels())
     
+
+table_data_4_1_1_3_comp_ed <- crosstab_get(mode_occupation = mode_occupation, composition = composition) |> 
+  rename("GeoUID" = "DA_ID") |> 
+  full_join(laval_da, by = "GeoUID") |> 
+  st_as_sf() |> 
+  st_transform(crs = 32618) |> 
+  interpolate(additive_vars = c("owner_wo_kids", "owner_w_kids", "owner_mono", "owner_multi", "owner_solo", "owner_other",
+                                "tenant_wo_kids", "tenant_w_kids", "tenant_mono", "tenant_multi", "tenant_solo", "tenant_other")) |> 
+  mutate(across(c("owner_wo_kids", "owner_w_kids", "owner_mono", "owner_multi", "owner_solo", "owner_other",
+                  "tenant_wo_kids", "tenant_w_kids", "tenant_mono", "tenant_multi", "tenant_solo", "tenant_other"), round)) |> 
+  st_drop_geometry() |> 
+  select(-ID) |>
+  mutate(wo_kids = owner_wo_kids + tenant_wo_kids,
+         w_kids = owner_w_kids + tenant_w_kids,
+         mono = owner_mono + tenant_mono,
+         multi = owner_multi + tenant_multi,
+         solo = owner_solo + tenant_solo,
+         other = owner_other + tenant_other) |> 
+  mutate(total = wo_kids + w_kids + mono + multi + solo + other) |> 
+  mutate("Couple sans enfants (n)" = wo_kids,
+         "Couple sans enfants (%)" = wo_kids / total,
+         "Couple avec enfants (n)" = w_kids,
+         "Couple avec enfants (%)" = w_kids / total,
+         "Famille monoparentale (n)" = mono,
+         "Famille monoparentale (%)" = mono / total,
+         "Ménage multigénérationnel (n)" = multi,
+         "Ménage multigénérationnel (%)" = multi / total,
+         "Seule personne (n)" = solo,
+         "Seule personne (%)" = solo / total,
+         "Deux personnes ou plus (n)" = other,
+         "Deux personnes ou plus (%)" = other / total) |> 
+  select(NOM, "Couple sans enfants (n)", "Couple sans enfants (%)",
+         "Couple avec enfants (n)", "Couple avec enfants (%)", "Famille monoparentale (n)", "Famille monoparentale (%)", 
+         "Ménage multigénérationnel (n)", "Ménage multigénérationnel (%)", "Seule personne (n)",
+         "Seule personne (%)","Deux personnes ou plus (n)", "Deux personnes ou plus (%)") |> 
+  rename("District électorale" = NOM)
+  
+table_4_1_1_3_comp_ed <- table_data_4_1_1_3_comp_ed |> 
+  gt() |> 
+  tab_style(
+    style = cell_fill(color = "#f0f0f0"),
+    locations = cells_body(
+      rows = seq(2, nrow(table_data_4_1_1_3_comp_ed), by = 2)
+    )) |> 
+  data_color(
+    columns = c(3,5,7,9,11,13),
+    colors = scales::col_numeric(
+      palette = c("transparent", color_theme("purpletransport")),
+      domain = NULL
+    )) |> 
+  fmt(columns = c(2,4,6,8,10,12), fns = convert_number) |> 
+  fmt(columns = c(3,5,7,9,11,13), fns = convert_pct) |> 
+  tab_style(
+    style = cell_text(font = "KMR Apparat Regular", size = px(13)),
+    locations = cells_body()) |> 
+  tab_style(
+    style = cell_text(font = "KMR Apparat Regular", size = px(14)),
+    locations = cells_column_labels()) |> 
+  tab_options(
+    table.width = px(6 * 252)
+  )
+
+ggsave(plot = plot_4_1_1_3_comp, "outputs/4/plot_4_1_1_3_comp.pdf", width = 7.5, height = 6)
+gtsave(table_4_1_1_3_comp, "outputs/4/table_4_1_1_3_comp.png", vwidth = 1600)
+gtsave(table_4_1_1_3_comp_ed, "outputs/4/table_4_1_1_3_comp_ed.png", vwidth = 1600)
 
 # #Grabbing the data for the plot
 # data_4_1_3 <- read_excel("data/4/mode_occupation_composition_SR.xlsx") |> #Edited version of the spreadsheet
@@ -739,80 +978,349 @@ table_4_1_1_3 <- table_data_4_1_1_3 |>
 # ggsave("outputs/4/map_4_1_3_noncf.png", plot = map_4_1_3_noncf, width = 800/72, height = 600/72, dpi = 72)
 
 # 4.1.1.4 Statut d'immigrant selon mode d'occupation ----------------------
-#Percentages based on provided PDF and 2016 census data
-imm_2016 <- get_census(dataset = "CA16",
-                       regions = list(CSD = 2465005),
-                       level = "CSD",
-                       vectors = pto_year)
+#Percentages based on provided PDF
+#https://observatoire.cmm.qc.ca/wp-content/uploads/2022/05/CMM_10e_Cahier_metropolitain_web.pdf
+df_4_1_1_4 <- data.frame(
+  Statut = c("Autochtone", "Autochtone", "Immigrant avant 2006",
+             "Immigrant avant 2006", "Immigrant de 2006 à 2016",
+             "Immigrant de 2006 à 2016", "Résident non permanent",
+             "Résident non permanent", "Non-immigrant / non-autochtone",
+             "Non-immigrant / non-autochtone"),
+  Type = c("Propriétaire", "Locataire", "Propriétaire", "Locataire",
+                       "Propriétaire", "Locataire", "Propriétaire", "Locataire",
+                       "Propriétaire", "Locataire"),
+  Pourcentage = c(0.21, 0.79, 0.51, 0.49, 0.17, 0.83, 0.07, 0.93, 0.42, 0.58)) |> 
+  mutate(prop = convert_pct(Pourcentage),
+         Statut = factor(Statut, levels = c("Autochtone", "Immigrant avant 2006",
+                                            "Immigrant de 2006 à 2016", "Résident non permanent",
+                                            "Non-immigrant / non-autochtone")),
+         Type = factor(Type, levels = c("Propriétaire", "Locataire")))
 
-# 4.1.5 -------------------------------------------------------------------
+plot_4_1_1_4 <- ggplot(df_4_1_1_4, aes(x = Statut, y = Pourcentage, fill = Type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = prop), position = position_dodge(width = 0.9),
+            vjust = 2, size = 3, color = "white") +
+  scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 18)) +
+  scale_y_continuous(labels = function(x) convert_pct(x)) +
+  labs(x = "Statut d'immigration", 
+       y = "Proportion des ménages") +
+  graph_theme +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-# 4.1.6 -------------------------------------------------------------------
+ggsave(plot = plot_4_1_1_4, "outputs/4/plot_4_1_1_4.pdf", width = 7.5, height = 6)
 
-# 4.1.7 -------------------------------------------------------------------
-data_4_1_7 <- read_excel("data/4/4_1_7.xlsx") |> 
-  filter(RA == 13) |> 
-  mutate(period = factor(ifelse(Year < 2024, "Avant 2024", "Après 2024"),
-                         levels = c("Avant 2024", "Après 2024")))
+# 4.1.1.5 Âge du principal soutien du ménage selon mote d'occupation------------
+#https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=9810023201&pickMembers%5B0%5D=1.1730&pickMembers%5B1%5D=2.1&pickMembers%5B2%5D=3.1&pickMembers%5B3%5D=4.1
 
-plot_4_1_7 <- ggplot(data_4_1_7, aes(x = Year, y = Total, linetype = period)) +
-  geom_line(color = "black", linewidth = 1.75) +
-  scale_linetype_manual(values = c("Avant 2024" = "solid", "Après 2024" = "dotted"),
-                        labels = c("Avant 2024", "Après 2024")) +
+data_4_1_1_5 <- read.csv("data/4/4_1_1_5.csv", skip = 12) |> 
+  slice(-c(1, 11:24)) |> 
+  rename("Age" = "Tenure..4..4") |> 
+  select(Age, Owner, Renter, "Total...Tenure") |> 
+  mutate(Age = replace(Age, 1, "Total")) |> 
+  mutate(across(c(Owner, Renter, `Total...Tenure`), ~ as.numeric(gsub(",", "", .)))) |> 
+  mutate(Prop_Own = Owner / `Total...Tenure`,  
+         Prop_Ten = Renter / `Total...Tenure`) |> 
+  select(-`Total...Tenure`) |> 
+  pivot_longer(cols = c(Owner, Renter),
+               names_to = "Type",
+               values_to = "Value") |> 
+  mutate(Prop = ifelse(Type == "Owner", Prop_Own, Prop_Ten)) |> 
+  select(Age, Type, Value, Prop) |> 
+  slice(-c(1,2)) |> 
+  mutate(Type = ifelse(Type == "Owner", "Propriétaire", "Locataire")) |> 
+  mutate(Age = case_when(
+    Age == "15 to 24 years" ~ "15 à 24 ans",
+    Age == "25 to 34 years" ~ "25 à 34 ans",
+    Age == "35 to 44 years" ~ "35 à 44 ans",
+    Age == "45 to 54 years" ~ "45 à 54 ans",
+    Age == "55 to 64 years" ~ "55 à 64 ans",
+    Age == "65 to 74 years" ~ "65 à 74 ans",
+    Age == "75 to 84 years" ~ "75 à 84 ans",
+    Age == "85 years and over" ~ "85 ans et plus",
+    TRUE ~ Age)) |> 
+  mutate(prop = convert_pct(Prop))
+
+renter_15 <- data_4_1_1_5 |> filter(Age == "15 à 24 ans" & Type == "Locataire") |> pull(prop)
+renter_25 <- data_4_1_1_5 |> filter(Age == "25 à 34 ans" & Type == "Locataire") |> pull(prop)
+owner_45 <- data_4_1_1_5 |> filter(Age == "45 à 54 ans" & Type == "Propriétaire") |> pull(prop)
+
+plot_4_1_1_5 <- ggplot(data_4_1_1_5, aes(x = Age, y = Value, fill = Type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = prop), position = position_dodge(width = 0.9),
+            vjust = 2, size = 3, color = "white") +
+  scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 18)) +
   scale_y_continuous(labels = function(x) convert_number(x)) +
-  labs(x = "", y = "Nombre de ménages (n)", linetype = "Période") +
-  graph_theme
+  labs(x = "Âge du principal soutien du ménage", 
+       y = "Nombre de ménages (n)") +
+  graph_theme +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggsave("outputs/4/plot_4_1_7.png", plot = plot_4_1_7, width = 800/72, height = 600/72, dpi = 72)
-# 4.1.8 -------------------------------------------------------------------
+ggsave(plot = plot_4_1_1_5, "outputs/4/plot_4_1_1_5.pdf", width = 7.5, height = 6)
 
-# 4.1.9 -------------------------------------------------------------------
-data_4_1_9 <- read_excel("data/4/4_1_9.xlsx") |> 
-  filter(RA == 13 & Sexe == 3) |> 
-  mutate("0-24" = `0-19` + `20-24`,
-         "25-64" = `20-64` - `20-24`)
+# 4.1.1.6 Typologie (unifamilial, multi logement, etc.) selon mode d'occupation----
+#https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=9810024001
+#Télécharger les données sélectionnées (pour le chargement de la base de données)
 
-data_4_1_9_2 <- data_4_1_7 |> 
-  mutate(`15-24` = `15-19` + `20-24`,
-         `25-64` = `25-29` + `30-34` + `35-39` + `40-44` + `45-49` +
-                   `50-54`+ `55-59` + `60-64`,
-         `65+` = `65-69` + `70-74` + `75-79` + `80-84` + `85+`)
+data_4_1_1_6 <- read.csv("data/4/4_1_1_6.csv", sep = ";") |> 
+  select("Type.de.construction.résidentielle..10.", "Mode.d.occupation..4.", "VALEUR") |> 
+  rename(Build = "Type.de.construction.résidentielle..10.",
+         Type = "Mode.d.occupation..4.",
+         Value = "VALEUR") |> 
+  filter(Build != "Autre logement attenant") |> 
+  pivot_wider(names_from = Type, values_from = Value) |>
+  rename("Total" = "Total - Mode d’occupation") |> 
+  mutate(across(c(Propriétaire, Locataire, `Total`), ~ as.numeric(gsub(",", "", .)))) |> 
+  mutate(Prop_Own = Propriétaire / Total,
+         Prop_Ten = Locataire / Total) |> 
+  select(-Total) |> 
+  mutate(Build = case_when(Build == "Total – Type de construction résidentielle" ~ "Total",
+                           TRUE ~ Build)) |> 
+  pivot_longer(cols = c(Propriétaire, Locataire),
+               names_to = "Type",
+               values_to = "Value") |> 
+  mutate(Prop = ifelse(Type == "Propriétaire", Prop_Own, Prop_Ten)) |> 
+  select(Build, Type, Value, Prop) |> 
+  filter(Build != "Total") |> 
+  mutate(prop = convert_pct(Prop)) |> 
+  mutate(Build = factor(Build, levels = c("Maison individuelle non attenante", "Appartement dans un immeuble de cinq étages ou plus",
+                                          "Appartement ou plain-pied dans un duplex", "Appartement dans un immeuble de moins de cinq étages",
+                                          "Autre maison individuelle attenante", "Maison en rangée", "Maison jumelée", "Logement mobile")),
+         Type = factor(Type, levels = c("Propriétaire", "Locataire")))
 
-plot_4_1_9_pop <- ggplot(data_4_1_9, aes(x = Year)) +
-  geom_line(data = subset(data_4_1_9, Year < 2024), aes(y = `0-24`, color = "0-24", linetype = "Before 2024"), linewidth = 1.75) +
-  geom_line(data = subset(data_4_1_9, Year >= 2024), aes(y = `0-24`, color = "0-24", linetype = "After 2024"), linewidth = 1.75) +
-  geom_line(data = subset(data_4_1_9, Year < 2024), aes(y = `25-64`, color = "25-64", linetype = "Before 2024"), linewidth = 1.75) +
-  geom_line(data = subset(data_4_1_9, Year >= 2024), aes(y = `25-64`, color = "25-64", linetype = "After 2024"), linewidth = 1.75) +
-  geom_line(data = subset(data_4_1_9, Year < 2024), aes(y = `65+`, color = "65+", linetype = "Before 2024"), linewidth = 1.75) +
-  geom_line(data = subset(data_4_1_9, Year >= 2024), aes(y = `65+`, color = "65+", linetype = "After 2024"), linewidth = 1.75) +
-  scale_color_manual(values = c("0-24" = "#A3B0D1", "25-64" = "#CD718C", "65+" = "#73AD80"),
-                     labels = c("0-24", "25-64", "65+")) +
-  scale_linetype_manual(values = c("Before 2024" = "solid", "After 2024" = "dotted"),
-                        labels = c("Avant 2024", "Après 2024")) +
+plot_4_1_1_6 <- ggplot(data_4_1_1_6, aes(x = Build, y = Value, fill = Type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = prop), position = position_dodge(width = 0.9),
+            vjust = -0.5, size = 3, color = "black") +
+  scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 18)) +
   scale_y_continuous(labels = function(x) convert_number(x)) +
-  labs(x = "", y = "Population (n)", color = "Age Group", linetype = "Period") +
-  graph_theme
+  labs(x = "Typologie de logements", 
+       y = "Nombre de ménages (n)") +
+  graph_theme +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-plot_4_1_9_hh <- ggplot(data_4_1_9_2, aes(x = Year)) +
-  geom_line(data = subset(data_4_1_9_2, Year < 2024), aes(y = `15-24`, color = "15-24", linetype = "Before 2024"), linewidth = 1.75) +
-  geom_line(data = subset(data_4_1_9_2, Year >= 2024), aes(y = `15-24`, color = "15-24", linetype = "After 2024"), linewidth = 1.75) +
-  geom_line(data = subset(data_4_1_9_2, Year < 2024), aes(y = `25-64`, color = "25-64", linetype = "Before 2024"), linewidth = 1.75) +
-  geom_line(data = subset(data_4_1_9_2, Year >= 2024), aes(y = `25-64`, color = "25-64", linetype = "After 2024"), linewidth = 1.75) +
-  geom_line(data = subset(data_4_1_9_2, Year < 2024), aes(y = `65+`, color = "65+", linetype = "Before 2024"), linewidth = 1.75) +
-  geom_line(data = subset(data_4_1_9_2, Year >= 2024), aes(y = `65+`, color = "65+", linetype = "After 2024"), linewidth = 1.75) +
-  scale_color_manual(values = c("15-24" = "#A3B0D1", "25-64" = "#CD718C", "65+" = "#73AD80"),
-                     labels = c("15-24", "25-64", "65+")) +
-  scale_linetype_manual(values = c("Before 2024" = "solid", "After 2024" = "dotted"),
-                        labels = c("Avant 2024", "Après 2024")) +
+data_4_1_1_6_table <- read.csv("data/4/4_1_1_6.csv", sep = ";") |> 
+  select("Type.de.construction.résidentielle..10.", "Mode.d.occupation..4.", "VALEUR") |> 
+  rename(Build = "Type.de.construction.résidentielle..10.",
+         Type = "Mode.d.occupation..4.",
+         Value = "VALEUR") |> 
+  filter(Build != "Autre logement attenant") |> 
+  pivot_wider(names_from = Type, values_from = Value) |>
+  rename("Total" = "Total - Mode d’occupation") |> 
+  mutate(across(c(Propriétaire, Locataire, `Total`), ~ as.numeric(gsub(",", "", .)))) |> 
+  pivot_longer(cols = c(Propriétaire, Locataire, Total),
+               names_to = "Measure",
+               values_to = "Value") |> 
+  pivot_wider(names_from = Build, values_from = Value) |> 
+  select(Measure, everything()) |> 
+  rename("Total" = "Total – Type de construction résidentielle") |> 
+  mutate(`Maison individuelle non attenante (n)` = `Maison individuelle non attenante`,
+         `Maison individuelle non attenante (%)` = `Maison individuelle non attenante` / Total,
+         `Appartement dans un immeuble de cinq étages ou plus (n)` = `Appartement dans un immeuble de cinq étages ou plus`,
+         `Appartement dans un immeuble de cinq étages ou plus (%)` = `Appartement dans un immeuble de cinq étages ou plus` / Total,
+         `Appartement ou plain-pied dans un duplex (n)` = `Appartement ou plain-pied dans un duplex`,
+         `Appartement ou plain-pied dans un duplex (%)` = `Appartement ou plain-pied dans un duplex` / Total,
+         `Appartement dans un immeuble de moins de cinq étages (n)` = `Appartement dans un immeuble de moins de cinq étages`,
+         `Appartement dans un immeuble de moins de cinq étages (%)` = `Appartement dans un immeuble de moins de cinq étages` / Total,
+         `Autre maison individuelle attenante (n)` = `Autre maison individuelle attenante`,
+         `Autre maison individuelle attenante (%)` = `Autre maison individuelle attenante` / Total,
+         `Maison en rangée (n)` = `Maison en rangée`,
+         `Maison en rangée (%)` = `Maison en rangée` / Total,
+         `Maison jumelée (n)` = `Maison jumelée`,
+         `Maison jumelée (%)` = `Maison jumelée` / Total,
+         `Logement mobile (n)` = `Logement mobile`,
+         `Logement mobile (%)` = `Logement mobile` / Total) |> 
+  select(Measure, `Maison individuelle non attenante (n)`, `Maison individuelle non attenante (%)`,
+    `Appartement dans un immeuble de cinq étages ou plus (n)`, `Appartement dans un immeuble de cinq étages ou plus (%)`,
+    `Appartement ou plain-pied dans un duplex (n)`, `Appartement ou plain-pied dans un duplex (%)`,
+    `Appartement dans un immeuble de moins de cinq étages (n)`, `Appartement dans un immeuble de moins de cinq étages (%)`,
+    `Autre maison individuelle attenante (n)`, `Autre maison individuelle attenante (%)`,
+    `Maison en rangée (n)`, `Maison en rangée (%)`, `Maison jumelée (n)`, `Maison jumelée (%)`,
+    `Logement mobile (n)`, `Logement mobile (%)`
+  ) |> 
+  rename("Type de ménage" = Measure)
+
+table_4_1_1_6 <- data_4_1_1_6_table |> 
+  gt() |> 
+  tab_spanner(
+    label = "Typologie de logements",
+    columns = c(2:17)
+  ) |>
+  data_color(
+    columns = c(3, 5, 7, 9, 11, 13, 15, 17),
+    colors = scales::col_numeric(
+      palette = c("transparent", color_theme("purpletransport")),
+      domain = NULL
+    )) |> 
+  fmt(columns = c(2, 4, 6, 8, 10, 12, 14, 16), fns = convert_number) |> 
+  fmt(columns = c(3, 5, 7, 9, 11, 13, 15, 17), fns = convert_pct) |> 
+  tab_style(
+    style = cell_text(font = "KMR Apparat Regular", size = px(13)),
+    locations = cells_body()) |> 
+  tab_style(
+    style = cell_text(font = "KMR Apparat Regular", size = px(14)),
+    locations = cells_column_labels()) |> 
+  tab_options(
+    table.width = px(6 * 282)
+  )
+
+sfh_laval <- data_4_1_1_6_table |> filter("Type de ménage" == "Total") |> pull(`Maison individuelle non attenante (%)`)
+apt_laval <- data_4_1_1_6_table |> filter("Type de ménage" == "Total") |> pull(`Appartement dans un immeuble de moins de cinq étages (%)`)
+sfh_owner <- data_4_1_1_6_table |> filter("Type de ménage" == "Propriétaire") |> pull(`Maison individuelle non attenante (%)`)
+
+ggsave(plot = plot_4_1_1_6, "outputs/4/plot_4_1_1_6.pdf", width = 7.5, height = 6)
+gtsave(table_4_1_1_6, "outputs/4/table_4_1_1_6.png", vwidth = 2400)
+
+# 4.1.2.1 Projection des ménages X-2046 (PRÉCISER JALONS, C17) -----------------
+#https://statistique.quebec.ca/fr/document/projections-de-menages-mrc-municipalites-regionales-de-comte
+
+projection_4_1_2_1 <- read_excel("data/4/4_1_2_1.xlsx") |> 
+  slice(-c(1:2)) |> 
+  filter(`...2` == "Laval") |> 
+  select(-`Nombre de ménages privés, scénario Référence A2022, MRC du Québec, 2021-2041`,
+         -`...2`, -`...3`) |> 
+  rename(`2021` = `...4`, `2022` = `...5`, `2023` = `...6`, `2024` = `...7`,
+         `2025` = `...8`, `2026` = `...9`, `2027` = `...10`, `2028` = `...11`,
+         `2029` = `...12`, `2030` = `...13`, `2031` = `...14`, `2032` = `...15`,
+         `2033` = `...16`, `2034` = `...17`, `2035` = `...18`, `2036` = `...19`,
+         `2037` = `...20`, `2038` = `...21`, `2039` = `...22`, `2040` = `...23`, 
+         `2041` = `...24`)
+
+census16_4_1_2_1 <- get_census(dataset = "CA16",
+                               regions = list(CSD = 2465005),
+                               level = "CSD",
+                               vectors = c(`2016` = "v_CA16_418")) |> 
+  select(`2016`)
+
+data_4_1_2_1 <- get_census(dataset = "CA11",
+                               regions = list(CSD = 2465005),
+                               level = "CSD",
+                               vectors = c(`2011` = "v_CA11F_182")) |> 
+  select(`2011`) |> 
+  bind_cols(census16_4_1_2_1, projection_4_1_2_1) |> 
+  pivot_longer(cols = everything(), names_to = "Year", values_to = "Households") |> 
+  mutate(Year = as.character(Year))
+
+all_years <- data.frame(Year = as.character(2011:2041))
+
+data_4_1_2_1_complete <- all_years %>%
+  left_join(data_4_1_2_1, by = "Year") |> 
+  mutate(Households = ifelse(is.na(Households), NA, Households))
+
+year_2011 <- data_4_1_2_1_complete |> filter(Year == "2011") |> pull(Households)
+year_2021 <- data_4_1_2_1_complete |> filter(Year == "2021") |> pull(Households)
+year_2041 <- data_4_1_2_1_complete |> filter(Year == "2041") |> pull(Households)
+
+diff_2011_2021 <- convert_pct(year_2021/year_2011-1)
+diff_2021_2041 <- convert_pct(year_2041/year_2021-1)
+year_2011 <- data_4_1_2_1_complete |> filter(Year == "2011") |> pull(Households) |> convert_number()
+year_2021 <- data_4_1_2_1_complete |> filter(Year == "2021") |> pull(Households) |> convert_number()
+year_2041 <- data_4_1_2_1_complete |> filter(Year == "2041") |> pull(Households) |> convert_number()
+year_2028 <- data_4_1_2_1_complete |> filter(Year == "2028") |> pull(Households) |> convert_number()
+year_2032 <- data_4_1_2_1_complete |> filter(Year == "2032") |> pull(Households) |> convert_number()
+year_2036 <- data_4_1_2_1_complete |> filter(Year == "2036") |> pull(Households) |> convert_number()
+
+plot_4_1_2_1 <- ggplot(data_4_1_2_1_complete, aes(x = Year, y = Households)) +
+  geom_line(data = data_4_1_2_1_complete %>% filter(!is.na(Households) & Year <= 2021), 
+            aes(group = 1, linetype = "Ménages actuels"),
+            linewidth = 1.5, 
+            na.rm = TRUE) +  # Solid line for years before 2022
+  geom_line(data = data_4_1_2_1_complete %>% filter(!is.na(Households) & Year >= 2021), 
+            aes(group = 1, linetype = "Ménages projetés"),
+            linewidth = 1.5, 
+            na.rm = TRUE) +
+  scale_x_discrete(limits = as.character(2011:2041)) +
   scale_y_continuous(labels = function(x) convert_number(x)) +
-  labs(x = "", y = "Nombre de ménages (n)", color = "Age Group", linetype = "Period") +
-  graph_theme
+  scale_linetype_manual(values = c("solid", "dotted")) +
+  labs(x = "", y = "Nombre de ménages (n)", linetype = "") +
+  graph_theme +
+  theme(axis.text.x = element_text(angle = 315, hjust = 1))
 
-ggsave("outputs/4/plot_4_1_9_pop.png", plot = plot_4_1_7, width = 800/72, height = 600/72, dpi = 72)
-ggsave("outputs/4/plot_4_1_9_hh.png", plot = plot_4_1_7, width = 800/72, height = 600/72, dpi = 72)
+ggsave(plot = plot_4_1_2_1, "outputs/4/plot_4_1_2_1.pdf", width = 7.5, height = 6)
+
+# 4.1.2.2 Croissance prévue des ménages ---------------------------------------
+
+# 4.1.2.3.1 Projections population/ménages selon groupe d'âge ----------------
+#https://statistique.quebec.ca/fr/document/projections-de-menages-mrc-municipalites-regionales-de-comte
+projection_4_1_2_3_1 <- read_excel("data/4/4_1_2_3_1.xlsx") |> 
+  slice(-c(1:2)) |> 
+  filter(`...2` == "Laval"| `...5` == "Total") |> 
+  select(-`Nombre de ménages privés selon le groupe d'âge de la personne-référence, scénario Référence A2022, MRC du Québec, 2021-2041`,
+         -`...2`, -`...3`) |> 
+  rename(`Année` = `...4`, `Total` = `...5`, `15-19` = `...6`, `20-24` = `...7`,
+         `25-29` = `...8`, `30-34` = `...9`, `35-39` = `...10`, `40-44` = `...11`,
+         `45-49` = `...12`, `50-54` = `...13`, `55-59` = `...14`, `60-64` = `...15`,
+         `65-69` = `...16`, `70-74` = `...17`, `75-79` = `...18`, `80-84` = `...19`,
+         `85+` = `...20`) |> 
+  select(-Total) |> 
+  slice(-1) |> 
+  column_to_rownames(var = "Année") |>
+  as.data.frame() |> 
+  t() |> 
+  as.data.frame() |>
+  rownames_to_column(var = "Groupe d'âge") |> 
+  mutate(across(-`Groupe d'âge`, as.numeric)) |> 
+  mutate(Changement = `2041` / `2021` - 1)
+
+table_4_1_2_3_1 <- projection_4_1_2_3_1 |> 
+  gt() |>
+  data_color(
+    columns = c(23),
+    colors = scales::col_numeric(
+      palette = c("white", color_theme("purpletransport")),
+      domain = NULL
+    )
+  ) |>
+  fmt(columns = c(2:22), fns = convert_number) |>
+  fmt(columns = c(23), fns = convert_pct) |>
+  tab_spanner(
+    label = "Année",
+    columns = c(2:22)
+  ) |>
+  tab_style(
+    style = cell_text(font = "KMR Apparat Regular", size = px(13)),
+    locations = cells_body()) |>
+  tab_style(
+    style = cell_text(font = "KMR Apparat Regular", size = px(14)),
+    locations = cells_column_labels()) |>
+  tab_style(
+    style = cell_text(size = px(15)),
+    locations = cells_column_spanners(spanners = "Année")
+  ) |>
+  tab_options(
+    table.font.size = 13,
+    table.width = px(6 * 224))
+
+change_85 <- projection_4_1_2_3_1 |> filter(`Groupe d'âge` == "85+") |> pull(`Changement`) |> convert_pct()
+change_84 <- projection_4_1_2_3_1 |> filter(`Groupe d'âge` == "80-84") |> pull(`Changement`) |> convert_pct()
+change_59 <- projection_4_1_2_3_1 |> filter(`Groupe d'âge` == "55-59") |> pull(`Changement`) |> convert_pct()
+
+gtsave(table_4_1_2_3_1, "outputs/4/table_4_1_2_3_1.png", vwidth = 2400)
+
+# 4.1.2.3.2 Composantes de la croissance démographique annuelle  --------
+#https://statistique.quebec.ca/fr/document/projections-de-population-regions-administratives-et-regions-metropolitaines-rmr
+sheet_4_1_2_3_2 <- read_excel("data/4/4_1_2_3_2.xlsx")
+
+data_4_1_2_3_2 <- sheet_4_1_2_3_2 |> #Separate data frame so loading from the spreadsheet constantly isn't needed
+  select(-`Composantes démographiques projetées, scénario Référence A2022, régions administratives du Québec, 2021-2041`,
+         -`...2`, -`...3`, -`...6`, -`...9`, -`...14`, -`...16`, -`...20`, -`...24`, -`...28`, -`...29`, -`...30`,
+         -`...34`, -`...35`, -`...36`, -`...37`, -`...38`, -`...39`)|> 
+  slice(-c(278:370)) |> 
+  slice(-c(6:257)) |> 
+  rename("Année" = `...4`, "Population" = `...5`, "Births" = `...7`, "Fertility Rate" = `...8`,
+         "Deaths" = `...10`, "Life Expectancy (m)" = `...11`, "Life Expectancy (f)" = `...12`,
+         "Life Expectancy (total)" = `...13`, "Natural Change" = `...15`, "International Immigration" = `...17`,
+         "International Emmigration" = `...18`, "International Change" = `...19`)
 
 # R Markdown --------------------------------------------------------------
 qs::qsavem(plot_4_1_1_1, map_total_hh, map_owner_hh, map_tenant_hh, table_4_1_1_1,
            owner_count_diff, tenant_count_diff, owner_growth, tenant_growth,
            owner_growth_16, tenant_growth_16, total_hh_01, total_hh_21, total_prop_diff,
+           plot_4_1_1_2, table_4_1_1_2_2, table_4_1_1_2, plot_4_1_1_3_comp, table_4_1_1_3_comp,
+           table_4_1_1_3_comp_ed, plot_4_1_1_4, plot_4_1_1_5, renter_15, renter_25, plot_4_1_1_6,
+           table_4_1_1_6, sfh_laval, sfh_owner, apt_laval, diff_2011_2021, diff_2021_2041,
+           year_2011, year_2021, year_2028, year_2032, year_2036, year_2041, plot_4_1_2_1,
+           table_4_1_2_3_1, change_59, change_84, change_85,
            file = "data/section_4_1.qsm")
