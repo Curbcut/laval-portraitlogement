@@ -191,7 +191,7 @@ housing <-
 # Interpolate
 housing <- 
   housing |> 
-  interpolate(additive_vars = c(
+  interpolate(group = "year", additive_vars = c(
     "dwellings", "type_total", "type_single", "type_semi", "type_row", 
     "type_duplex", "type_apart_small", "type_apart_large", "type_other_single",
     "type_movable", "age_total", "age_1960", "age_1980", "age_1990", "age_2000", 
@@ -203,10 +203,9 @@ housing <-
 
 # 5.1.1.1 Répartition des logements selon le typologie --------------------
 
-plot_5_1_1_1_facet <- 
+plot_5_1_1_1_facet <-
   housing |> 
   st_drop_geometry() |> 
-  select(GeoUID:type_movable) |> 
   summarize(across(type_total:type_movable, sum, na.rm = TRUE), .by = year) |> 
   mutate(across(type_single:type_movable, \(x) x / type_total)) |> 
   select(-type_other_single, -type_movable) |> 
@@ -223,9 +222,26 @@ plot_5_1_1_1_facet <-
   theme_minimal() +
   theme(legend.position = "bottom")
 
+# table_5_2_1_1 <-
+  housing |> 
+  st_drop_geometry() |> 
+  select(GeoUID:type_movable) |> 
+    
+  filter(is.na(zone)) |>
+  mutate("Date Range" = case_when(
+    year >= 2020 ~ "2020-2023",
+    year >= 2016 ~ "2016-2019",
+    year >= 2012 ~ "2012-2015")) |> 
+  summarize(avg = mean(value, na.rm = TRUE) / 100, 
+            .by = c(`Date Range`, quartile)) |> 
+  pivot_wider(names_from = quartile, values_from = avg) |> 
+  mutate(across(-`Date Range`, round, 3)) |>
+  mutate(across(-`Date Range`, scales::percent)) |> 
+  gt::gt() |> 
+  gt::tab_header("Vacancy rate for purpose-built rentals by bedroom type")
+
 map_5_1_1_1_single <-
   housing |> 
-    select(GeoUID:type_single, geometry) |> 
     mutate(single_pct = type_single / type_total) |> 
     ggplot(aes(fill = single_pct)) +
     geom_sf(colour = "white", lwd = 0.1) +
@@ -235,8 +251,6 @@ map_5_1_1_1_single <-
     facet_wrap(vars(year)) +
     theme_void() +
     theme(legend.position = "bottom", legend.key.width = unit(40, "points"))
-
-
 
 
 # 5.1.1.2 -------------------------------------------------------------------
