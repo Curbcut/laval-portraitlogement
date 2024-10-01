@@ -80,9 +80,55 @@ map_5_1_1_2_owner
 
 _Data source: Canadian Census_
 
+Although three-bedroom homes are the most common housing size in Laval, their share of the total housing stock has been declining steadily over the 2011-2021 period during which bedroom counts were measured by the Census. In fact, despite robust overall growth in housing units, as of 2021 there were fewer three-bedroom units than there were in 2011. All other bedroom counts saw absolute growth in unit counts from 2011-2021, but that growth was highest among the largest units: the share of total housing stock composed of units with four or more bedrooms grew by nearly a quarter.
+
+```{r plot_5_1_1_3_facet}
+plot_5_1_1_3_facet
+```
+
+```{r table_5_1_1_3}
+table_5_1_1_3
+```
+
+Over the past ten years, a growing (albeit still small) proportion of dwelling units in the outlying areas of the city have four or more bedrooms. In the Val-des-Arbres, Saint-François, Auteuil, Laval-les-Îles, Marc-Aurèle-Fortin, Sainte-Dorothée, Fabreville, and Saint-Martin electoral districts, more than one quarter of homes had four or more bedrooms in 2021, while in 2011 it was only Saint-François and Val-des-Arbres. This trend points to the increasingly large houses which are common in new single-family construction.
+
+```{r map_5_1_1_3_four}
+map_5_1_1_3_four
+```
+
 # 5.1.1.4 Répartition des logements selon l'âge du cadre bâti
 
+```{r construction_facts}
+ages <- 
+  housing |> 
+  st_drop_geometry() |> 
+  filter(year == 2021) |> 
+  select(NOM, age_total:age_2021) |> 
+  mutate(age_2000 = age_1990 + age_2000,
+         age_2021 = age_2005 + age_2010 + age_2015 + age_2021) |> 
+  select(-age_1990, -age_2005, -age_2010, -age_2015) |> 
+  summarize(across(age_total:age_2021, sum)) |> 
+  mutate(across(age_1960:age_2021, \(x) x / age_total)) |> 
+  mutate(across(age_1960:age_2021, scales::percent, 0.1))
+```
+
 _Data source: Canadian Census_
+
+There is a relatively even distribution of building ages among private housing units in Laval, although recent decades are underrepresented in building ages compared to the postwar period. Comparing roughly 20-year construction period, `r ages$age_1960` of private occupied dwellings in 2021 were constructed in 1960 or earlier, `r ages$age_1980` were constructed between 1961 and 1980, `r ages$age_2000` were constructed between 1981 and 2000, and `r ages$age_2021` were constructed between 2001 and 2021. Put differently, the major period for housing construction in the city was the 1960s and 1970s, and subsequent decades have seen slowly decreasing rates of new housing arriving on the market, even in the face of the ongoing attrition of older units.
+
+```{r plot_5_1_1_4}
+plot_5_1_1_4
+```
+
+```{r table_5_1_1_4}
+table_5_1_1_4
+```
+
+As the map indicates, there is a distinctive spatial pattern to different ages of residential buildings in the city. Housing units constructed in 1960 or earlier are only common along the south shore of Laval; in the electoral district of Duvernay-Pont-Viau they are nearly a majority of all private housing units, while elsewhere along the shore they are generally between 20 and 30 percent of all units. Meanwhile, in most of the city a plurality of all private housing units present in 2021 were constructed between 1961 and 1980, with majority concentrations in the Chomedey, Marc-Aurèle-Fortin and Marigot electoral districts. Housing construction in the 1980s and 1990s was concentrated mostly to the west and north of the island, while in the Renaud and Fabreville electoral districts more than one in ten private housing units in 2021 had been constructed in the previous five years.
+
+```{r map_5_1_1_4}
+map_5_1_1_4
+```
 
 # 5.1.1.5 Répartition des logements selon le type de parc : privé lucratif, non lucratif (privé ou public)
 

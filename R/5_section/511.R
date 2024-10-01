@@ -62,7 +62,7 @@ vec_2011_511 <- c(
   condo_total = "v_CA11N_2256",
   condo_condo = "v_CA11N_2257",
   bedroom_total = "v_CA11N_2247",
-  bedroom_zero = "v_CA11N_2248", # Zero or one
+  bedroom_one = "v_CA11N_2248", # Zero or one
   bedroom_two = "v_CA11N_2249",
   bedroom_three = "v_CA11N_2250",
   bedroom_four = "v_CA11N_2251",
@@ -180,14 +180,15 @@ housing <-
   rename(dwellings = Dwellings) |> 
   relocate(dwellings, .after = year) |> 
   relocate(age_2005, age_2010, age_2015, age_2021, .after = age_2000) |> 
-  relocate(bedroom_one, .after = bedroom_zero) |>
+  relocate(bedroom_zero, .before = bedroom_one) |>
   relocate(bedroom_four, .after = bedroom_three) |> 
+  mutate(across(c(age_total:age_2021, age_1985), replace_na, replace = 0)) |> 
   mutate(age_1960 = age_1946 + age_1960,
          age_1980 = age_1970 + age_1980,
          age_1990 = age_1985 + age_1990,
          age_2000 = age_1995 + age_2000) |> 
   select(-age_1946, -age_1970, -age_1985, -age_1995)
-
+    
 # Interpolate
 housing <- 
   housing |> 
@@ -320,8 +321,135 @@ map_5_1_1_2_owner <-
 
 # 5.1.1.3 -------------------------------------------------------------------
 
+plot_5_1_1_3_facet <-
+  housing |> 
+  st_drop_geometry() |> 
+  summarize(across(bedroom_total:bedroom_four, sum, na.rm = TRUE), 
+            .by = year) |> 
+  filter(year >= 2011) |> 
+  mutate(across(bedroom_zero:bedroom_four, \(x) x / bedroom_total)) |> 
+  pivot_longer(bedroom_zero:bedroom_four) |> 
+  mutate(value = if_else(value == 0, NA, value)) |> 
+  mutate(name = str_remove(name, "bedroom_")) |> 
+  mutate(name = case_when(
+    name == "zero" ~ "Zero bedrooms",
+    name == "one" ~ "One bedroom",
+    name == "two" ~ "Two bedrooms",
+    name == "three" ~ "Three bedrooms",
+    name == "four" ~ "Four or more bedrooms")) |> 
+  mutate(name = factor(name, levels = c(
+    "Zero bedrooms", "One bedroom", "Two bedrooms", "Three bedrooms", 
+    "Four or more bedrooms"))) |> 
+  ggplot(aes(year, value, colour = name)) +
+  geom_point() +
+  geom_line() +
+  scale_y_continuous("Share of all private dwelling units",
+                     labels = scales::percent) +
+  scale_x_continuous("Year") +
+  scale_colour_discrete(NULL) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+table_5_1_1_3 <-
+  housing |> 
+  st_drop_geometry() |> 
+  summarize(across(bedroom_total:bedroom_four, sum, na.rm = TRUE), 
+            .by = year) |> 
+  filter(year >= 2011) |> 
+  mutate(across(bedroom_zero:bedroom_four, \(x) paste0(
+    scales::comma(x, 10), " (", scales::percent(
+      x / bedroom_total, 0.1), ")"))) |> 
+  mutate(bedroom_total = scales::comma(bedroom_total, 10)) |> 
+  mutate(bedroom_zero = c(NA, bedroom_zero[2:3])) |> 
+  set_names(c("Year", "Total", "Zero bedrooms", "One bedroom", "Two bedrooms", 
+              "Three bedrooms", "Four or more bedrooms")) |> 
+  gt::gt() |> 
+  gt::tab_header("Privately occupied dwelling units by bedroom count")
+
+map_5_1_1_3_four <-
+  housing |> 
+  mutate(four_pct = bedroom_four / bedroom_total) |> 
+  filter(year >= 2011) |> 
+  ggplot(aes(fill = four_pct)) +
+  geom_sf(colour = "white", lwd = 0.1) +
+  scale_fill_viridis_b(
+    "Share of all private dwelling units which have four or more bedrooms",
+    labels = scales::percent, n.breaks = 6) +
+  facet_wrap(vars(year)) +
+  theme_void() +
+  theme(legend.position = "bottom", legend.key.width = unit(40, "points"))
+
 
 # 5.1.1.4 -------------------------------------------------------------------
+
+plot_5_1_1_4 <-
+  housing |> 
+  st_drop_geometry() |> 
+  summarize(across(age_total:age_2021, sum, na.rm = TRUE), 
+            .by = year) |> 
+  mutate(across(age_1960:age_2021, \(x) x / age_total)) |> 
+  pivot_longer(age_1960:age_2021) |> 
+  mutate(value = if_else(value == 0, NA, value)) |> 
+  mutate(name = str_remove(name, "age_")) |> 
+  mutate(name = case_when(
+    name == "1960" ~ "1960 or earlier",
+    name == "1980" ~ "1961-1980",
+    name == "1990" ~ "1981-1990",
+    name == "2000" ~ "1991-2000",
+    name == "2005" ~ "2001-2005",
+    name == "2010" ~ "2006-2010",
+    name == "2015" ~ "2011-2015",
+    name == "2021" ~ "2016-2021")) |>
+  ggplot(aes(year, value, colour = name)) +
+  geom_point() +
+  geom_line() +
+  scale_y_continuous("Share of all private dwelling units",
+                     labels = scales::percent) +
+  scale_x_continuous("Year") +
+  scale_colour_discrete(NULL) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+table_5_1_1_4 <-
+  housing |> 
+  st_drop_geometry() |> 
+  summarize(across(age_total:age_2021, sum, na.rm = TRUE), 
+            .by = year) |> 
+  mutate(across(age_1960:age_2021, \(x) paste0(
+    scales::comma(x, 10), " (", scales::percent(
+      x / age_total, 0.1), ")"))) |> 
+  mutate(age_total = scales::comma(age_total, 10)) |> 
+  set_names(c("Year", "Total", "1960 or earlier", "1961-1980", "1981-1990", 
+              "1991-2000", "2001-2005", "2006-2010", "2011-2015", 
+              "2016-2021")) |> 
+  gt::gt() |> 
+  gt::tab_header(
+    "Privately occupied dwelling units by building year of construction")
+
+map_5_1_1_4 <-
+  housing |> 
+  filter(year == 2021) |> 
+  select(NOM, age_total:age_2021) |> 
+  mutate(across(age_1960:age_2021, \(x) x / age_total)) |> 
+  pivot_longer(age_1960:age_2021) |> 
+  mutate(name = str_remove(name, "age_")) |> 
+  mutate(name = case_when(
+    name == "1960" ~ "1960 or earlier",
+    name == "1980" ~ "1961-1980",
+    name == "1990" ~ "1981-1990",
+    name == "2000" ~ "1991-2000",
+    name == "2005" ~ "2001-2005",
+    name == "2010" ~ "2006-2010",
+    name == "2015" ~ "2011-2015",
+    name == "2021" ~ "2016-2021")) |>
+  ggplot(aes(fill = value)) +
+  geom_sf(colour = "white", lwd = 0.1) +
+  scale_fill_viridis_b(
+    "Share of 2021 private dwelling units by construction year",
+    labels = scales::percent, n.breaks = 10) +
+  facet_wrap(vars(name)) +
+  theme_void() +
+  theme(legend.position = "bottom", legend.key.width = unit(50, "points"))
 
 
 # 5.1.1.5 -------------------------------------------------------------------
@@ -332,4 +460,6 @@ map_5_1_1_2_owner <-
 
 qs::qsavem(housing, plot_5_1_1_1_facet, table_5_1_1_1, map_5_1_1_1_single, 
            plot_5_1_1_2_facet, table_5_1_1_2, map_5_1_1_2_owner,
+           plot_5_1_1_3_facet, table_5_1_1_3, map_5_1_1_3_four,
+           plot_5_1_1_4, table_5_1_1_4, map_5_1_1_4, 
            file = "data/section_5_1_1.qsm")
