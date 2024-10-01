@@ -28,7 +28,7 @@ single_shares <-
 
 _Data source: Canadian Census_
 
-From 2001 to 2021, the total number of privately occupied dwelling units in the City of Laval has grown at an average rate of 1.32% per year, almost identical to the Canadian average (1.31%). In all five census periods, single-detached dwellings have represented a plurality of all dwellings, although this share has been declining, from `r single_shares[1]` in 2001 to `r single_shares[5]` in 2021. This decline has been met with an increase in low-rise apartments in the early 2000s and then an increase in medium-rise and high-rise apartments in the last census period. In both proportional and absolute terms, semi-detached and duplex housing types have experienced steady declines, while the count of row houses has grown in absolute terms although it has remained mostly constant as a share of all dwelling units.
+From 2001 to 2021, the total number of privately occupied dwelling units in the City of Laval has grown at an average rate of 1.33% per year, almost identical to the Canadian average (1.31%). In all five census periods, single-detached dwellings have represented a plurality of all dwellings, although this share has been declining, from `r single_shares[1]` in 2001 to `r single_shares[5]` in 2021. This decline has been met with an increase in low-rise apartments in the early 2000s and then an increase in medium-rise and high-rise apartments in the last census period. In both proportional and absolute terms, semi-detached and duplex housing types have experienced steady declines, while the count of row houses has grown in absolute terms although it has remained mostly constant as a share of all dwelling units.
 
 ```{r plot_5_1_1_1_facet}
 plot_5_1_1_1_facet
@@ -101,7 +101,7 @@ map_5_1_1_3_four
 ```{r construction_facts}
 ages <- 
   housing |> 
-  st_drop_geometry() |> 
+  sf::st_drop_geometry() |> 
   filter(year == 2021) |> 
   select(NOM, age_total:age_2021) |> 
   mutate(age_2000 = age_1990 + age_2000,
@@ -132,5 +132,31 @@ map_5_1_1_4
 
 # 5.1.1.5 Répartition des logements selon le type de parc : privé lucratif, non lucratif (privé ou public)
 
+_Data source: Canadian Census_
+
+```{r subsid_data}
+subsid_data <- 
+  housing |> 
+  sf::st_drop_geometry() |> 
+  filter(year >= 2011) |> 
+  summarize(across(subsid_total:subsid, sum), .by = year) |> 
+  mutate(pct = scales::percent(subsid / subsid_total, 0.1)) |> 
+  mutate(subsid = scales::comma(subsid, 10))
+
+can_subsid_pct <- scales::percent(can_subsid$subsid / 100, 0.1)
+qc_subsid_pct <- scales::percent(qc_subsid$subsid / 100, 0.1)
+```
+
+There is only limited systematic information available about households living in non-market housing. In particular, for the last ten years the Canadian Census has identified tenant households who live in subsidized housing. According to this indicator, the share of the overall tenant population in Laval living in subsidized housing has been flat, from `r subsid_data$subsid[1]` (`r subsid_data$pct[1]`) in 2011 to `r subsid_data$subsid[3]` (`r subsid_data$pct[3]`) in 2021. This rate is quite a bit lower than both the Canadian (`r can_subsid_pct`) and Quebec (`r qc_subsid_pct`) rates.
+
+```{r table_5_1_1_5}
+table_5_1_1_5
+```
+
+Although the geography of subsidized housing has shifted somewhat over the last ten years, the electoral districts of Souvenir-Labelle and Renaud consistently have had the highest concentrations of subsidized tenant households, ranging between 10 and 20 percent of total tenant households between 2011 and 2021.
+
+```{r map_5_1_1_5}
+map_5_1_1_5
+```
 
 

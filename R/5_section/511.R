@@ -75,7 +75,9 @@ vec_2011_511 <- c(
   age_1990 = "v_CA11N_2236",
   age_2000 = "v_CA11N_2237",
   age_2005 = "v_CA11N_2238",
-  age_2010 = "v_CA11N_2239")
+  age_2010 = "v_CA11N_2239",
+  subsid_total = "v_CA11N_2288",
+  subsid = "v_CA11N_2289")
 
 vec_2016_511 <- c(
   type_total = "v_CA16_408",
@@ -105,7 +107,9 @@ vec_2016_511 <- c(
   age_2000 = "v_CA16_4866",
   age_2005 = "v_CA16_4867",
   age_2010 = "v_CA16_4868",
-  age_2015 = "v_CA16_4869")
+  age_2015 = "v_CA16_4869",
+  subsid_total = "v_CA16_4897",
+  subsid = "v_CA16_4898")
 
 vec_2021_511 <- c(
   type_total = "v_CA21_434",
@@ -128,6 +132,7 @@ vec_2021_511 <- c(
   tenure_total = "v_CA21_4237",
   tenure_owner = "v_CA21_4238",
   tenure_renter = "v_CA21_4239",
+  tenure_gov = "v_CA21_4240",
   age_total = "v_CA21_4263",
   age_1960 = "v_CA21_4264",
   age_1980 = "v_CA21_4265",
@@ -136,37 +141,39 @@ vec_2021_511 <- c(
   age_2005 = "v_CA21_4268",
   age_2010 = "v_CA21_4269",
   age_2015 = "v_CA21_4270",
-  age_2021 = "v_CA21_4271")
+  age_2021 = "v_CA21_4271",
+  subsid_total = "v_CA21_4313",
+  subsid = "v_CA21_4314")
 
 
 # Get census data ---------------------------------------------------------
 
-housing_01 <- get_census("CA01", regions = list(CSD = "2465005"), level = "DA",
+housing_01 <- get_census("CA01", regions = list(CSD = "2465005"), level = "CT",
                          vectors = vec_2001_511, geo_format = "sf") |> 
   mutate(year = 2001, .after = GeoUID) |> 
   mutate(age_total = tenure_total, .before = age_1946) |> 
   mutate(age_2005 = age_2000 / 6, .after = age_2000) |> 
   mutate(age_2000 = age_2000 * 5 / 6)
 
-housing_06 <- get_census("CA06", regions = list(CSD = "2465005"), level = "DA",
+housing_06 <- get_census("CA06", regions = list(CSD = "2465005"), level = "CT",
                          vectors = vec_2006_511, geo_format = "sf") |> 
   mutate(year = 2006, .after = GeoUID) |> 
   mutate(age_2010 = age_2005 / 6, .after = age_2005) |> 
   mutate(age_2005 = age_2005 * 5 / 6)
 
-housing_11 <- get_census("CA11", regions = list(CSD = "2465005"), level = "DA",
+housing_11 <- get_census("CA11", regions = list(CSD = "2465005"), level = "CT",
                          vectors = vec_2011_511, geo_format = "sf") |> 
   mutate(year = 2011, .after = GeoUID) |> 
   mutate(age_2015 = age_2010 / 6, .after = age_2010) |> 
   mutate(age_2010 = age_2010 * 5 / 6)
 
-housing_16 <- get_census("CA16", regions = list(CSD = "2465005"), level = "DA",
+housing_16 <- get_census("CA16", regions = list(CSD = "2465005"), level = "CT",
                          vectors = vec_2016_511, geo_format = "sf") |> 
   mutate(year = 2016, .after = GeoUID) |> 
   mutate(age_2021 = age_2015 / 6, .after = age_2015) |> 
   mutate(age_2015 = age_2015 * 5 / 6)
 
-housing_21 <- get_census("CA21", regions = list(CSD = "2465005"), level = "DA",
+housing_21 <- get_census("CA21", regions = list(CSD = "2465005"), level = "CT",
                          vectors = vec_2021_511, geo_format = "sf") |> 
   mutate(year = 2021, .after = GeoUID)
 
@@ -176,12 +183,15 @@ housing <-
   st_as_sf() |> 
   select(-key, -`NHS Non-Return Rate`, -`NHS Non Return Rate`, -`Shape Area`, 
          -Type, -Households, -`Quality Flags`, -name, -CSD_UID, -Population, 
-         -CT_UID, -c(CD_UID:`Area (sq km)`)) |> 
+         -`Adjusted Population (previous Census)`, -c(CD_UID:`Area (sq km)`),
+         -CMA_UID, -PR_UID) |> 
   rename(dwellings = Dwellings) |> 
   relocate(dwellings, .after = year) |> 
   relocate(age_2005, age_2010, age_2015, age_2021, .after = age_2000) |> 
   relocate(bedroom_zero, .before = bedroom_one) |>
   relocate(bedroom_four, .after = bedroom_three) |> 
+  relocate(tenure_gov, .after = tenure_renter) |> 
+  relocate(subsid_total, subsid, .after = bedroom_four) |> 
   mutate(across(c(age_total:age_2021, age_1985), replace_na, replace = 0)) |> 
   mutate(age_1960 = age_1946 + age_1960,
          age_1980 = age_1970 + age_1980,
@@ -192,14 +202,15 @@ housing <-
 # Interpolate
 housing <- 
   housing |> 
+  mutate(subsid = subsid / 100 * subsid_total) |> 
   interpolate(group = "year", additive_vars = c(
     "dwellings", "type_total", "type_single", "type_semi", "type_row", 
     "type_duplex", "type_apart_small", "type_apart_large", "type_other_single",
     "type_movable", "age_total", "age_1960", "age_1980", "age_1990", "age_2000", 
     "age_2005", "age_2010", "age_2015", "age_2021", "tenure_total", 
-    "tenure_owner", "tenure_renter", "condo_total", "condo_condo", 
+    "tenure_owner", "tenure_renter", "tenure_gov", "condo_total", "condo_condo", 
     "bedroom_total", "bedroom_zero", "bedroom_one", "bedroom_two", 
-    "bedroom_three", "bedroom_four"))
+    "bedroom_three", "bedroom_four", "subsid_total", "subsid"))
 
 
 # 5.1.1.1 Répartition des logements selon le typologie --------------------
@@ -222,7 +233,7 @@ laval_dwellings <-
   st_drop_geometry() |> 
   summarize(dwellings = sum(dwellings, na.rm = TRUE), .by = year)
 
-laval_dwellings$dwellings[5] - laval_dwellings$dwellings[1] * 1.0132 ^ 20
+laval_dwellings$dwellings[5] - laval_dwellings$dwellings[1] * 1.0133 ^ 20
 
 plot_5_1_1_1_facet <-
   housing |> 
@@ -454,6 +465,52 @@ map_5_1_1_4 <-
 
 # 5.1.1.5 -------------------------------------------------------------------
 
+can_subsid <- get_census("CA21", list(C = "01"), vectors = c(
+  subsid_total = "v_CA21_4313", subsid = "v_CA21_4314"))
+
+qc_subsid <- get_census("CA21", list(PR = "24"), vectors = c(
+  subsid_total = "v_CA21_4313", subsid = "v_CA21_4314"))
+
+# plot_5_1_1_5 <-
+#   housing |> 
+#   st_drop_geometry() |> 
+#   filter(year >= 2011) |> 
+#   select(NOM, year, subsid_total, subsid) |> 
+#   summarize(across(subsid_total:subsid, sum), .by = year) |> 
+#   mutate(pct = subsid / subsid_total) |> 
+#   ggplot(aes(year, pct)) +
+#   geom_line() +
+#   scale_y_continuous("Share of tenant households in subsidized housing",
+#                      labels = scales::percent, limits = c(0.05, 0.08)) +
+#   scale_x_continuous("Year") +
+#   theme_minimal()
+
+table_5_1_1_5 <-
+  housing |> 
+  st_drop_geometry() |>
+  filter(year >= 2011) |> 
+  select(NOM, year, subsid_total, subsid) |> 
+  summarize(across(subsid_total:subsid, sum, na.rm = TRUE), .by = year) |> 
+  mutate(subsid = paste0(scales::comma(subsid, 10), " (", 
+                         scales::percent(subsid / subsid_total, 0.1), ")")) |> 
+  mutate(subsid_total = scales::comma(subsid_total, 10)) |> 
+  set_names(c("Year", "Total tenant households", "In subsidized housing")) |> 
+  gt::gt() |> 
+  gt::tab_header("Share of tenant households in subsidized housing")
+
+map_5_1_1_5 <-
+  housing |> 
+  filter(year >= 2011) |> 
+  select(NOM, year, subsid_total, subsid) |> 
+  mutate(pct = subsid / subsid_total) |> 
+  ggplot(aes(fill = pct)) +
+  geom_sf(colour = "white", lwd = 0.1) +
+  scale_fill_viridis_b(
+    "Share of tenant households in subsidized housing",
+    labels = scales::percent, n.breaks = 6) +
+  facet_wrap(vars(year)) +
+  theme_void() +
+  theme(legend.position = "bottom", legend.key.width = unit(40, "points"))
 
 
 # Save --------------------------------------------------------------------
@@ -461,5 +518,6 @@ map_5_1_1_4 <-
 qs::qsavem(housing, plot_5_1_1_1_facet, table_5_1_1_1, map_5_1_1_1_single, 
            plot_5_1_1_2_facet, table_5_1_1_2, map_5_1_1_2_owner,
            plot_5_1_1_3_facet, table_5_1_1_3, map_5_1_1_3_four,
-           plot_5_1_1_4, table_5_1_1_4, map_5_1_1_4, 
+           plot_5_1_1_4, table_5_1_1_4, map_5_1_1_4, can_subsid, qc_subsid,
+           table_5_1_1_5, map_5_1_1_5,
            file = "data/section_5_1_1.qsm")

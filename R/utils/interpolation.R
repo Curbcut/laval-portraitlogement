@@ -5,9 +5,10 @@
 #                             level = "CT",
 #                             geo_format = "sf")
 
-interpolate <- function(from, to = sf::st_read("data/limite-district-electoral.geojson"), 
-                        group = NULL, average_vars = c(), additive_vars = c(), 
-                        round_additive = FALSE, crs = 32618) {
+interpolate <- function(
+    from, to = sf::st_read("data/limite-district-electoral.geojson"), 
+    group = NULL, average_vars = c(), additive_vars = c(), 
+    round_additive = FALSE, crs = 32618) {
   
   # Cut using Laval
   to <- sf::st_transform(to, crs = 32618)
