@@ -1,12 +1,20 @@
-# ## Clean up, get DA data
-# 
+## Clean up, get DA data
+
 # allcrosstab <- tibble::as_tibble(data.table::fread("data/allcrosstab.csv", encoding = "Latin-1"))
 # DAIDs <- cancensus::get_census(dataset = "CA21",
-#                     regions = list(CSD = 2465005),
-#                     level = "DA")$GeoUID
+#                                regions = list(CSD = 2465005),
+#                                level = "DA")$GeoUID
 # allcrosstab <- allcrosstab[c(1:4, which(allcrosstab$V1 %in% DAIDs)), ]
 # allcrosstab[1:4, 1] <- c("mode_occupation", "characteristic", "composition", "revenu")
 # qs::qsave(allcrosstab, file = "data/allcrosstab_Laval_DA.qs")
+# 
+# CTIDs <- cancensus::get_census(dataset = "CA21",
+#                                regions = list(CSD = 2465005),
+#                                level = "CT")$GeoUID
+# allcrosstab$V1 <- sub("(\\d+)(\\d{2})$", "\\1.\\2", allcrosstab$V1)
+# allcrosstab <- allcrosstab[c(1:4, which(allcrosstab$V1 %in% CTIDs)), ]
+# allcrosstab[1:4, 1] <- c("mode_occupation", "characteristic", "composition", "revenu")
+# qs::qsave(allcrosstab, file = "data/allcrosstab_Laval_CT.qs")
 
 # Get all options
 crosstab_list <- function(cat = c("mode_occupation", "characteristic", "composition", "revenu")) {
@@ -21,8 +29,9 @@ crosstab_get <- function(mode_occupation = c(total = "total"),
                          characteristic = c(total = "total"), 
                          composition = c(total = "total"), 
                          revenu = c(total = "total"),
-                         keep_cat = FALSE) {
-  allcrosstab <- qs::qread("data/allcrosstab_Laval_DA.qs")
+                         keep_cat = FALSE,
+                         scale = "CT") {
+  allcrosstab <- qs::qread(paste0("data/allcrosstab_Laval_", scale, ".qs"))
   
   if (sum(grepl("_", mode_occupation)) > 1) {
     stop("No `_` in names of named vector (mode_occupation)")

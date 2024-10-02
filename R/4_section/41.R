@@ -109,7 +109,7 @@ plot_4_1_1_1 <- ggplot(pto, aes(x = Year, y = count, fill = type)) +
             vjust = 2, size = 3, color = "white") +
   scale_fill_manual(values = c("owner" = "#A3B0D1", "tenant" = "#CD718C"),
                     labels = c("owner" = "Propriétaire", "tenant" = "Locataire")) +
-  scale_y_continuous(labels = function(x) convert_number(x)) +
+  scale_y_continuous(labels = convert_number) +
   labs(x = "", y = "Nombre de ménages") +
   graph_theme
 
@@ -229,10 +229,10 @@ table_4_1_1_1 <- table_4_1_1_1_data |>
   fmt(columns = c(2,3,5), fns = convert_number) |> 
   fmt(columns = c(4,6), fns = convert_pct) |> 
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular", size = px(15)),
+    style = cell_text(font = font_local_name, size = px(15)),
     locations = cells_body()) |> 
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular"),
+    style = cell_text(font = font_local_name),
     locations = cells_column_labels()) |> 
   tab_options(
     table.font.size = 14,
@@ -335,10 +335,10 @@ table_4_1_1_2_2 <- data_4_1_1_2_2_table |>
     columns = c(3:15)
   ) |>
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular", size = px(13)),
+    style = cell_text(font = font_local_name, size = px(13)),
     locations = cells_body()) |>
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular"),
+    style = cell_text(font = font_local_name),
     locations = cells_column_labels()) |>
   tab_style(
     style = cell_text(size = px(15)),
@@ -447,10 +447,10 @@ table_4_1_1_2 <- data_4_1_1_2_table |>
     columns = c(4:17)
   ) |> 
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular", size = px(13)),
+    style = cell_text(font = font_local_name, size = px(13)),
     locations = cells_body()) |> 
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular"),
+    style = cell_text(font = font_local_name),
     locations = cells_column_labels()) |> 
   tab_style(
     style = cell_text(size = px(14)),
@@ -751,10 +751,10 @@ table_4_1_1_3_comp <- table_data_4_1_1_3_comp |>
   fmt(columns = c(2,4,6,8,10,12), fns = convert_number) |> 
   fmt(columns = c(3,5,7,9,11,13), fns = convert_pct) |> 
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular", size = px(13)),
+    style = cell_text(font = font_local_name, size = px(13)),
     locations = cells_body()) |> 
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular", size = px(15)),
+    style = cell_text(font = font_local_name, size = px(15)),
     locations = cells_column_labels())
     
 
@@ -810,10 +810,10 @@ table_4_1_1_3_comp_ed <- table_data_4_1_1_3_comp_ed |>
   fmt(columns = c(2,4,6,8,10,12), fns = convert_number) |> 
   fmt(columns = c(3,5,7,9,11,13), fns = convert_pct) |> 
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular", size = px(13)),
+    style = cell_text(font = font_local_name, size = px(13)),
     locations = cells_body()) |> 
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular", size = px(14)),
+    style = cell_text(font = font_local_name, size = px(14)),
     locations = cells_column_labels()) |> 
   tab_options(
     table.width = px(6 * 252)
@@ -1157,10 +1157,10 @@ table_4_1_1_6 <- data_4_1_1_6_table |>
   fmt(columns = c(2, 4, 6, 8, 10, 12, 14, 16), fns = convert_number) |> 
   fmt(columns = c(3, 5, 7, 9, 11, 13, 15, 17), fns = convert_pct) |> 
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular", size = px(13)),
+    style = cell_text(font = font_local_name, size = px(13)),
     locations = cells_body()) |> 
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular", size = px(14)),
+    style = cell_text(font = font_local_name, size = px(14)),
     locations = cells_column_labels()) |> 
   tab_options(
     table.width = px(6 * 282)
@@ -1280,10 +1280,10 @@ table_4_1_2_3_1 <- projection_4_1_2_3_1 |>
     columns = c(2:22)
   ) |>
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular", size = px(13)),
+    style = cell_text(font = font_local_name, size = px(13)),
     locations = cells_body()) |>
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular", size = px(14)),
+    style = cell_text(font = font_local_name, size = px(14)),
     locations = cells_column_labels()) |>
   tab_style(
     style = cell_text(size = px(15)),
@@ -1359,10 +1359,10 @@ table_4_1_2_3_2 <- data_4_1_2_3_2 |>
     columns = c(19:21)
   ) |>
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular", size = px(13)),
+    style = cell_text(font = font_local_name, size = px(13)),
     locations = cells_body()) |>
   tab_style(
-    style = cell_text(font = "KMR Apparat Regular", size = px(14)),
+    style = cell_text(font = font_local_name, size = px(14)),
     locations = cells_column_labels()) |>
   tab_style(
     style = cell_text(size = px(15)),

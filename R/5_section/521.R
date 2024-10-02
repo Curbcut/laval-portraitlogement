@@ -165,13 +165,13 @@ prix_sur_marche_table <-
   ) |>
   tab_style(
     style = cell_text(
-      font = "KMR Apparat Regular"
+      font = font_local_name
     ),
     locations = cells_body()
   ) |>
   tab_style(
     style = cell_text(
-      font = "KMR Apparat Regular"
+      font = font_local_name
     ),
     locations = cells_column_labels()
   ) |>

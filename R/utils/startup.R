@@ -21,9 +21,9 @@ source("R/utils/interpolation.R")
 if (Sys.info()["sysname"] == "Windows") {
   # font_import()
   # loadfonts(device = "win", quiet = TRUE)
-  # windowsFonts(`KMR Apparat Regular`=windowsFont("KMR Apparat Regular"))
-  # "KMR Apparat Regular" %in% names(windowsFonts())
-  font_add(family = "KMR Apparat Regular", regular = "data/fonts/KMR-Apparat-Regular.ttf")
+  # windowsFonts(`KMR Apparat Regular`=windowsFont(font_local_name))
+  # font_local_name %in% names(windowsFonts())
+  font_add(family = font_local_name, regular = "data/fonts/KMR-Apparat-Regular.ttf")
   font_add(family = "KMR-Apparat-Regular", regular = "data/fonts/KMR-Apparat-Regular.ttf")
   showtext_auto()
 }
@@ -80,11 +80,13 @@ color_theme <- function(theme) {
 
 # Themes ------------------------------------------------------------------
 
+font_local_name <- "KMR Apparat Regular"
+
 graph_theme <- 
   theme_minimal() +
   theme(legend.title = element_blank(), legend.position = "bottom",
         legend.margin = margin(t = -5, r = 0, b = 5, l = 0),
-        text=element_text(family="KMR Apparat Regular"),
+        text=element_text(family=font_local_name),
         legend.text = element_text(size = 10),
         axis.title.y = element_text(size = 11))
 
@@ -109,11 +111,11 @@ gg_cc_tiles <- list(ggspatial::layer_spatial(tiles, alpha = 0.7))
 default_theme <- theme(
   legend.position = "bottom",
   legend.box = "vertical",
-  legend.title = element_text(size = 11, family="KMR Apparat Regular"),
-  legend.text = element_text(size = 10, family="KMR Apparat Regular"),
+  legend.title = element_text(size = 11, family=font_local_name),
+  legend.text = element_text(size = 10, family=font_local_name),
   legend.title.align = 0.5,
   legend.text.align = 0.5,
-  text=element_text(size = 10, family="KMR Apparat Regular"), 
+  text=element_text(size = 10, family=font_local_name), 
   legend.box.margin = margin(t = -10))
 
 # Converting the bounding box to be compatible with EPSG:4326

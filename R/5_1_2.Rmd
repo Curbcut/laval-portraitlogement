@@ -37,8 +37,17 @@ Pour "...selon selon la période de construction, le mode d'occupation et l'indi
 
 _Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
 
+En ajout à la section précédente, le graphique \@ref(fig:repEvol) montre l'évolution à la baisse du pourcentage de logements nécessitant des réparations majeures. En 1996, 5,84 % des logements nécessitaient des réparations majeures. Ce chiffre a légèrement augmenté pour atteindre 5,85 % en 2001, avant de diminuer progressivement à 5,13 % en 2016, et enfin à 5,18 % en 2021.
+
+Malgré une amélioration générale, ce pourcentage reste relativement stable depuis 2011, oscillant autour de 5,1 %. Ainsi, bien que la proportion de logements nécessitant des réparations majeures ait diminué par rapport à la fin des années 1990, les besoins persistent à un niveau modéré au cours de la dernière décennie.
+
+```{r repEvol, include=TRUE, fig.cap="Évolution du pourcentage de logements nécessitant des réparations majeures à Laval entre 1996 et 2021", fig.align = 'center'}
+rep_evol
+```
+
 # 5.1.2.3 Qualité et salubrité du logement
 
 Pour 'salubrité', en attente de "données via rapport sur le Code du logement.".
 
-_Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
+Selon les normes d'accessibilité établies par la Société canadienne d'hypothèques, un logement est de qualité convenable si, de l'avis des occupants, il ne nécessite pas de réparations majeures. Répétition 5.1.2.2 "Pourcentage de logement nécessitant des réparations majeures (%)" ?
+
