@@ -86,20 +86,22 @@ tenant_growth_16 <- pto |>
   pull(difference)
 
 total_hh_21 <- pto |> 
-  filter(type == "owner", Year == 2021) |> 
-  mutate(total = convert_number(total)) |> 
+  filter(Year == 2021) |> 
+  summarize(total = convert_number(sum(count))) |> 
   pull(total)
 
 total_hh_01 <- pto |> 
-  filter(type == "owner", Year == 2001) |> 
-  mutate(total = convert_number(total)) |> 
+  filter(Year == 2001) |> 
+  summarize(total = convert_number(sum(count))) |> 
   pull(total)
 
 total_prop_diff <- pto |> 
-  filter(type == "owner", Year %in% c(2021, 2001)) |> 
-  select(Year, total) |> 
-  pivot_wider(names_from = Year, values_from = total) |> 
-  mutate(diff = convert_pct(`2021` / `2001` - 1)) |> 
+  filter(Year %in% c(2021, 2001)) |> 
+  select(Year, count) |> 
+  group_by(Year) |> 
+  summarize(count = sum(count)) |> 
+  pivot_wider(names_from = Year, values_from = count) |> 
+  mutate(diff = convert_pct((`2021` - `2001`) / `2001`)) |> 
   pull(diff)
 
 #Creating a grouped bar chart
@@ -125,33 +127,36 @@ pto_map <- get_census(dataset = "CA21",
          tenant = if_else(is.na(tenant), 0, tenant)) |> 
   mutate(total = if_else(is.na(total), owner + tenant, total))
 
-total_hh_map <- interpolate(pto_map, additive_vars = "total")
-owner_hh_map <- interpolate(pto_map, additive_vars = "owner")
-tenant_hh_map <- interpolate(pto_map, additive_vars = "tenant")
+hh_map <- interpolate(pto_map, additive_vars = c("total", "owner", "tenant"))
+hh_map <- hh_map |> 
+  mutate(owner_pct = owner / total,
+         tenant_pct = tenant / total)
 
 #Finding and creating the breaks
 #list(classInt::classIntervals(total_hh_map$total, n = 5, style = "jenks")$brks)
-total_hh_breaks <- c(-Inf, 7000, 7600, 8300, 8700, Inf)
-total_hh_breaks_lab <- c("< 7 000", "7 000 - 7 600", "7 600 - 8 300", "8 300 - 8 700", "> 8 700")
+total_hh_breaks <- c(-Inf, 7000, 7500, 8000, 8500, Inf)
+total_hh_breaks_lab <- c("< 7 000", "7 000 - 7 500", "7 500 - 8 000", "8 000 - 8 500", "> 8 500")
 #list(classInt::classIntervals(owner_hh_map$owner, n = 5, style = "jenks")$brks)
-owner_hh_breaks <- c(-Inf, 3500, 4500, 5100, 5900, Inf)
-owner_hh_breaks_lab <- c("< 3 500", "3 500 - 4 500", "4 500 - 5 100", "5 100 - 5 900", "> 5 900")
+owner_hh_breaks <- c(-Inf, 0.2, 0.4, 0.6, 0.8, Inf)
+owner_hh_breaks_lab <- c("< 20 %", "20 % - 40 %", "40 % - 60 %", "60 % - 80 %", "> 80 %")
 #list(classInt::classIntervals(tenant_hh_map$tenant, n = 5, style = "jenks")$brks)
-tenant_hh_breaks <- c(-Inf, 1500, 2200, 3300, 5100, Inf)
-tenant_hh_breaks_lab <- c("< 1 500", "1 500 - 2 200", "2 200 - 3 300", "3 300 - 5 100", "> 5 100")
+tenant_hh_breaks <- c(-Inf, 0.2, 0.4, 0.6, 0.8, Inf)
+tenant_hh_breaks_lab <- c("< 20 %", "20 % - 40 %", "40 % - 60 %", "60 % - 80 %", "> 80 %")
 
 #Applying the breaks as new columns to the data frame
-total_hh_map <- total_hh_map |> 
+total_hh_map <- hh_map |> 
   mutate(total_quantile = cut(total, breaks = total_hh_breaks, include.lowest = TRUE,
                               labels = total_hh_breaks_lab))
 
-owner_hh_map <- owner_hh_map |> 
-  mutate(owner_quantile = cut(owner, breaks = owner_hh_breaks, include.lowest = TRUE,
+owner_hh_map <- hh_map |> 
+  mutate(owner_quantile = cut(owner_pct, breaks = owner_hh_breaks, include.lowest = TRUE,
                               labels = owner_hh_breaks_lab))
+owner_hh_map$owner_quantile <- factor(owner_hh_map$owner_quantile, levels = owner_hh_breaks_lab)
 
-tenant_hh_map <- tenant_hh_map |> 
-  mutate(tenant_quantile = cut(tenant, breaks = tenant_hh_breaks, include.lowest = TRUE,
+tenant_hh_map <- hh_map |> 
+  mutate(tenant_quantile = cut(tenant_pct, breaks = tenant_hh_breaks, include.lowest = TRUE,
                               labels = tenant_hh_breaks_lab))
+tenant_hh_map$tenant_quantile <- factor(tenant_hh_map$tenant_quantile, levels = tenant_hh_breaks_lab)
 
 # pto_map <- pto_map |> 
 #   mutate(
@@ -166,9 +171,9 @@ tenant_hh_map <- tenant_hh_map |>
 #Plotting total number of households
 map_total_hh <- ggplot(data = total_hh_map) +
   gg_cc_tiles +
-  geom_sf(aes(geometry = geometry, fill = total_quantile), alpha = 0.9, color = "transparent") +
+  geom_sf(aes(geometry = geometry, fill = total_quantile), alpha = 0.9, color = "transparent", show.legend = TRUE) +
   scale_fill_manual(values = curbcut_scale,
-                    name = "Nombre de ménages (n)") +
+                    name = "Nombre de ménages (n)",) +
   gg_cc_theme +
   guides(fill = guide_legend(title.position = "top",
                              title.hjust = 0.5))
@@ -176,9 +181,11 @@ map_total_hh <- ggplot(data = total_hh_map) +
 #Plotting total number of owner households
 map_owner_hh <- ggplot(data = owner_hh_map) +
   gg_cc_tiles +
-  geom_sf(aes(geometry = geometry, fill = owner_quantile), alpha = 0.9, color = "transparent") +
+  geom_sf(aes(geometry = geometry, fill = owner_quantile), alpha = 0.9, color = "transparent", show.legend = TRUE) +
   scale_fill_manual(values = curbcut_scale,
-                    name = "Nombre de ménages propriétaires (n)") +
+                    labels = owner_hh_breaks_lab,
+                    drop = FALSE,
+                    name = "Pourcentage de ménages propriétaires (n)") +
   geom_sf(data = laval_sectors, fill = "transparent", color = "black") +
   gg_cc_theme +
   guides(fill = guide_legend(title.position = "top",
@@ -187,9 +194,11 @@ map_owner_hh <- ggplot(data = owner_hh_map) +
 #Plotting total number of tenant households
 map_tenant_hh <- ggplot(data = tenant_hh_map) +
   gg_cc_tiles +
-  geom_sf(aes(geometry = geometry, fill = tenant_quantile), alpha = 0.9, color = "transparent") +
+  geom_sf(aes(geometry = geometry, fill = tenant_quantile), alpha = 0.9, color = "transparent", show.legend = TRUE) +
   scale_fill_manual(values = curbcut_scale,
-                    name = "Nombre de ménages locataires (n)") +
+                    labels = tenant_hh_breaks_lab,
+                    drop = FALSE,
+                    name = "Pourcentage de ménages locataires") +
   gg_cc_theme +
   guides(fill = guide_legend(title.position = "top",
                              title.hjust = 0.5))
@@ -287,83 +296,90 @@ data_4_1_1_2 <- crosstab_get(mode_occupation = mode_occupation, revenu = revenu)
           "100 - 124 999 $",
           "> 125 000 $")))
 
+data_4_1_1_2 <- 
+data_4_1_1_2 |> 
+  group_by(income) |> 
+  mutate(pct = convert_pct(count / sum(count)))
+
 plot_4_1_1_2 <- ggplot(data_4_1_1_2, aes(x = income, y = count, fill = type)) +
-    geom_bar(stat = "identity", position = "dodge") +
-    labs(x = "Revenu médian des ménages", y = "Nombre de ménages (n)", title = "") +
-    scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
-    scale_x_discrete(labels = function(x) str_wrap(x, width = 18)) +
-    scale_y_continuous(labels = function(x) convert_number(x)) +
-    graph_theme +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = NULL, y = "Nombre de ménages", title = "") +
+  scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 18)) +
+  scale_y_continuous(labels = function(x) convert_number(x)) +
+  geom_text(aes(label = pct), position = position_dodge(width = 0.9),
+            vjust = 2, size = 3, color = "white") +
+  graph_theme +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-data_4_1_1_2_2_table <- data_4_1_1_2 |>
-  pivot_wider(names_from = income, values_from = count) |>
-  mutate("< 19 999 $ (n)" = `< 19 999 $`,
-         "< 19 999 $ (%)" = `< 19 999 $` / sum(`< 19 999 $`, na.rm = TRUE),
-         "20 - 39 999 $ (n)" = `20 - 39 999 $`,
-         "20 - 39 999 $ (%)" = `20 - 39 999 $` / sum(`20 - 39 999 $`, na.rm = TRUE),
-         "40 - 59 999 $ (n)" = `40 - 59 999 $`,
-         "40 - 59 999 $ (%)" = `40 - 59 999 $` / sum(`40 - 59 999 $`, na.rm = TRUE),
-         "60 - 79 999 $ (n)" = `60 - 79 999 $`,
-         "60 - 79 999 $ (%)" = `60 - 79 999 $` / sum(`60 - 79 999 $`, na.rm = TRUE),
-         "80 - 99 999 $ (n)" = `80 - 99 999 $`,
-         "80 - 99 999 $ (%)" = `80 - 99 999 $` / sum(`80 - 99 999 $`, na.rm = TRUE),
-         "100 - 124 999 $ (n)" = `100 - 124 999 $`,
-         "100 - 124 999 $ (%)" = `100 - 124 999 $` / sum(`100 - 124 999 $`, na.rm = TRUE),
-         "> 125 000 $ (n)" = `> 125 000 $`,
-         "> 125 000 $ (%)" = `> 125 000 $` / sum(`> 125 000 $`, na.rm = TRUE)) |>
-  select(type, "< 19 999 $ (n)", "< 19 999 $ (%)", "20 - 39 999 $ (n)",
-         "20 - 39 999 $ (%)", "40 - 59 999 $ (n)", "40 - 59 999 $ (%)",
-         "60 - 79 999 $ (n)", "60 - 79 999 $ (%)", "80 - 99 999 $ (n)",
-         "80 - 99 999 $ (%)","100 - 124 999 $ (n)", "100 - 124 999 $ (%)",
-         "> 125 000 $ (n)", "> 125 000 $ (%)") |>
-  rename("Type de ménage" = type)
-
-table_4_1_1_2_2 <- data_4_1_1_2_2_table |>
-  gt() |>
-  data_color(
-    columns = c(3,5,7,9,11,13,15),
-    colors = scales::col_numeric(
-      palette = c("white", color_theme("purpletransport")),
-      domain = NULL
-    )
-  ) |>
-  fmt(columns = c(2,4,6,8,10,12,14), fns = convert_number) |>
-  fmt(columns = c(3,5,7,9,11,13,15), fns = convert_pct) |>
-  tab_spanner(
-    label = "Tranche de revenu",
-    columns = c(3:15)
-  ) |>
-  tab_style(
-    style = cell_text(font = font_local_name, size = px(13)),
-    locations = cells_body()) |>
-  tab_style(
-    style = cell_text(font = font_local_name),
-    locations = cells_column_labels()) |>
-  tab_style(
-    style = cell_text(size = px(15)),
-    locations = cells_column_spanners(spanners = "Tranche de revenu")
-  ) |>
-  tab_options(
-    table.font.size = 13,
-    table.width = px(6 * 208)
-  ) |>
-  cols_width(
-    columns = c(1) ~ px(70),
-    everything() ~ px(72)
-  )
+# data_4_1_1_2_2_table <- data_4_1_1_2 |>
+#   pivot_wider(names_from = income, values_from = count) |>
+#   mutate("< 19 999 $ (n)" = `< 19 999 $`,
+#          "< 19 999 $ (%)" = `< 19 999 $` / sum(`< 19 999 $`, na.rm = TRUE),
+#          "20 - 39 999 $ (n)" = `20 - 39 999 $`,
+#          "20 - 39 999 $ (%)" = `20 - 39 999 $` / sum(`20 - 39 999 $`, na.rm = TRUE),
+#          "40 - 59 999 $ (n)" = `40 - 59 999 $`,
+#          "40 - 59 999 $ (%)" = `40 - 59 999 $` / sum(`40 - 59 999 $`, na.rm = TRUE),
+#          "60 - 79 999 $ (n)" = `60 - 79 999 $`,
+#          "60 - 79 999 $ (%)" = `60 - 79 999 $` / sum(`60 - 79 999 $`, na.rm = TRUE),
+#          "80 - 99 999 $ (n)" = `80 - 99 999 $`,
+#          "80 - 99 999 $ (%)" = `80 - 99 999 $` / sum(`80 - 99 999 $`, na.rm = TRUE),
+#          "100 - 124 999 $ (n)" = `100 - 124 999 $`,
+#          "100 - 124 999 $ (%)" = `100 - 124 999 $` / sum(`100 - 124 999 $`, na.rm = TRUE),
+#          "> 125 000 $ (n)" = `> 125 000 $`,
+#          "> 125 000 $ (%)" = `> 125 000 $` / sum(`> 125 000 $`, na.rm = TRUE)) |>
+#   select(type, "< 19 999 $ (n)", "< 19 999 $ (%)", "20 - 39 999 $ (n)",
+#          "20 - 39 999 $ (%)", "40 - 59 999 $ (n)", "40 - 59 999 $ (%)",
+#          "60 - 79 999 $ (n)", "60 - 79 999 $ (%)", "80 - 99 999 $ (n)",
+#          "80 - 99 999 $ (%)","100 - 124 999 $ (n)", "100 - 124 999 $ (%)",
+#          "> 125 000 $ (n)", "> 125 000 $ (%)") |>
+#   rename("Type de ménage" = type)
+# 
+# table_4_1_1_2_2 <- data_4_1_1_2_2_table |>
+#   gt() |>
+#   data_color(
+#     columns = c(3,5,7,9,11,13,15),
+#     colors = scales::col_numeric(
+#       palette = c("white", color_theme("purpletransport")),
+#       domain = NULL
+#     )
+#   ) |>
+#   fmt(columns = c(2,4,6,8,10,12,14), fns = convert_number) |>
+#   fmt(columns = c(3,5,7,9,11,13,15), fns = convert_pct) |>
+#   tab_spanner(
+#     label = "Tranche de revenu",
+#     columns = c(3:15)
+#   ) |>
+#   tab_style(
+#     style = cell_text(font = font_local_name, size = px(13)),
+#     locations = cells_body()) |>
+#   tab_style(
+#     style = cell_text(font = font_local_name),
+#     locations = cells_column_labels()) |>
+#   tab_style(
+#     style = cell_text(size = px(15)),
+#     locations = cells_column_spanners(spanners = "Tranche de revenu")
+#   ) |>
+#   tab_options(
+#     table.font.size = 13,
+#     table.width = px(6 * 208)
+#   ) |>
+#   cols_width(
+#     columns = c(1) ~ px(70),
+#     everything() ~ px(72)
+#   )
   
 
-data_4_1_1_2_table_pre <- crosstab_get(mode_occupation = mode_occupation, revenu = revenu) |> 
+data_4_1_1_2_table_pre <- crosstab_get(mode_occupation = mode_occupation, revenu = revenu, scale = "CT") |> 
   mutate(owner_20 = owner_none + owner_10 + owner_2,
          tenant_20 = tenant_none + tenant_10 + tenant_2) |> 
   select(-owner_none, -tenant_none, -owner_10, -tenant_10, -owner_2, -tenant_2) |> 
   rename("GeoUID" = "DA_ID") |> 
-  full_join(laval_da, by = "GeoUID") |> 
+  full_join(laval_ct, by = "GeoUID") |> 
   st_as_sf() |> 
   st_transform(crs = 32618)
 
-data_4_1_1_2_table <- interpolate(data_4_1_1_2_table_pre, additive_vars = c("owner_20", "tenant_20", "owner_40", "tenant_40",
+data_4_1_1_2_table <- interpolate(from = data_4_1_1_2_table_pre, additive_vars = c("owner_20", "tenant_20", "owner_40", "tenant_40",
                                              "owner_60", "tenant_60", "owner_80", "tenant_80",
                                              "owner_100", "tenant_100", "owner_124", "tenant_124",
                                              "owner_125", "tenant_125")) |> 
@@ -391,14 +407,23 @@ data_4_1_1_2_table <- interpolate(data_4_1_1_2_table_pre, additive_vars = c("own
     "> 125 000 $ (n)" = `125`,
   ) |> 
   group_by(NOM) |>
+  # mutate(
+  #   "< 19 999 $ (%)" = `< 19 999 $ (n)` / sum(`< 19 999 $ (n)`, na.rm = TRUE),
+  #   "20 - 39 999 $ (%)" = `20 - 39 999 $ (n)` / sum(`20 - 39 999 $ (n)`, na.rm = TRUE),
+  #   "40 - 59 999 $ (%)" = `40 - 59 999 $ (n)` / sum(`40 - 59 999 $ (n)`, na.rm = TRUE),
+  #   "60 - 79 999 $ (%)" = `60 - 79 999 $ (n)` / sum(`60 - 79 999 $ (n)`, na.rm = TRUE),
+  #   "80 - 99 999 $ (%)" = `80 - 99 999 $ (n)` / sum(`80 - 99 999 $ (n)`, na.rm = TRUE),
+  #   "100 - 124 999 $ (%)" = `100 - 124 999 $ (n)` / sum(`100 - 124 999 $ (n)`, na.rm = TRUE),
+  #   "> 125 000 $ (%)" = `> 125 000 $ (n)` / sum(`> 125 000 $ (n)`, na.rm = TRUE)
+  # ) |>
   mutate(
-    "< 19 999 $ (%)" = `< 19 999 $ (n)` / sum(`< 19 999 $ (n)`, na.rm = TRUE),
-    "20 - 39 999 $ (%)" = `20 - 39 999 $ (n)` / sum(`20 - 39 999 $ (n)`, na.rm = TRUE),
-    "40 - 59 999 $ (%)" = `40 - 59 999 $ (n)` / sum(`40 - 59 999 $ (n)`, na.rm = TRUE),
-    "60 - 79 999 $ (%)" = `60 - 79 999 $ (n)` / sum(`60 - 79 999 $ (n)`, na.rm = TRUE),
-    "80 - 99 999 $ (%)" = `80 - 99 999 $ (n)` / sum(`80 - 99 999 $ (n)`, na.rm = TRUE),
-    "100 - 124 999 $ (%)" = `100 - 124 999 $ (n)` / sum(`100 - 124 999 $ (n)`, na.rm = TRUE),
-    "> 125 000 $ (%)" = `> 125 000 $ (n)` / sum(`> 125 000 $ (n)`, na.rm = TRUE)
+    "< 19 999 $ (%)" = `< 19 999 $ (n)` / total,
+    "20 - 39 999 $ (%)" = `20 - 39 999 $ (n)` / total,
+    "40 - 59 999 $ (%)" = `40 - 59 999 $ (n)` / total,
+    "60 - 79 999 $ (%)" = `60 - 79 999 $ (n)` / total,
+    "80 - 99 999 $ (%)" = `80 - 99 999 $ (n)` / total,
+    "100 - 124 999 $ (%)" = `100 - 124 999 $ (n)` / total,
+    "> 125 000 $ (%)" = `> 125 000 $ (n)` / total
   ) |>
   ungroup() |>
   mutate(across(where(is.numeric), ~ ifelse(is.nan(.), 0, .))) |>
@@ -407,44 +432,75 @@ data_4_1_1_2_table <- interpolate(data_4_1_1_2_table_pre, additive_vars = c("own
     type == "tenant" ~ "Locataire",
     TRUE ~ type
   )) |> 
-  select(NOM, type, total, "< 19 999 $ (n)", "< 19 999 $ (%)", "20 - 39 999 $ (n)",
-         "20 - 39 999 $ (%)", "40 - 59 999 $ (n)", "40 - 59 999 $ (%)", 
-         "60 - 79 999 $ (n)", "60 - 79 999 $ (%)", "80 - 99 999 $ (n)",
-         "80 - 99 999 $ (%)","100 - 124 999 $ (n)", "100 - 124 999 $ (%)", 
-         "> 125 000 $ (n)", "> 125 000 $ (%)") |> 
+  # select(NOM, type, total, "< 19 999 $ (n)", "< 19 999 $ (%)", "20 - 39 999 $ (n)",
+  #        "20 - 39 999 $ (%)", "40 - 59 999 $ (n)", "40 - 59 999 $ (%)", 
+  #        "60 - 79 999 $ (n)", "60 - 79 999 $ (%)", "80 - 99 999 $ (n)",
+  #        "80 - 99 999 $ (%)","100 - 124 999 $ (n)", "100 - 124 999 $ (%)", 
+  #        "> 125 000 $ (n)", "> 125 000 $ (%)") |> 
+  select(NOM, type, total, "< 19 999 $ (%)", "20 - 39 999 $ (%)", "40 - 59 999 $ (%)", 
+         "60 - 79 999 $ (%)", "80 - 99 999 $ (%)","100 - 124 999 $ (%)", 
+         "> 125 000 $ (%)") |> 
   rename("Type de ménage" = type,
          "Nombre total de ménages (n)" = total,
-         "District électorale" = NOM)
+         "district électoral" = NOM)
 
-table_4_1_1_2 <- data_4_1_1_2_table |> 
+data_4_1_1_2_table_tenant <- data_4_1_1_2_table[
+  data_4_1_1_2_table$`Type de ménage` == "Locataire", c(1, 3:ncol(data_4_1_1_2_table))]
+names(data_4_1_1_2_table_owner)[2] <- "Nombre de ménages locataires"
+
+table_4_1_1_2_tenant <- data_4_1_1_2_table_tenant |> 
   gt() |> 
-  tab_style(
-    style = cell_fill(color = "#f0f0f0"),
-    locations = cells_body(
-      rows = seq(2, nrow(data_4_1_1_2_table), by = 2)
-    )
-  ) |> 
-  tab_style(
-    style = list(
-      cell_fill(color = "#f0f0f0"),
-      cell_text(color = "transparent")
-    ),
-    locations = cells_body(
-      columns = 1,
-      rows = seq(2, nrow(data_4_1_1_2_table), by = 2) # Every other row
-    )
-  ) |> 
   data_color(
-    columns = c(5,7,9,11,13,15,17),
+    columns = 3:ncol(data_4_1_1_2_table_tenant),
     colors = scales::col_numeric(
       palette = c("white", color_theme("purpletransport")),
-      domain = NULL
-    )) |> 
-  fmt(columns = c(3,4,6,8,10,12,14,16), fns = convert_number) |> 
-  fmt(columns = c(5,7,9,11,13,15,17), fns = convert_pct) |> 
+      domain = c(0.023, 0.389), 
+    ),
+    direction = "row") |> 
+  fmt(columns = 2, fns = convert_number) |> 
+  fmt(columns = 3:ncol(data_4_1_1_2_table_tenant), fns = convert_pct) |> 
   tab_spanner(
     label = "Tranche de revenu",
-    columns = c(4:17)
+    columns = c(3:ncol(data_4_1_1_2_table_tenant))
+  ) |> 
+  tab_style(
+    style = cell_text(font = font_local_name, size = px(13)),
+    locations = cells_body()) |> 
+  tab_style(
+    style = cell_text(font = font_local_name),
+    locations = cells_column_labels()) |> 
+  tab_style(
+    style = cell_text(size = px(14)),
+    locations = cells_column_spanners(spanners = "Tranche de revenu")
+  ) |> 
+  tab_options(
+    table.font.size = 13,
+    table.width = px(6 * 208)
+  ) |> 
+  cols_width(
+    columns = c(1) ~ px(100),
+    columns = c(3) ~ px(102),
+    everything() ~ px(72)
+  )
+
+data_4_1_1_2_table_owner <- data_4_1_1_2_table[
+  data_4_1_1_2_table$`Type de ménage` == "Propriétaire", c(1, 3:ncol(data_4_1_1_2_table))]
+names(data_4_1_1_2_table_owner)[2] <- "Nombre de ménages propriétaires"
+
+table_4_1_1_2_owner <- data_4_1_1_2_table_owner |> 
+  gt() |> 
+  data_color(
+    columns = 3:ncol(data_4_1_1_2_table_owner),
+    colors = scales::col_numeric(
+      palette = c("white", color_theme("purpletransport")),
+      domain = c(0, 0.51), 
+    ),
+    direction = "row") |> 
+  fmt(columns = 2, fns = convert_number) |> 
+  fmt(columns = 3:ncol(data_4_1_1_2_table_owner), fns = convert_pct) |> 
+  tab_spanner(
+    label = "Tranche de revenu",
+    columns = c(3:ncol(data_4_1_1_2_table_owner))
   ) |> 
   tab_style(
     style = cell_text(font = font_local_name, size = px(13)),
@@ -501,8 +557,10 @@ table_4_1_1_2 <- data_4_1_1_2_table |>
 
 #Saving the visuals as images
 ggsave(plot = plot_4_1_1_2, "outputs/4/plot_4_1_1_2.pdf", width = 7.5, height = 6)
-gtsave(table_4_1_1_2_2, "outputs/4/table_4_1_1_2_2.png", vwidth = 2400)
-gtsave(table_4_1_1_2, "outputs/4/table_4_1_1_2.png", vwidth = 2400)
+# gtsave(table_4_1_1_2_2, "outputs/4/table_4_1_1_2_2.png", vwidth = 2400)
+gtsave(table_4_1_1_2_owner, "outputs/4/table_4_1_1_2_owner.png", vwidth = 2400)
+
+gtsave(table_4_1_1_2_tenant, "outputs/4/table_4_1_1_2_tenant.png", vwidth = 2400)
 #Data frame for the plot
 # data_4_1_2 <- read_excel("data/4/mode_occupation_revenu_SR.xlsx") |> #Edited version of the spreadsheet
 #   select(-GeoUID) |> 
@@ -792,7 +850,7 @@ table_data_4_1_1_3_comp_ed <- crosstab_get(mode_occupation = mode_occupation, co
          "Couple avec enfants (n)", "Couple avec enfants (%)", "Famille monoparentale (n)", "Famille monoparentale (%)", 
          "Ménage multigénérationnel (n)", "Ménage multigénérationnel (%)", "Seule personne (n)",
          "Seule personne (%)","Deux personnes ou plus (n)", "Deux personnes ou plus (%)") |> 
-  rename("District électorale" = NOM)
+  rename("district électoral" = NOM)
   
 table_4_1_1_3_comp_ed <- table_data_4_1_1_3_comp_ed |> 
   gt() |> 
@@ -1231,16 +1289,19 @@ plot_4_1_2_1 <- ggplot(data_4_1_2_1_complete, aes(x = Year, y = Households)) +
             aes(group = 1, linetype = "Ménages projetés"),
             linewidth = 1.5, 
             na.rm = TRUE) +
-  scale_x_discrete(limits = as.character(2011:2041)) +
+  scale_x_discrete(limits = as.character(2011:2041), breaks = as.character(seq(2010, 2040, by = 10))) +
   scale_y_continuous(labels = function(x) convert_number(x)) +
   scale_linetype_manual(values = c("solid", "dotted")) +
   labs(x = "", y = "Nombre de ménages (n)", linetype = "") +
   graph_theme +
-  theme(axis.text.x = element_text(angle = 315, hjust = 1))
+  theme(axis.text.x = element_text(angle = 0, hjust = 0.5))  # Remove angle for better readability
+
 
 ggsave(plot = plot_4_1_2_1, "outputs/4/plot_4_1_2_1.pdf", width = 7.5, height = 6)
 
 # 4.1.2.2 Croissance prévue des ménages ---------------------------------------
+
+
 
 # 4.1.2.3.1 Projections population/ménages selon groupe d'âge ----------------
 #https://statistique.quebec.ca/fr/document/projections-de-menages-mrc-municipalites-regionales-de-comte
@@ -1418,6 +1479,7 @@ plot_4_1_2_3_2 <- ggplot(data_4_1_2_3_2_plot, aes(x = `Année`, y = Value, fill 
 
 ggsave(plot = plot_4_1_2_3_2, "outputs/4/plot_4_1_2_3_2.pdf", width = 7.5, height = 6)
 gtsave(table_4_1_2_3_2, "outputs/4/table_4_1_2_3_2.png", vwidth = 3200)
+
 # R Markdown --------------------------------------------------------------
 qs::qsavem(plot_4_1_1_1, map_total_hh, map_owner_hh, map_tenant_hh, table_4_1_1_1,
            owner_count_diff, tenant_count_diff, owner_growth, tenant_growth,

@@ -8,65 +8,69 @@ output: html_document
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 ```
 
-# Portrait des ménages et de leur logement
-
-## Axe démographique
-
-### État actuel
-
-#### Répartition ménages selon mode d'occupation
+# 4.1.1.1 Répartition ménages selon mode d'occupation
 
 ```{r 4_1}
 qs::qload(here::here("data/section_4_1.qsm"))
 ```
 
-_Source: Recensement de la population (2001-2021)
+_Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
 
-From 2001 to 2016, the city of Laval has seen its number of households grow `r total_prop_diff` from `r total_hh_01` to `r total_hh_21`. As shown below in `r plot_4_1_1_1`, the proportion of owner households has held steady, with the proportion of owner households changing only 0,3 %, a difference of `r owner_count_diff` households, despite growing `r owner_growth`. Similarly, the proportion of tenant households shrank by 0,1 %, despite growing by `r tenant_count_diff` or `r tenant_growth`. However, the years 2016-2021 saw an abrupt change to the trend compared to 2001-2016, where the growth of tenant households, seeing a `r tenant_growth_16`, signficantly outpaced owner household growth, at `r owner_growth_16`, causing the proportion of owner households to drop 1,7 % and the proportion of tenant households to grow 2,9 %.
+De 2001 à 2021, la ville de Laval a vu son nombre de ménages augmenter de `r total_prop_diff`, passant de `r total_hh_01` à `r total_hh_21`. Comme illustré ci-dessous au graphique \@ref(fig:plot_4_1_1_1), bien que le nombre de ménages propriétaires ait augmenté en termes absolus, leur proportion est restée relativement stable au cours des deux décennies, variant entre 66,4 % et 69,4 %. Cependant, cette apparente stabilité cache un changement important entre 2016 et 2021, période durant laquelle la proportion de ménages propriétaires a reculé de 69,4 % à 66,7 %. De manière opposée, la proportion de ménages locataires, qui oscillait entre 30,7 % et 33,5 % durant ces 20 ans, a enregistré une hausse significative de 2,9 % entre 2016 et 2021, passant de 30,6 % à 33,5 %.
+
+Ces tendances révèlent un changement structurel dans la dynamique du marché résidentiel à Laval. Entre 2006 et 2011, l'essentiel de la croissance des ménages a été tiré par les propriétaires, reflétant probablement un contexte économique favorable à l'accès à la propriété, avec une augmentation nette de la proportion de ménages propriétaires. En revanche, la période 2016 à 2021 marque un renversement de tendance. Durant ces années, bien que le nombre total de ménages ait continué de croître, cette croissance semble avoir été largement absorbée par les locataires, indiquant un changement dans les conditions économiques ou les préférences résidentielles.
 
 ```{r plot_4_1_1_1, include=TRUE, fig.cap="Proportion de ménages propriétaires et locataires", fig.align = 'center'}
 plot_4_1_1_1
 ```
 
-Because the city of Laval has a higher proportion of owner households, the majority of electoral districts in Laval have a higher number of owner households compared to tenant households. This is especially notable in districts such as Auteuil and Saint-Francois, where, as shown in `r table_4_1_1_1`, owner households make up over 85% of households in the district. Additionally, as shown in `r map_owner_hh`, areas that have larger amounts of owner households are located away from the downtown area. Conversely, areas closer and within downtown Laval `r map_tenant_hh`, such as Souvenir-Labelle and Concorde-Bois-de-Boulogne, see a higher proportion and amount of tenant households.
+Comme la ville de Laval affiche une proportion plus élevée de ménages propriétaires, la majorité des districts électoraux de Laval comptent davantage de ménages propriétaires que de locataires. C'est particulièrement notable dans des districts comme Auteuil et Saint-François, où, comme le montre la carte \@ref(fig:map_owner_hh), les ménages propriétaires représentent plus de 85 % des ménages. Les districts avec une forte proportion de ménages propriétaires se trouvent généralement en périphérie du centre-ville. À l'inverse, les zones plus proches du centre-sud, telles que Souvenir-Labelle et Concorde-Bois-de-Boulogne, présentent une proportion plus élevée de ménages locataires..
 
-```{r table_4_1_1_1, include=TRUE, fig.cap="Composition des ménages par district électorale", fig.align = 'center'}
-table_4_1_1_1
-```
-
-```{r map_total_hh, include=TRUE, fig.cap="Nombre total de ménages par district électorale", fig.align = 'center'}
+```{r map_total_hh, include=TRUE, fig.cap="Nombre total de ménages par district électoral", fig.align = 'center'}
 map_total_hh
 ```
 
-```{r map_owner_hh, include=TRUE, fig.cap="Ménages propriétaires par district électorale", fig.align = 'center'}
+```{r map_owner_hh, include=TRUE, fig.cap="Pourcentage de ménages propriétaires, par district électoral", fig.align = 'center'}
 map_owner_hh
 ```
 
-```{r map_tenant_hh, include=TRUE, fig.cap="Ménages locataires par district électorale", fig.align = 'center'}
+```{r map_tenant_hh, include=TRUE, fig.cap="Pourcentage de ménages locataires, par district électoral", fig.align = 'center'}
 map_tenant_hh
 ```
 
-#### Catégorie de revenu et mode d'occupation
-_Source: Crosstab
+# 4.1.1.2 Catégorie de revenu et mode d'occupation
 
-While in 2021, the most of the households present in Laval were owner households, the majority of households making under 60 000 \$ were tenant households, with over 90 % of households making under 20 000 \$ renting, as shown in `r plot_4_1_1_2` and `r table_4_1_1_2_2`. Conversely, the majority of Laval households making at least 60 000 \$ a year were owner households, with over 95 % of households making more than 125 000 \$.
+_Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
+
+En 2021, bien que la majorité des ménages à Laval soient des propriétaires, la majorité de ceux ayant un revenu inférieur à 60 000 \$ étaient des locataires, avec 80 % des ménages gagnant moins de 20 000 \$ étant locataires, comme le montre le graphique \@ref(fig:plot_4_1_1_2). À l'inverse, parmi les ménages lavallois ayant un revenu annuel d'au moins 60 000 \$, la majorité étaient des propriétaires, avec plus de 90 % des ménages gagnant plus de 125 000 \$ étant propriétaires.
 
 ```{r plot_4_1_1_2, include=TRUE, fig.cap="Type de ménage par tranche de revenu", fig.align = 'center'}
 plot_4_1_1_2
 ```
 
-```{r table_4_1_1_2_2, include=TRUE, fig.cap="Ménages propriétaires par district électorale. Remarque : les pourcentages concernent le support lui-même", fig.align = 'center'}
-table_4_1_1_2_2
-```
+
+HAVE A WORD ON PROPRIÉTAIRE PAUVRE TKTKTKTK
+
 
 When looking at the data at the electoral district level, the general trend of household ownership remains the same, the higher a household's income is, the more likely they are to own the home they live in. However, the income threshold in which form of household ownership shifts based on the electoral district. For example, as seen in `r table_4_1_1_2`, electoral districts such as Sainte-Rose and Marc-Aurèle-Fortin saw the majority of households in lower income brackets live in owner households compared to the city, with some districts such as Auteuil seeing the majority of households living in their own home at all income levels. Conversely, districts such as Laval-des-Rapides saw more households renting in higher income brackets compared to city-wide statistics, seeing a majority of tenant households in households earning under 80 000 \$.
 
-```{r table_4_1_1_2, include=TRUE, fig.cap="Ménages locataires par district électorale. Remarque : les pourcentages concernent le support lui-même", fig.align = 'center'}
+```{r table_4_1_1_2, include=TRUE, fig.cap="Ménages locataires par district électoral. Remarque : les pourcentages concernent le support lui-même", fig.align = 'center'}
 table_4_1_1_2
 ```
 
-#### Type de ménage (taille et composition) selon mode d'occupation
-_Source: Crosstab
+
+
+
+
+
+
+
+
+
+
+# 4.1.1.3 Type de ménage (taille et composition) selon mode d'occupation
+
+_Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
 
 Shown in `r plot_4_1_1_3_comp` and `r table_4_1_1_3_comp`, the majority of households that are composed of census or multi-generational families lived in owner households. This is especially true for couples with children and multi-generational households, which saw 85,5 % and 97,2 % of their households composed of owner households, respectively. Conversely, non-census family households composing of one or more people had more people renting than owning their home. While single-person households saw a relatively even amount of people owning or renting their home, at 44,0 % and 56,0 % respectively, non-census family households composed of two people or more saw 88,9 % of households renting.
 
@@ -80,12 +84,12 @@ table_4_1_1_3_comp
 
 The distribution of these household compositions are not even across Laval, however. For example, while couples with infants make up the plurality of households for the entire city, such as in districts such as Sainte-Dorothée and Saint-Martin, they don't hold true in other districts such as Laval-des-Rapides and Souvenir-Labelle, which instead saw more single-person households than any other type `r table_4_1_1_3_comp_ed`.
 
-```{r table_4_1_1_3_comp_ed, include=TRUE, fig.cap="Composition des ménages par district électorale. Remarque : les pourcentages concernent chaque district électorale", fig.align = 'center'}
+```{r table_4_1_1_3_comp_ed, include=TRUE, fig.cap="Composition des ménages par district électoral. Remarque : les pourcentages concernent chaque district électoral", fig.align = 'center'}
 table_4_1_1_3_comp_ed
 ```
 
-#### Statut d'immigrant selon mode d'occupation
-_Source: 2016 Census
+# 4.1.1.4 Statut d'immigrant selon mode d'occupation
+_Source: 2016 Census_
 
 According to the latest data from the 2016 census and the 2022 version of "Portrait de l'habitation dans le grand Montréal," the majority households of all immigrant statuses are tenant households, with the proportion reaching as high as 93,0 % for non-permanent residents `r plot_4_1_1_4`. One exception to this are households of immigrants who arrived before 2006, which saw a larger amount of owner households, albeit only slightly higher, than tenant households, at 51,0 % and 49,0 % of households respectively.
 
@@ -93,7 +97,7 @@ According to the latest data from the 2016 census and the 2022 version of "Portr
 plot_4_1_1_4
 ```
 
-#### Âge du principal soutien du ménage selon mote d'occupation
+# 4.1.1.5 Âge du principal soutien du ménage selon mote d'occupation
 _Source: 2021 Census
 
 In Laval, the vast majority of households where the primary earner for the household is between 15 and 24 years old are tenant households, making up `r renter_15` of households for that age group. This trend continues for the next age group, where the primary earner for the household is between 25 and 34 years old, in which there are more tenant households than owner households, except that the difference between the two are significantly smaller, with tenant households making up only `r renter_25` of households in that age group.
@@ -104,8 +108,8 @@ After the 25 to 34 year old age group, owner households make up a higher proport
 plot_4_1_1_5
 ```
 
-#### Typologie (unifamilial, multi logement, etc.) selon mode d'occupation
-_Source: 2021 Census
+# 4.1.1.6 Typologie (unifamilial, multi logement, etc.) selon mode d'occupation
+_Source: 2021 Census_
 
 As of the 2021 census, `r sfh_laval` of all Laval households live in single-detached houses, with households in apartment buildings that are less than 5 stories tall following closely behind at `r apt_laval`, shown in `r table_4_1_1_6`. The mode of occupation for each kind of housing typology differs significantly proportionately, however. As `r plot_4_1_1_6` and the aforementioned table shows, the vast majority (`r sfh_owner`) of owner households live in single-detached housing, while tenant households primarily lived in apartment buildings, especially those that were less than 5 stories tall.
 
@@ -117,10 +121,8 @@ plot_4_1_1_6
 table_4_1_1_6
 ```
 
-### Projection
-
-#### Projection des ménages
-_Source: 2011-2021 Census and ISQ
+# 4.1.2.1 Projection des ménages
+_Source: 2011-2021 Census and ISQ_
 
 From 2011 to 2021, the city of Laval has seen the number of households grow `r diff_2011_2021`, from `r year_2011` to `r year_2021`. In the next 20 years, Laval is expected to see the growth of households slow down, seeing only `r diff_2021_2041` growth in the number of households, to `r year_2041` households in 2041. The city is expected to hit `r year_2028` households in 2028, the first time it will have over 180 000 households, with the city seeing `r year_2032` and `r year_2036` households in 2032 and 2036 respectively.
 
@@ -128,8 +130,8 @@ From 2011 to 2021, the city of Laval has seen the number of households grow `r d
 plot_4_1_2_1
 ```
 
-#### Croissance prévue des ménages
-_Source: ISQ
+# 4.1.2.2 Croissance prévue des ménages
+_Source: ISQ_
 
 While Laval as a whole is projected to grow from 2021 to 2041, this growth is not evenly spread by "age group of the reference-person". While some age groups, such as the 20-24, 25-29, and 45-49 year cohort all see growth under 10 %, some groups, such as 80-84 and 85+ year cohort, all see significant amounts of growth, doubling in population at `r change_84` and `r change_85` respectively, which is representative of Laval's aging population. Conversely, some groups, such as the 35-39 and 50-54 year cohorts for example, see some level of decline in their population. However, the 55-59 year cohort will see the largest decline out of all age groups, with the age group expecting to decline `r change_59`.
 
@@ -137,8 +139,22 @@ While Laval as a whole is projected to grow from 2021 to 2041, this growth is no
 table_4_1_2_3_1
 ```
 
-#### Composantes de la croissance démographique annuelle (fécondité, mortalité, immigration)
-_Source: ISQ 2022
+# 4.1.2.3.1	Projections population/ménages selon groupe d'âge
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 4.1.2.3.2 Composantes de la croissance démographique annuelle (fécondité, mortalité, immigration)
+_Source: ISQ 2022_
 
 As mentioned in previous sections, Laval is projected to have an increase in population from 2021 to 2041. However, as shown in `r plot_4_1_2_3_2` and `r table_4_1_2_3_2`, Laval is already experiencing a decline of residents due to inter-provincial and internal migration, with growth in Laval being driven by international immigration, births outpacing deaths, and non-permanent resident growth. However, beginning in 2031, Laval is expected to no longer have growth from permanent residents, and beginning in 2035, deaths in Laval begins outpacing births. From that point onward, growth in Laval is projected to be driven by only international immigration.
 

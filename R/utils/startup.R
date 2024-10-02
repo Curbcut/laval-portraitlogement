@@ -23,11 +23,12 @@ if (Sys.info()["sysname"] == "Windows") {
   # loadfonts(device = "win", quiet = TRUE)
   # windowsFonts(`KMR Apparat Regular`=windowsFont(font_local_name))
   # font_local_name %in% names(windowsFonts())
-  font_add(family = font_local_name, regular = "data/fonts/KMR-Apparat-Regular.ttf")
+  font_add(family = "KMR Apparat Regular", regular = "data/fonts/KMR-Apparat-Regular.ttf")
   font_add(family = "KMR-Apparat-Regular", regular = "data/fonts/KMR-Apparat-Regular.ttf")
   showtext_auto()
 }
 
+font_local_name <- "KMR Apparat Regular"
 
 # Checking vectors for Canada ---------------------------------------------
 
@@ -79,8 +80,6 @@ color_theme <- function(theme) {
 }
 
 # Themes ------------------------------------------------------------------
-
-font_local_name <- "KMR Apparat Regular"
 
 graph_theme <- 
   theme_minimal() +
