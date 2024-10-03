@@ -15,18 +15,17 @@ library(gt)
 library(readxl)
 library(qs)
 
-source("R/utils/crosstab.R")
-source("R/utils/interpolation.R")
+source(here::here("R/utils/crosstab.R"))
+source(here::here("R/utils/interpolation.R"))
 
-if (Sys.info()["sysname"] == "Windows") {
-  # font_import()
-  # loadfonts(device = "win", quiet = TRUE)
-  # windowsFonts(`KMR Apparat Regular`=windowsFont(font_local_name))
-  # font_local_name %in% names(windowsFonts())
-  font_add(family = "KMR Apparat Regular", regular = "data/fonts/KMR-Apparat-Regular.ttf")
-  font_add(family = "KMR-Apparat-Regular", regular = "data/fonts/KMR-Apparat-Regular.ttf")
-  showtext_auto()
-}
+# font_import()
+# loadfonts(device = "win", quiet = TRUE)
+# windowsFonts(`KMR Apparat Regular`=windowsFont(font_local_name))
+# font_local_name %in% names(windowsFonts())
+font_add(family = "KMR Apparat Regular", regular = here::here("data/fonts/KMR-Apparat-Regular.ttf"))
+font_add(family = "KMR-Apparat-Regular", regular = here::here("data/fonts/KMR-Apparat-Regular.ttf"))
+showtext_auto()
+
 
 font_local_name <- "KMR Apparat Regular"
 
@@ -64,7 +63,7 @@ lvl <-
              geo_format = "sf") |> 
   st_transform(crs = 32618)
 
-electoral_districts <- sf::st_read("data/limite-district-electoral.geojson")
+electoral_districts <- sf::st_read(here::here("data/limite-district-electoral.geojson"))
 electoral_districts <- sf::st_transform(electoral_districts, crs = 32618)
 electoral_districts <- sf::st_intersection(electoral_districts, lvl["geometry"])
 
@@ -101,7 +100,7 @@ graph_theme <-
 
 lvlbbox <- sf::st_bbox(lvl)
 
-laval_sectors <- qs::qread("data/geom_context/secteur.qs")
+laval_sectors <- qs::qread(here::here("data/geom_context/secteur.qs"))
 
 tiles <- mapboxapi::get_static_tiles(
   location = lvlbbox, 
