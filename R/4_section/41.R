@@ -442,7 +442,7 @@ data_4_1_1_2_table <- interpolate(from = data_4_1_1_2_table_pre, additive_vars =
          "> 125 000 $ (%)") |> 
   rename("Type de ménage" = type,
          "Nombre total de ménages (n)" = total,
-         "district électoral" = NOM)
+         "District électoral" = NOM)
 
 data_4_1_1_2_table_tenant <- data_4_1_1_2_table[
   data_4_1_1_2_table$`Type de ménage` == "Locataire", c(1, 3:ncol(data_4_1_1_2_table))]
@@ -470,7 +470,7 @@ table_4_1_1_2_tenant <- data_4_1_1_2_table_tenant |>
     style = cell_text(font = font_local_name),
     locations = cells_column_labels()) |> 
   tab_style(
-    style = cell_text(size = px(14)),
+    style = cell_text(font = font_local_name, size = px(14)),
     locations = cells_column_spanners(spanners = "Tranche de revenu")
   ) |> 
   tab_options(
@@ -509,7 +509,7 @@ table_4_1_1_2_owner <- data_4_1_1_2_table_owner |>
     style = cell_text(font = font_local_name),
     locations = cells_column_labels()) |> 
   tab_style(
-    style = cell_text(size = px(14)),
+    style = cell_text(font = font_local_name, size = px(14)),
     locations = cells_column_spanners(spanners = "Tranche de revenu")
   ) |> 
   tab_options(
@@ -850,7 +850,7 @@ table_data_4_1_1_3_comp_ed <- crosstab_get(mode_occupation = mode_occupation, co
          "Couple avec enfants (n)", "Couple avec enfants (%)", "Famille monoparentale (n)", "Famille monoparentale (%)", 
          "Ménage multigénérationnel (n)", "Ménage multigénérationnel (%)", "Seule personne (n)",
          "Seule personne (%)","Deux personnes ou plus (n)", "Deux personnes ou plus (%)") |> 
-  rename("district électoral" = NOM)
+  rename("District électoral" = NOM)
   
 table_4_1_1_3_comp_ed <- table_data_4_1_1_3_comp_ed |> 
   gt() |> 
@@ -1484,9 +1484,10 @@ gtsave(table_4_1_2_3_2, "outputs/4/table_4_1_2_3_2.png", vwidth = 3200)
 qs::qsavem(plot_4_1_1_1, map_total_hh, map_owner_hh, map_tenant_hh, table_4_1_1_1,
            owner_count_diff, tenant_count_diff, owner_growth, tenant_growth,
            owner_growth_16, tenant_growth_16, total_hh_01, total_hh_21, total_prop_diff,
-           plot_4_1_1_2, table_4_1_1_2_2, table_4_1_1_2, plot_4_1_1_3_comp, table_4_1_1_3_comp,
+           plot_4_1_1_2, table_4_1_1_2, plot_4_1_1_3_comp, table_4_1_1_3_comp,
            table_4_1_1_3_comp_ed, plot_4_1_1_4, plot_4_1_1_5, renter_15, renter_25, plot_4_1_1_6,
            table_4_1_1_6, sfh_laval, sfh_owner, apt_laval, diff_2011_2021, diff_2021_2041,
            year_2011, year_2021, year_2028, year_2032, year_2036, year_2041, plot_4_1_2_1,
            table_4_1_2_3_1, change_59, change_84, change_85, plot_4_1_2_3_2, table_4_1_2_3_2,
+           table_4_1_1_2_owner, table_4_1_1_2_tenant,
            file = "data/section_4_1.qsm")
