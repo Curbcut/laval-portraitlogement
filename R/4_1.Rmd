@@ -66,53 +66,51 @@ table_4_1_1_2_owner
 
 _Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
 
-Shown in `r plot_4_1_1_3_comp` and `r table_4_1_1_3_comp`, the majority of households that are composed of census or multi-generational families lived in owner households. This is especially true for couples with children and multi-generational households, which saw 85,5 % and 97,2 % of their households composed of owner households, respectively. Conversely, non-census family households composing of one or more people had more people renting than owning their home. While single-person households saw a relatively even amount of people owning or renting their home, at 44,0 % and 56,0 % respectively, non-census family households composed of two people or more saw 88,9 % of households renting.
+Le graphique \@ref(fig:plot_4_1_1_3_comp) illustre que les couples avec et sans enfants, ainsi que les ménages multigénérationnels, sont majoritairement propriétaires, ce qui reflète une forte tendance des ménages familiaux à accéder à la propriété. En revanche, 47,9 % des locataires sont des personnes vivant seules, comparativement à seulement 19,2 % des propriétaires. De plus, bien qu’il y ait davantage de familles monoparentales parmi les propriétaires, la proportion de locataires est plus élevée dans ce type de ménage, indiquant une plus grande précarité d’accès à la propriété pour ces familles.
 
-```{r plot_4_1_1_3_comp, include=TRUE, fig.cap="Nombre de ménages par composition", fig.align = 'center'}
+```{r plot_4_1_1_3_comp, include=TRUE, fig.cap="Nombre de ménages par type et répartition en pourcentage selon le statut d’occupation", fig.align = 'center'}
 plot_4_1_1_3_comp
 ```
 
-```{r table_4_1_1_3_comp, include=TRUE, fig.cap="Nombre de ménages par composition et type. Remarque : les pourcentages sont exprimés selon la composition du ménage", fig.align = 'center'}
-table_4_1_1_3_comp
+Les deux séries de cartes suivantes présentent les proportions de ménages locataires et propriétaires sur l'ensemble de Laval, selon leur composition. Ces visualisations permettent d'identifier des tendances spécifiques dans la répartition de chaque groupe de ménages par statut d’occupation (locataires ou propriétaires). Parmi les ménages locataires, une proportion importante est composée de personnes seules, surtout dans les secteurs centraux et sud de Laval, où elles représentent souvent plus de 40 à 50 % des locataires. De plus, les familles monoparentales sont proportionnellement plus présentes parmi les locataires que parmi les propriétaires. À l'inverse, les couples avec et sans enfants et les ménages multigénérationnels sont bien plus représentés parmi les propriétaires.
+
+```{r plot_4_1_1_3_tenant, include=TRUE, fig.cap="Composition des ménages locataires par district électoral", fig.align = 'center'}
+plot_4_1_1_3_tenant
 ```
-
-The distribution of these household compositions are not even across Laval, however. For example, while couples with infants make up the plurality of households for the entire city, such as in districts such as Sainte-Dorothée and Saint-Martin, they don't hold true in other districts such as Laval-des-Rapides and Souvenir-Labelle, which instead saw more single-person households than any other type `r table_4_1_1_3_comp_ed`.
-
-```{r table_4_1_1_3_comp_ed, include=TRUE, fig.cap="Composition des ménages par district électoral. Remarque : les pourcentages concernent chaque district électoral", fig.align = 'center'}
-table_4_1_1_3_comp_ed
+```{r plot_4_1_1_3_owner, include=TRUE, fig.cap="Composition des ménages propriétaires par district électoral", fig.align = 'center'}
+plot_4_1_1_3_owner
 ```
 
 # 4.1.1.4 Statut d'immigrant selon mode d'occupation
-_Source: 2016 Census_
 
-According to the latest data from the 2016 census and the 2022 version of "Portrait de l'habitation dans le grand Montréal," the majority households of all immigrant statuses are tenant households, with the proportion reaching as high as 93,0 % for non-permanent residents `r plot_4_1_1_4`. One exception to this are households of immigrants who arrived before 2006, which saw a larger amount of owner households, albeit only slightly higher, than tenant households, at 51,0 % and 49,0 % of households respectively.
+_Source: Statistique Canada, Recensement de la population de 2016, analyse et traitement des données par la CMM. Récupéré au https://observatoire.cmm.qc.ca/wp-content/uploads/2022/05/CMM_10e_Cahier_metropolitain_web.pdf_
 
-```{r plot_4_1_1_4, include=TRUE, fig.cap="Proportion des ménages selon le statut d'immigrant", fig.align = 'center'}
+Le graphique \@ref(fig:plot_4_1_1_4) illustre la répartition du statut d’occupation des ménages à Laval selon différents groupes d’immigration, en comparant les proportions de locataires (en logements subventionnés et non subventionnés) et de propriétaires (en copropriété ou en pleine propriété). Les immigrants arrivés avant 2006 présentent le taux le plus élevé de propriétaires (80 %, dont 71 % en pleine propriété), ce qui suggère une forte intégration dans le marché immobilier à long terme. À l’inverse, les immigrants arrivés entre 2006 et 2016, les autochtones et les résidents non permanents affichent une majorité de ménages locataires, respectivement 54 %, 57 % et 73 %.
+
+```{r plot_4_1_1_4, include=TRUE, fig.cap="Proportion des statut d'occupation des ménages selon le statut d'immigration", fig.align = 'center'}
 plot_4_1_1_4
 ```
 
-# 4.1.1.5 Âge du principal soutien du ménage selon mote d'occupation
-_Source: 2021 Census
+# 4.1.1.5 Âge du principal soutien du ménage selon le mode d'occupation
 
-In Laval, the vast majority of households where the primary earner for the household is between 15 and 24 years old are tenant households, making up `r renter_15` of households for that age group. This trend continues for the next age group, where the primary earner for the household is between 25 and 34 years old, in which there are more tenant households than owner households, except that the difference between the two are significantly smaller, with tenant households making up only `r renter_25` of households in that age group.
+_Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
 
-After the 25 to 34 year old age group, owner households make up a higher proportion of households for every age group afterward, as seen in `r plot_4_1_1_5`, peaking at `r owner_45` before the difference between the two types of households begins shrinking again.
+À Laval, la grande majorité des ménages dont le principal soutien est âgé de 15 à 24 ans sont des locataires, représentant 83,8 % des ménages de cette tranche d’âge. Cette tendance se poursuit pour le groupe des 25 à 34 ans, où les ménages locataires restent majoritaires, mais l’écart avec les propriétaires se réduit considérablement, avec 53,4 % de locataires.
 
-```{r plot_4_1_1_5, include=TRUE, fig.cap="Âge du principal soutien du ménage selon mote d'occupation", fig.align = 'center'}
+Cette tendance s'inverse à partir du groupe des 35 à 44 ans où les deux tiers (65,5 %) sont propriétaires, proportion qui augmente à 74,6 % pour le groupe des 45 à 54 ans et qui reste stable à 74,0 % pour les 55 à 64 ans. À partir de 65 ans et plus, on observe une diminution progressive de la proportion de propriétaires, bien que ceux-ci restent majoritaires.
+
+```{r plot_4_1_1_5, include=TRUE, fig.cap="Âge du principal soutien du ménage selon le mode d'occupation", fig.align = 'center'}
 plot_4_1_1_5
 ```
 
-# 4.1.1.6 Typologie (unifamilial, multi logement, etc.) selon mode d'occupation
-_Source: 2021 Census_
+# 4.1.1.6 Typologie selon le mode d'occupation
 
-As of the 2021 census, `r sfh_laval` of all Laval households live in single-detached houses, with households in apartment buildings that are less than 5 stories tall following closely behind at `r apt_laval`, shown in `r table_4_1_1_6`. The mode of occupation for each kind of housing typology differs significantly proportionately, however. As `r plot_4_1_1_6` and the aforementioned table shows, the vast majority (`r sfh_owner`) of owner households live in single-detached housing, while tenant households primarily lived in apartment buildings, especially those that were less than 5 stories tall.
+_Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
+
+Le graphique suivant confirme des tendances bien établies en matière de logement : un tiers des propriétaires lavallois réside dans des maisons individuelles non attenantes (32,0 %), et ils sont également plus nombreux à habiter dans des maisons en rangée ou jumelées. De leur côté, un tiers des locataires vit dans des appartements dans des immeubles de moins de cinq étages (33,2 %), et ils sont proportionnellement plus nombreux à occuper d'autres types d'appartements, notamment ceux dans des immeubles de plus grande hauteur. Ces tendances reflètent les réalités économiques, où l'accès à la propriété est généralement associé à des logements plus spacieux et individuels, tandis que les locataires, confrontés à des contraintes financières, optent pour des logements plus abordables, comme les appartements.
 
 ```{r plot_4_1_1_6, include=TRUE, fig.cap="Typologie de l'habitat et mode d'occupation.", fig.align = 'center'}
 plot_4_1_1_6
-```
-
-```{r table_4_1_1_6, include=TRUE, fig.cap="Typologie des logements et mode d'occupation. Note : Les pourcentages sont basés sur le total pour ce mode d'occupation.", fig.align = 'center'}
-table_4_1_1_6
 ```
 
 # 4.1.2.1 Projection des ménages
