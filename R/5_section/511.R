@@ -254,6 +254,9 @@ plot_5_1_1_1_facet <-
   theme_minimal() +
   theme(legend.position = "bottom")
 
+ggplot2::ggsave(filename = here::here("outputs/5/plot_5_1_1_1_facet.pdf"),
+                plot = plot_5_1_1_1_facet, width = 7.5, height = 6)
+
 table_5_1_1_1 <-
   housing |> 
   st_drop_geometry() |> 
@@ -272,6 +275,8 @@ table_5_1_1_1 <-
   gt::gt() |> 
   gt::tab_header("Privately occupied dwelling units by type")
 
+gtsave(table_5_1_1_1, "outputs/5/table_5_1_1_1.png", zoom = 1)
+
 map_5_1_1_1_single <-
   housing |> 
     mutate(single_pct = type_single / type_total) |> 
@@ -284,6 +289,8 @@ map_5_1_1_1_single <-
     theme_void() +
     theme(legend.position = "bottom", legend.key.width = unit(40, "points"))
 
+ggplot2::ggsave(filename = here::here("outputs/5/map_5_1_1_1_single.pdf"),
+                plot = map_5_1_1_1_single, width = 7.5, height = 6)
 
 # 5.1.1.2 -------------------------------------------------------------------
 
@@ -305,6 +312,9 @@ plot_5_1_1_2_facet <-
   theme_minimal() +
   theme(legend.position = "bottom")
 
+ggplot2::ggsave(filename = here::here("outputs/5/plot_5_1_1_2_facet.pdf"),
+                plot = plot_5_1_1_2_facet, width = 7.5, height = 6)
+
 table_5_1_1_2 <-
   housing |> 
   st_drop_geometry() |> 
@@ -316,6 +326,8 @@ table_5_1_1_2 <-
   set_names(c("Year", "Total", "Owner-occupied", "Tenant-occupied")) |> 
   gt::gt() |> 
   gt::tab_header("Privately occupied dwelling units by tenure")
+
+gtsave(table_5_1_1_2, "outputs/5/table_5_1_1_2.png", zoom = 1)
 
 map_5_1_1_2_owner <-
   housing |> 
@@ -329,6 +341,8 @@ map_5_1_1_2_owner <-
   theme_void() +
   theme(legend.position = "bottom", legend.key.width = unit(40, "points"))
 
+ggplot2::ggsave(filename = here::here("outputs/5/map_5_1_1_2_owner.pdf"),
+                plot = map_5_1_1_2_owner, width = 7.5, height = 6)
 
 # 5.1.1.3 -------------------------------------------------------------------
 
@@ -361,6 +375,9 @@ plot_5_1_1_3_facet <-
   theme_minimal() +
   theme(legend.position = "bottom")
 
+ggplot2::ggsave(filename = here::here("outputs/5/plot_5_1_1_3_facet.pdf"),
+                plot = plot_5_1_1_3_facet, width = 7.5, height = 6)
+
 table_5_1_1_3 <-
   housing |> 
   st_drop_geometry() |> 
@@ -377,6 +394,8 @@ table_5_1_1_3 <-
   gt::gt() |> 
   gt::tab_header("Privately occupied dwelling units by bedroom count")
 
+gtsave(table_5_1_1_3, "outputs/5/table_5_1_1_3.png", zoom = 1)
+
 map_5_1_1_3_four <-
   housing |> 
   mutate(four_pct = bedroom_four / bedroom_total) |> 
@@ -390,6 +409,8 @@ map_5_1_1_3_four <-
   theme_void() +
   theme(legend.position = "bottom", legend.key.width = unit(40, "points"))
 
+ggplot2::ggsave(filename = here::here("outputs/5/map_5_1_1_3_four.pdf"),
+                plot = map_5_1_1_3_four, width = 7.5, height = 6)
 
 # 5.1.1.4 -------------------------------------------------------------------
 
@@ -421,6 +442,9 @@ plot_5_1_1_4 <-
   theme_minimal() +
   theme(legend.position = "bottom")
 
+ggplot2::ggsave(filename = here::here("outputs/5/plot_5_1_1_4.pdf"),
+                plot = plot_5_1_1_4, width = 7.5, height = 6)
+
 table_5_1_1_4 <-
   housing |> 
   st_drop_geometry() |> 
@@ -436,6 +460,8 @@ table_5_1_1_4 <-
   gt::gt() |> 
   gt::tab_header(
     "Privately occupied dwelling units by building year of construction")
+
+gtsave(table_5_1_1_4, "outputs/5/table_5_1_1_4.png", zoom = 1)
 
 map_5_1_1_4 <-
   housing |> 
@@ -462,6 +488,8 @@ map_5_1_1_4 <-
   theme_void() +
   theme(legend.position = "bottom", legend.key.width = unit(50, "points"))
 
+ggplot2::ggsave(filename = here::here("outputs/5/map_5_1_1_4.pdf"),
+                plot = map_5_1_1_4, width = 7.5, height = 6)
 
 # 5.1.1.5 -------------------------------------------------------------------
 
@@ -498,6 +526,8 @@ table_5_1_1_5 <-
   gt::gt() |> 
   gt::tab_header("Share of tenant households in subsidized housing")
 
+gtsave(table_5_1_1_5, "outputs/5/table_5_1_1_5.png", zoom = 1)
+
 map_5_1_1_5 <-
   housing |> 
   filter(year >= 2011) |> 
@@ -512,6 +542,8 @@ map_5_1_1_5 <-
   theme_void() +
   theme(legend.position = "bottom", legend.key.width = unit(40, "points"))
 
+ggplot2::ggsave(filename = here::here("outputs/5/map_5_1_1_5.pdf"),
+                plot = map_5_1_1_5, width = 7.5, height = 6)
 
 # Save --------------------------------------------------------------------
 
