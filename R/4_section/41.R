@@ -108,7 +108,7 @@ total_prop_diff <- pto |>
 plot_4_1_1_1 <- ggplot(pto, aes(x = Year, y = count, fill = type)) +
   geom_bar(stat = "identity", position = "dodge") +
   geom_text(aes(label = prop_cc), position = position_dodge(width = 0.9),
-            vjust = 2, size = 3, color = "white") +
+            vjust = 2, size = 2.5, color = "white") +
   scale_fill_manual(values = c("owner" = "#A3B0D1", "tenant" = "#CD718C"),
                     labels = c("owner" = "Propriétaire", "tenant" = "Locataire")) +
   scale_y_continuous(labels = convert_number) +
@@ -308,7 +308,7 @@ plot_4_1_1_2 <- ggplot(data_4_1_1_2, aes(x = income, y = count, fill = type)) +
   scale_x_discrete(labels = function(x) str_wrap(x, width = 18)) +
   scale_y_continuous(labels = function(x) convert_number(x)) +
   geom_text(aes(label = pct), position = position_dodge(width = 0.9),
-            vjust = 2, size = 3, color = "white") +
+            vjust = 2, size = 2.5, color = "white") +
   graph_theme +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
@@ -760,9 +760,9 @@ data_4_1_1_3_comp <- crosstab_get(mode_occupation = mode_occupation, composition
 plot_4_1_1_3_comp <- ggplot(data_4_1_1_3_comp, aes(x = comp, y = count, fill = type)) +
   geom_bar(stat = "identity", position = "dodge") +
   geom_text(data = data_4_1_1_3_comp[-c(4, 6, 10, 12), ], aes(label = pct), position = position_dodge(width = 0.9),
-            vjust = 2, size = 3, color = "white") +
+            vjust = 2, size = 2.5, color = "white") +
   geom_text(data = data_4_1_1_3_comp[c(4, 6, 10, 12), ], aes(label = pct), position = position_dodge(width = 0.9),
-            vjust = -1.5, size = 3, color = "black") +
+            vjust = -1.5, size = 2.5, color = "black") +
   scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
   scale_x_discrete(labels = function(x) str_wrap(x, width = 18)) +
   scale_y_continuous(labels = function(x) convert_number(x)) +
@@ -1234,17 +1234,20 @@ owner_45 <- data_4_1_1_5 |> filter(Age == "45 à 54 ans" & Type == "Propriétair
 
 plot_4_1_1_5 <- ggplot(data_4_1_1_5, aes(x = Age, y = Value, fill = Type)) +
   geom_bar(stat = "identity", position = "dodge") +
-  geom_text(aes(label = prop), position = position_dodge(width = 0.9),
-            vjust = 2, size = 3, color = "white") +
+  geom_text(data = data_4_1_1_5[!data_4_1_1_5$Age %in% c("15 à 24 ans", "85 ans et plus"), ], 
+            aes(label = prop), position = position_dodge(width = 0.9),
+            vjust = 2, size = 2.5, color = "white") +
+  geom_text(data = data_4_1_1_5[data_4_1_1_5$Age %in% c("15 à 24 ans", "85 ans et plus"), ], 
+            aes(label = prop), position = position_dodge(width = 0.9),
+            vjust = -1.5, size = 2.5, color = "black") +
   scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
   scale_x_discrete(labels = function(x) str_wrap(x, width = 18)) +
   scale_y_continuous(labels = function(x) convert_number(x)) +
-  labs(x = "Âge du principal soutien du ménage", 
-       y = "Nombre de ménages (n)") +
-  graph_theme +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  labs(x = NULL, 
+       y = "Nombre de ménages") +
+  graph_theme
 
-ggsave(plot = plot_4_1_1_5, "outputs/4/plot_4_1_1_5.pdf", width = 7.5, height = 6)
+ggsave(plot = plot_4_1_1_5, "outputs/4/plot_4_1_1_5.pdf", width = 7.5, height = 3)
 
 # 4.1.1.6 Typologie (unifamilial, multi logement, etc.) selon mode d'occupation----
 #https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=9810024001
@@ -1259,8 +1262,8 @@ data_4_1_1_6 <- read.csv("data/4/4_1_1_6.csv", sep = ";") |>
   pivot_wider(names_from = Type, values_from = Value) |>
   rename("Total" = "Total - Mode d’occupation") |> 
   mutate(across(c(Propriétaire, Locataire, `Total`), ~ as.numeric(gsub(",", "", .)))) |> 
-  mutate(Prop_Own = Propriétaire / Total,
-         Prop_Ten = Locataire / Total) |> 
+  mutate(Prop_Own = Propriétaire / sum(Propriétaire),
+         Prop_Ten = Locataire / sum(Locataire)) |> 
   select(-Total) |> 
   mutate(Build = case_when(Build == "Total – Type de construction résidentielle" ~ "Total",
                            TRUE ~ Build)) |> 
@@ -1270,7 +1273,7 @@ data_4_1_1_6 <- read.csv("data/4/4_1_1_6.csv", sep = ";") |>
   mutate(Prop = ifelse(Type == "Propriétaire", Prop_Own, Prop_Ten)) |> 
   select(Build, Type, Value, Prop) |> 
   filter(Build != "Total") |> 
-  mutate(prop = convert_pct(Prop)) |> 
+  mutate(Prop = convert_pct(Prop)) |> 
   mutate(Build = factor(Build, levels = c("Maison individuelle non attenante", "Appartement dans un immeuble de cinq étages ou plus",
                                           "Appartement ou plain-pied dans un duplex", "Appartement dans un immeuble de moins de cinq étages",
                                           "Autre maison individuelle attenante", "Maison en rangée", "Maison jumelée", "Logement mobile")),
@@ -1278,87 +1281,86 @@ data_4_1_1_6 <- read.csv("data/4/4_1_1_6.csv", sep = ";") |>
 
 plot_4_1_1_6 <- ggplot(data_4_1_1_6, aes(x = Build, y = Value, fill = Type)) +
   geom_bar(stat = "identity", position = "dodge") +
-  geom_text(aes(label = prop), position = position_dodge(width = 0.9),
-            vjust = -0.5, size = 3, color = "black") +
+  geom_text(aes(label = Prop), position = position_dodge(width = 0.9),
+            vjust = -0.5, size = 2.5, color = "black") +
   scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
-  scale_x_discrete(labels = function(x) str_wrap(x, width = 18)) +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 12)) +
   scale_y_continuous(labels = function(x) convert_number(x)) +
-  labs(x = "Typologie de logements", 
-       y = "Nombre de ménages (n)") +
-  graph_theme +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  labs(x = NULL, 
+       y = "Nombre de ménages") +
+  graph_theme
 
-data_4_1_1_6_table <- read.csv("data/4/4_1_1_6.csv", sep = ";") |> 
-  select("Type.de.construction.résidentielle..10.", "Mode.d.occupation..4.", "VALEUR") |> 
-  rename(Build = "Type.de.construction.résidentielle..10.",
-         Type = "Mode.d.occupation..4.",
-         Value = "VALEUR") |> 
-  filter(Build != "Autre logement attenant") |> 
-  pivot_wider(names_from = Type, values_from = Value) |>
-  rename("Total" = "Total - Mode d’occupation") |> 
-  mutate(across(c(Propriétaire, Locataire, `Total`), ~ as.numeric(gsub(",", "", .)))) |> 
-  pivot_longer(cols = c(Propriétaire, Locataire, Total),
-               names_to = "Measure",
-               values_to = "Value") |> 
-  pivot_wider(names_from = Build, values_from = Value) |> 
-  select(Measure, everything()) |> 
-  rename("Total" = "Total – Type de construction résidentielle") |> 
-  mutate(`Maison individuelle non attenante (n)` = `Maison individuelle non attenante`,
-         `Maison individuelle non attenante (%)` = `Maison individuelle non attenante` / Total,
-         `Appartement dans un immeuble de cinq étages ou plus (n)` = `Appartement dans un immeuble de cinq étages ou plus`,
-         `Appartement dans un immeuble de cinq étages ou plus (%)` = `Appartement dans un immeuble de cinq étages ou plus` / Total,
-         `Appartement ou plain-pied dans un duplex (n)` = `Appartement ou plain-pied dans un duplex`,
-         `Appartement ou plain-pied dans un duplex (%)` = `Appartement ou plain-pied dans un duplex` / Total,
-         `Appartement dans un immeuble de moins de cinq étages (n)` = `Appartement dans un immeuble de moins de cinq étages`,
-         `Appartement dans un immeuble de moins de cinq étages (%)` = `Appartement dans un immeuble de moins de cinq étages` / Total,
-         `Autre maison individuelle attenante (n)` = `Autre maison individuelle attenante`,
-         `Autre maison individuelle attenante (%)` = `Autre maison individuelle attenante` / Total,
-         `Maison en rangée (n)` = `Maison en rangée`,
-         `Maison en rangée (%)` = `Maison en rangée` / Total,
-         `Maison jumelée (n)` = `Maison jumelée`,
-         `Maison jumelée (%)` = `Maison jumelée` / Total,
-         `Logement mobile (n)` = `Logement mobile`,
-         `Logement mobile (%)` = `Logement mobile` / Total) |> 
-  select(Measure, `Maison individuelle non attenante (n)`, `Maison individuelle non attenante (%)`,
-    `Appartement dans un immeuble de cinq étages ou plus (n)`, `Appartement dans un immeuble de cinq étages ou plus (%)`,
-    `Appartement ou plain-pied dans un duplex (n)`, `Appartement ou plain-pied dans un duplex (%)`,
-    `Appartement dans un immeuble de moins de cinq étages (n)`, `Appartement dans un immeuble de moins de cinq étages (%)`,
-    `Autre maison individuelle attenante (n)`, `Autre maison individuelle attenante (%)`,
-    `Maison en rangée (n)`, `Maison en rangée (%)`, `Maison jumelée (n)`, `Maison jumelée (%)`,
-    `Logement mobile (n)`, `Logement mobile (%)`
-  ) |> 
-  rename("Type de ménage" = Measure)
-
-table_4_1_1_6 <- data_4_1_1_6_table |> 
-  gt() |> 
-  tab_spanner(
-    label = "Typologie de logements",
-    columns = c(2:17)
-  ) |>
-  data_color(
-    columns = c(3, 5, 7, 9, 11, 13, 15, 17),
-    colors = scales::col_numeric(
-      palette = c("transparent", color_theme("purpletransport")),
-      domain = NULL
-    )) |> 
-  fmt(columns = c(2, 4, 6, 8, 10, 12, 14, 16), fns = convert_number) |> 
-  fmt(columns = c(3, 5, 7, 9, 11, 13, 15, 17), fns = convert_pct) |> 
-  tab_style(
-    style = cell_text(font = font_local_name, size = px(13)),
-    locations = cells_body()) |> 
-  tab_style(
-    style = cell_text(font = font_local_name, size = px(14)),
-    locations = cells_column_labels()) |> 
-  tab_options(
-    table.width = px(6 * 282)
-  )
+# data_4_1_1_6_table <- read.csv("data/4/4_1_1_6.csv", sep = ";") |> 
+#   select("Type.de.construction.résidentielle..10.", "Mode.d.occupation..4.", "VALEUR") |> 
+#   rename(Build = "Type.de.construction.résidentielle..10.",
+#          Type = "Mode.d.occupation..4.",
+#          Value = "VALEUR") |> 
+#   filter(Build != "Autre logement attenant") |> 
+#   pivot_wider(names_from = Type, values_from = Value) |>
+#   rename("Total" = "Total - Mode d’occupation") |> 
+#   mutate(across(c(Propriétaire, Locataire, `Total`), ~ as.numeric(gsub(",", "", .)))) |> 
+#   pivot_longer(cols = c(Propriétaire, Locataire, Total),
+#                names_to = "Measure",
+#                values_to = "Value") |> 
+#   pivot_wider(names_from = Build, values_from = Value) |> 
+#   select(Measure, everything()) |> 
+#   rename("Total" = "Total – Type de construction résidentielle") |> 
+#   mutate(`Maison individuelle non attenante (n)` = `Maison individuelle non attenante`,
+#          `Maison individuelle non attenante (%)` = `Maison individuelle non attenante` / Total,
+#          `Appartement dans un immeuble de cinq étages ou plus (n)` = `Appartement dans un immeuble de cinq étages ou plus`,
+#          `Appartement dans un immeuble de cinq étages ou plus (%)` = `Appartement dans un immeuble de cinq étages ou plus` / Total,
+#          `Appartement ou plain-pied dans un duplex (n)` = `Appartement ou plain-pied dans un duplex`,
+#          `Appartement ou plain-pied dans un duplex (%)` = `Appartement ou plain-pied dans un duplex` / Total,
+#          `Appartement dans un immeuble de moins de cinq étages (n)` = `Appartement dans un immeuble de moins de cinq étages`,
+#          `Appartement dans un immeuble de moins de cinq étages (%)` = `Appartement dans un immeuble de moins de cinq étages` / Total,
+#          `Autre maison individuelle attenante (n)` = `Autre maison individuelle attenante`,
+#          `Autre maison individuelle attenante (%)` = `Autre maison individuelle attenante` / Total,
+#          `Maison en rangée (n)` = `Maison en rangée`,
+#          `Maison en rangée (%)` = `Maison en rangée` / Total,
+#          `Maison jumelée (n)` = `Maison jumelée`,
+#          `Maison jumelée (%)` = `Maison jumelée` / Total,
+#          `Logement mobile (n)` = `Logement mobile`,
+#          `Logement mobile (%)` = `Logement mobile` / Total) |> 
+#   select(Measure, `Maison individuelle non attenante (n)`, `Maison individuelle non attenante (%)`,
+#     `Appartement dans un immeuble de cinq étages ou plus (n)`, `Appartement dans un immeuble de cinq étages ou plus (%)`,
+#     `Appartement ou plain-pied dans un duplex (n)`, `Appartement ou plain-pied dans un duplex (%)`,
+#     `Appartement dans un immeuble de moins de cinq étages (n)`, `Appartement dans un immeuble de moins de cinq étages (%)`,
+#     `Autre maison individuelle attenante (n)`, `Autre maison individuelle attenante (%)`,
+#     `Maison en rangée (n)`, `Maison en rangée (%)`, `Maison jumelée (n)`, `Maison jumelée (%)`,
+#     `Logement mobile (n)`, `Logement mobile (%)`
+#   ) |> 
+#   rename("Type de ménage" = Measure)
+# 
+# table_4_1_1_6 <- data_4_1_1_6_table |> 
+#   gt() |> 
+#   tab_spanner(
+#     label = "Typologie de logements",
+#     columns = c(2:17)
+#   ) |>
+#   data_color(
+#     columns = c(3, 5, 7, 9, 11, 13, 15, 17),
+#     colors = scales::col_numeric(
+#       palette = c("transparent", color_theme("purpletransport")),
+#       domain = NULL
+#     )) |> 
+#   fmt(columns = c(2, 4, 6, 8, 10, 12, 14, 16), fns = convert_number) |> 
+#   fmt(columns = c(3, 5, 7, 9, 11, 13, 15, 17), fns = convert_pct) |> 
+#   tab_style(
+#     style = cell_text(font = font_local_name, size = px(13)),
+#     locations = cells_body()) |> 
+#   tab_style(
+#     style = cell_text(font = font_local_name, size = px(14)),
+#     locations = cells_column_labels()) |> 
+#   tab_options(
+#     table.width = px(6 * 282)
+#   )
 
 sfh_laval <- data_4_1_1_6_table |> filter("Type de ménage" == "Total") |> pull(`Maison individuelle non attenante (%)`)
 apt_laval <- data_4_1_1_6_table |> filter("Type de ménage" == "Total") |> pull(`Appartement dans un immeuble de moins de cinq étages (%)`)
 sfh_owner <- data_4_1_1_6_table |> filter("Type de ménage" == "Propriétaire") |> pull(`Maison individuelle non attenante (%)`)
 
-ggsave(plot = plot_4_1_1_6, "outputs/4/plot_4_1_1_6.pdf", width = 7.5, height = 6)
-gtsave(table_4_1_1_6, "outputs/4/table_4_1_1_6.png", vwidth = 2400)
+ggsave(plot = plot_4_1_1_6, "outputs/4/plot_4_1_1_6.pdf", width = 7.5, height = 4)
+# gtsave(table_4_1_1_6, "outputs/4/table_4_1_1_6.png", vwidth = 2400)
 
 # 4.1.2.1 Projection des ménages X-2046 (PRÉCISER JALONS, C17) -----------------
 #https://statistique.quebec.ca/fr/document/projections-de-menages-mrc-municipalites-regionales-de-comte
