@@ -724,7 +724,7 @@ composition <- c("wo_kids"= "  Ménage comptant une seule famille de recensement
                  "w_kids" = "  Ménage comptant une seule famille de recensement, sans personnes additionnelles : couple avec enfants",
                  "mono" = "  Ménage comptant une seule famille de recensement, sans personnes additionnelles : famille monoparentale",
                  "multi" = "Ménage multigénérationnel",
-                 "solo" = "Ménage composé d'une seule personne",
+                 "solo" = "Ménage composé d'une Personne seule",
                  "other" = "  Ménage sans famille de recensement, composé de deux personnes ou plus")
 
 data_4_1_1_3_comp <- crosstab_get(mode_occupation = mode_occupation, composition = composition) |> 
@@ -732,11 +732,11 @@ data_4_1_1_3_comp <- crosstab_get(mode_occupation = mode_occupation, composition
   summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
   pivot_longer(cols = everything(), names_to = "type", values_to = "count") |> 
   mutate(comp = case_when(
-    str_detect(type, "wo_kids") ~ "Couple sans enfants*",
-    str_detect(type, "w_kids") ~ "Couple avec enfants*",
-    str_detect(type, "mono") ~ "Famille monoparentale*",
+    str_detect(type, "wo_kids") ~ "Couple sans enfants",
+    str_detect(type, "w_kids") ~ "Couple avec enfants",
+    str_detect(type, "mono") ~ "Famille monoparentale",
     str_detect(type, "multi") ~ "Ménage multigénérationnel",
-    str_detect(type, "solo") ~ "Seule personne",
+    str_detect(type, "solo") ~ "Personne seule",
     str_detect(type, "other") ~ "Deux personnes ou plus",
     TRUE ~ NA_character_),
     type = case_when(
@@ -748,91 +748,95 @@ data_4_1_1_3_comp <- crosstab_get(mode_occupation = mode_occupation, composition
     "Propriétaire",
     "Locataire")),
     comp = factor(comp, levels = c(
-      "Couple sans enfants*",
-      "Couple avec enfants*",
-      "Famille monoparentale*",
+      "Couple sans enfants",
+      "Couple avec enfants",
+      "Famille monoparentale",
       "Ménage multigénérationnel",
-      "Seule personne",
-      "Deux personnes ou plus")))
+      "Personne seule",
+      "Deux personnes ou plus"))) |> 
+  group_by(type) |> 
+  mutate(pct = convert_pct(count / sum(count)))
 
 plot_4_1_1_3_comp <- ggplot(data_4_1_1_3_comp, aes(x = comp, y = count, fill = type)) +
   geom_bar(stat = "identity", position = "dodge") +
-  labs(x = "", y = "Nombre de ménages (n)", title = "", caption = "*Ménage comptant une seule famille de recensement, sans personnes additionnelles") +
+  geom_text(data = data_4_1_1_3_comp[-c(4, 6, 10, 12), ], aes(label = pct), position = position_dodge(width = 0.9),
+            vjust = 2, size = 3, color = "white") +
+  geom_text(data = data_4_1_1_3_comp[c(4, 6, 10, 12), ], aes(label = pct), position = position_dodge(width = 0.9),
+            vjust = -1.5, size = 3, color = "black") +
   scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
   scale_x_discrete(labels = function(x) str_wrap(x, width = 18)) +
   scale_y_continuous(labels = function(x) convert_number(x)) +
   graph_theme +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        plot.caption = element_text(hjust = 0))
+  xlab(NULL) +
+  ylab("Nombre de ménages")
 
-table_data_4_1_1_3_comp <- crosstab_get(mode_occupation = mode_occupation, composition = composition) |> 
-  select(-DA_ID) |> 
-  summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
-  rename_with(~ gsub("^owner_", "Propriétaire_", .x), starts_with("owner_")) |>  # Rename owner_ to Propriétaire_
-  rename_with(~ gsub("^tenant_", "Locataire_", .x), starts_with("tenant_")) |> 
-  pivot_longer(
-    cols = starts_with("Propriétaire_") | starts_with("Locataire_"),
-    names_to = c("Type de ménage", ".value"),
-    names_pattern = "(Propriétaire|Locataire)_(.*)") |> 
-  mutate(total = wo_kids + w_kids + mono + multi + solo + other) |> 
-  mutate("Couple sans enfants (n)" = wo_kids,
-         "Couple sans enfants (%)" = wo_kids / sum(wo_kids, na.rm = TRUE),
-         "Couple avec enfants (n)" = w_kids,
-         "Couple avec enfants (%)" = w_kids / sum(w_kids, na.rm = TRUE),
-         "Famille monoparentale (n)" = mono,
-         "Famille monoparentale (%)" = mono / sum(mono, na.rm = TRUE),
-         "Ménage multigénérationnel (n)" = multi,
-         "Ménage multigénérationnel (%)" = multi / sum(multi, na.rm = TRUE),
-         "Seule personne (n)" = solo,
-         "Seule personne (%)" = solo / sum(solo, na.rm = TRUE),
-         "Deux personnes ou plus (n)" = other,
-         "Deux personnes ou plus (%)" = other / sum(other, na.rm = TRUE)) |> 
-  select(-total, -wo_kids, -w_kids, -mono, -multi, -solo, -other)
-
-table_4_1_1_3_comp <- table_data_4_1_1_3_comp |> 
-  gt() |>
-  cols_label(
-    `Couple sans enfants (n)` = html("<div style='width:95px;'>Couple sans enfants (n)</div>"),
-    `Couple sans enfants (%)` = html("<div style='width:95px;'>Couple sans enfants (%)</div>"),
-    `Couple avec enfants (n)` = html("<div style='width:95px;'>Couple avec enfants (n)</div>"),
-    `Couple avec enfants (%)` = html("<div style='width:95px;'>Couple avec enfants (%)</div>"),
-    `Deux personnes ou plus (n)` = html("<div style='width:100px;'>Deux personnes ou plus (n)</div>"),
-    `Deux personnes ou plus (%)` = html("<div style='width:100px;'>Deux personnes ou plus (%)</div>")
-  ) |> 
-  data_color(
-    columns = c(3,5,7,9,11,13),
-    colors = scales::col_numeric(
-      palette = c("white", color_theme("purpletransport")),
-      domain = NULL
-    )
-  ) |> 
-  fmt(columns = c(2,4,6,8,10,12), fns = convert_number) |> 
-  fmt(columns = c(3,5,7,9,11,13), fns = convert_pct) |> 
-  tab_style(
-    style = cell_text(font = font_local_name, size = px(13)),
-    locations = cells_body()) |> 
-  tab_style(
-    style = cell_text(font = font_local_name, size = px(15)),
-    locations = cells_column_labels())
+# table_data_4_1_1_3_comp <- crosstab_get(mode_occupation = mode_occupation, composition = composition) |> 
+#   select(-DA_ID) |> 
+#   summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
+#   rename_with(~ gsub("^owner_", "Propriétaire_", .x), starts_with("owner_")) |>  # Rename owner_ to Propriétaire_
+#   rename_with(~ gsub("^tenant_", "Locataire_", .x), starts_with("tenant_")) |> 
+#   pivot_longer(
+#     cols = starts_with("Propriétaire_") | starts_with("Locataire_"),
+#     names_to = c("Type de ménage", ".value"),
+#     names_pattern = "(Propriétaire|Locataire)_(.*)") |> 
+#   mutate(total = wo_kids + w_kids + mono + multi + solo + other) |> 
+#   mutate("Couple sans enfants (n)" = wo_kids,
+#          "Couple sans enfants (%)" = wo_kids / sum(wo_kids, na.rm = TRUE),
+#          "Couple avec enfants (n)" = w_kids,
+#          "Couple avec enfants (%)" = w_kids / sum(w_kids, na.rm = TRUE),
+#          "Famille monoparentale (n)" = mono,
+#          "Famille monoparentale (%)" = mono / sum(mono, na.rm = TRUE),
+#          "Ménage multigénérationnel (n)" = multi,
+#          "Ménage multigénérationnel (%)" = multi / sum(multi, na.rm = TRUE),
+#          "Personne seule (n)" = solo,
+#          "Personne seule (%)" = solo / sum(solo, na.rm = TRUE),
+#          "Deux personnes ou plus (n)" = other,
+#          "Deux personnes ou plus (%)" = other / sum(other, na.rm = TRUE)) |> 
+#   select(-total, -wo_kids, -w_kids, -mono, -multi, -solo, -other)
+# 
+# table_4_1_1_3_comp <- table_data_4_1_1_3_comp |> 
+#   gt() |>
+#   cols_label(
+#     `Couple sans enfants (n)` = html("<div style='width:95px;'>Couple sans enfants (n)</div>"),
+#     `Couple sans enfants (%)` = html("<div style='width:95px;'>Couple sans enfants (%)</div>"),
+#     `Couple avec enfants (n)` = html("<div style='width:95px;'>Couple avec enfants (n)</div>"),
+#     `Couple avec enfants (%)` = html("<div style='width:95px;'>Couple avec enfants (%)</div>"),
+#     `Deux personnes ou plus (n)` = html("<div style='width:100px;'>Deux personnes ou plus (n)</div>"),
+#     `Deux personnes ou plus (%)` = html("<div style='width:100px;'>Deux personnes ou plus (%)</div>")
+#   ) |> 
+#   data_color(
+#     columns = c(3,5,7,9,11,13),
+#     colors = scales::col_numeric(
+#       palette = c("white", color_theme("purpletransport")),
+#       domain = NULL
+#     )
+#   ) |> 
+#   fmt(columns = c(2,4,6,8,10,12), fns = convert_number) |> 
+#   fmt(columns = c(3,5,7,9,11,13), fns = convert_pct) |> 
+#   tab_style(
+#     style = cell_text(font = font_local_name, size = px(13)),
+#     locations = cells_body()) |> 
+#   tab_style(
+#     style = cell_text(font = font_local_name, size = px(15)),
+#     locations = cells_column_labels())
     
 
-table_data_4_1_1_3_comp_ed <- crosstab_get(mode_occupation = mode_occupation, composition = composition) |> 
-  rename("GeoUID" = "DA_ID") |> 
-  full_join(laval_da, by = "GeoUID") |> 
+table_data_4_1_1_3_comp_ed_tenant <- crosstab_get(mode_occupation = mode_occupation, composition = composition, scale = "CT") |> 
+  rename("GeoUID" = "CT_ID") |> 
+  full_join(laval_ct_hou, by = "GeoUID") |> 
   st_as_sf() |> 
   st_transform(crs = 32618) |> 
-  interpolate(additive_vars = c("owner_wo_kids", "owner_w_kids", "owner_mono", "owner_multi", "owner_solo", "owner_other",
+  interpolate(additive_vars = c("Households", "owner_wo_kids", "owner_w_kids", "owner_mono", "owner_multi", "owner_solo", "owner_other",
                                 "tenant_wo_kids", "tenant_w_kids", "tenant_mono", "tenant_multi", "tenant_solo", "tenant_other")) |> 
-  mutate(across(c("owner_wo_kids", "owner_w_kids", "owner_mono", "owner_multi", "owner_solo", "owner_other",
+  mutate(across(c("Households", "owner_wo_kids", "owner_w_kids", "owner_mono", "owner_multi", "owner_solo", "owner_other",
                   "tenant_wo_kids", "tenant_w_kids", "tenant_mono", "tenant_multi", "tenant_solo", "tenant_other"), round)) |> 
-  st_drop_geometry() |> 
   select(-ID) |>
-  mutate(wo_kids = owner_wo_kids + tenant_wo_kids,
-         w_kids = owner_w_kids + tenant_w_kids,
-         mono = owner_mono + tenant_mono,
-         multi = owner_multi + tenant_multi,
-         solo = owner_solo + tenant_solo,
-         other = owner_other + tenant_other) |> 
+  mutate(wo_kids = tenant_wo_kids,
+         w_kids = tenant_w_kids,
+         mono = tenant_mono,
+         multi = tenant_multi,
+         solo = tenant_solo,
+         other = tenant_other) |> 
   mutate(total = wo_kids + w_kids + mono + multi + solo + other) |> 
   mutate("Couple sans enfants (n)" = wo_kids,
          "Couple sans enfants (%)" = wo_kids / total,
@@ -842,44 +846,138 @@ table_data_4_1_1_3_comp_ed <- crosstab_get(mode_occupation = mode_occupation, co
          "Famille monoparentale (%)" = mono / total,
          "Ménage multigénérationnel (n)" = multi,
          "Ménage multigénérationnel (%)" = multi / total,
-         "Seule personne (n)" = solo,
-         "Seule personne (%)" = solo / total,
+         "Personne seule (n)" = solo,
+         "Personne seule (%)" = solo / total,
          "Deux personnes ou plus (n)" = other,
          "Deux personnes ou plus (%)" = other / total) |> 
-  select(NOM, "Couple sans enfants (n)", "Couple sans enfants (%)",
-         "Couple avec enfants (n)", "Couple avec enfants (%)", "Famille monoparentale (n)", "Famille monoparentale (%)", 
-         "Ménage multigénérationnel (n)", "Ménage multigénérationnel (%)", "Seule personne (n)",
-         "Seule personne (%)","Deux personnes ou plus (n)", "Deux personnes ou plus (%)") |> 
-  rename("District électoral" = NOM)
+  # select(NOM, "Couple sans enfants (n)", "Couple sans enfants (%)",
+  #        "Couple avec enfants (n)", "Couple avec enfants (%)", "Famille monoparentale (n)", "Famille monoparentale (%)", 
+  #        "Ménage multigénérationnel (n)", "Ménage multigénérationnel (%)", "Personne seule (n)",
+  #        "Personne seule (%)","Deux personnes ou plus (n)", "Deux personnes ou plus (%)") |> 
+  transmute(`District électoral` = NOM, `Nombre de ménages` = `Households`, `Couple sans enfants (%)`, `Couple avec enfants (%)`, `Famille monoparentale (%)`, 
+            `Ménage multigénérationnel (%)`, `Personne seule (%)`, `Deux personnes ou plus (%)`)
+
+table_data_4_1_1_3_comp_ed_owner <- crosstab_get(mode_occupation = mode_occupation, composition = composition, scale = "CT") |> 
+  rename("GeoUID" = "CT_ID") |> 
+  full_join(laval_ct_hou, by = "GeoUID") |> 
+  st_as_sf() |> 
+  st_transform(crs = 32618) |> 
+  interpolate(additive_vars = c("Households", "owner_wo_kids", "owner_w_kids", "owner_mono", "owner_multi", "owner_solo", "owner_other",
+                                "tenant_wo_kids", "tenant_w_kids", "tenant_mono", "tenant_multi", "tenant_solo", "tenant_other")) |> 
+  mutate(across(c("Households", "owner_wo_kids", "owner_w_kids", "owner_mono", "owner_multi", "owner_solo", "owner_other",
+                  "tenant_wo_kids", "tenant_w_kids", "tenant_mono", "tenant_multi", "tenant_solo", "tenant_other"), round)) |> 
+  select(-ID) |>
+  mutate(wo_kids = owner_wo_kids,
+         w_kids = owner_w_kids,
+         mono = owner_mono,
+         multi = owner_multi,
+         solo = owner_solo,
+         other = owner_other) |> 
+  mutate(total = wo_kids + w_kids + mono + multi + solo + other) |> 
+  mutate("Couple sans enfants (n)" = wo_kids,
+         "Couple sans enfants (%)" = wo_kids / total,
+         "Couple avec enfants (n)" = w_kids,
+         "Couple avec enfants (%)" = w_kids / total,
+         "Famille monoparentale (n)" = mono,
+         "Famille monoparentale (%)" = mono / total,
+         "Ménage multigénérationnel (n)" = multi,
+         "Ménage multigénérationnel (%)" = multi / total,
+         "Personne seule (n)" = solo,
+         "Personne seule (%)" = solo / total,
+         "Deux personnes ou plus (n)" = other,
+         "Deux personnes ou plus (%)" = other / total) |> 
+  # select(NOM, "Couple sans enfants (n)", "Couple sans enfants (%)",
+  #        "Couple avec enfants (n)", "Couple avec enfants (%)", "Famille monoparentale (n)", "Famille monoparentale (%)", 
+  #        "Ménage multigénérationnel (n)", "Ménage multigénérationnel (%)", "Personne seule (n)",
+  #        "Personne seule (%)","Deux personnes ou plus (n)", "Deux personnes ou plus (%)") |> 
+  transmute(`District électoral` = NOM, `Nombre de ménages` = `Households`, `Couple sans enfants (%)`, `Couple avec enfants (%)`, `Famille monoparentale (%)`, 
+            `Ménage multigénérationnel (%)`, `Personne seule (%)`, `Deux personnes ou plus (%)`)
+
+table_data_4_1_1_3_comp_ed_tenant <- 
+  table_data_4_1_1_3_comp_ed_tenant |> 
+  pivot_longer(cols = c("Couple sans enfants (%)", 
+                        "Couple avec enfants (%)", 
+                        "Famille monoparentale (%)", 
+                        "Ménage multigénérationnel (%)", 
+                        "Personne seule (%)", 
+                        "Deux personnes ou plus (%)"), 
+               names_to = "Type_ménage", 
+               values_to = "Pourcentage")
+table_data_4_1_1_3_comp_ed_tenant$Type_ménage <- 
+  gsub(" \\(\\%\\)", "", table_data_4_1_1_3_comp_ed_tenant$Type_ménage)
+
+table_data_4_1_1_3_comp_ed_owner <- 
+  table_data_4_1_1_3_comp_ed_owner |> 
+  pivot_longer(cols = c("Couple sans enfants (%)", 
+                        "Couple avec enfants (%)", 
+                        "Famille monoparentale (%)", 
+                        "Ménage multigénérationnel (%)", 
+                        "Personne seule (%)", 
+                        "Deux personnes ou plus (%)"), 
+               names_to = "Type_ménage", 
+               values_to = "Pourcentage")
+table_data_4_1_1_3_comp_ed_owner$Type_ménage <- 
+  gsub(" \\(\\%\\)", "", table_data_4_1_1_3_comp_ed_owner$Type_ménage)
+
+plot_4_1_1_3_tenant <- ggplot(table_data_4_1_1_3_comp_ed_tenant) +
+  geom_sf(aes(geometry = geometry, fill = Pourcentage)) +  
+  facet_wrap(~ Type_ménage) +
+  scale_fill_gradientn(colors = c("#F0F0F0", "#F5D574", "#CD718C"),
+                       labels = convert_pct, trans = "sqrt",
+                       limits = c(0, 0.5),
+                       oob = scales::squish) +
+  labs(title = NULL, fill = "Proportion de ménages locataires") +
+  gg_cc_theme +
+  theme(legend.key.width = unit(3, "cm"),
+        legend.title.position = "top")
+
+plot_4_1_1_3_owner <- ggplot(table_data_4_1_1_3_comp_ed_owner) +
+  geom_sf(aes(geometry = geometry, fill = Pourcentage)) +  
+  facet_wrap(~ Type_ménage) +
+  scale_fill_gradientn(colors = c("#F0F0F0", "#F5D574", "#CD718C"),
+                       labels = convert_pct, trans = "sqrt",
+                       limits = c(0, 0.5),
+                       oob = scales::squish) +
+  labs(title = NULL, fill = "Proportion de ménages propriétaires") +
+  gg_cc_theme +
+  theme(legend.key.width = unit(3, "cm"),
+        legend.title.position = "top")
+
+ggsave(plot = plot_4_1_1_3_tenant, "outputs/4/plot_4_1_1_3_tenant.pdf", width = 7.5, height = 6)
+ggsave(plot = plot_4_1_1_3_owner, "outputs/4/plot_4_1_1_3_owner.pdf", width = 7.5, height = 6)
+
+
+
   
-table_4_1_1_3_comp_ed <- table_data_4_1_1_3_comp_ed |> 
-  gt() |> 
-  tab_style(
-    style = cell_fill(color = "#f0f0f0"),
-    locations = cells_body(
-      rows = seq(2, nrow(table_data_4_1_1_3_comp_ed), by = 2)
-    )) |> 
-  data_color(
-    columns = c(3,5,7,9,11,13),
-    colors = scales::col_numeric(
-      palette = c("transparent", color_theme("purpletransport")),
-      domain = NULL
-    )) |> 
-  fmt(columns = c(2,4,6,8,10,12), fns = convert_number) |> 
-  fmt(columns = c(3,5,7,9,11,13), fns = convert_pct) |> 
-  tab_style(
-    style = cell_text(font = font_local_name, size = px(13)),
-    locations = cells_body()) |> 
-  tab_style(
-    style = cell_text(font = font_local_name, size = px(14)),
-    locations = cells_column_labels()) |> 
-  tab_options(
-    table.width = px(6 * 252)
-  )
+# table_4_1_1_3_comp_ed <- table_data_4_1_1_3_comp_ed |> 
+#   gt() |> 
+#   tab_style(
+#     style = cell_fill(color = "#f0f0f0"),
+#     locations = cells_body(
+#       rows = seq(2, nrow(table_data_4_1_1_3_comp_ed), by = 2)
+#     )) |> 
+#   data_color(
+#     columns = c(3:8),
+#     colors = scales::col_numeric(
+#       palette = c("transparent", color_theme("purpletransport")),
+#       domain = c(0.009, .45)
+#     ),
+#     direction = "row") |> 
+#   fmt(columns = c(3:8), fns = convert_pct) |> 
+#   fmt(columns = 2, fns = convert_number_tens) |> 
+#   tab_style(
+#     style = cell_text(font = font_local_name, size = px(13)),
+#     locations = cells_body()) |> 
+#   tab_style(
+#     style = cell_text(font = font_local_name, size = px(14)),
+#     locations = cells_column_labels()) |> 
+#   tab_options(
+#     table.width = px(6 * 252)
+#   )
 
 ggsave(plot = plot_4_1_1_3_comp, "outputs/4/plot_4_1_1_3_comp.pdf", width = 7.5, height = 6)
-gtsave(table_4_1_1_3_comp, "outputs/4/table_4_1_1_3_comp.png", vwidth = 1600)
-gtsave(table_4_1_1_3_comp_ed, "outputs/4/table_4_1_1_3_comp_ed.png", vwidth = 1600)
+# gtsave(table_4_1_1_3_comp, "outputs/4/table_4_1_1_3_comp.png", vwidth = 1600)
+# gtsave(table_4_1_1_3_comp_ed, "outputs/4/table_4_1_1_3_comp_ed.png", vwidth = 1600)
 
 # #Grabbing the data for the plot
 # data_4_1_3 <- read_excel("data/4/mode_occupation_composition_SR.xlsx") |> #Edited version of the spreadsheet
@@ -892,7 +990,7 @@ gtsave(table_4_1_1_3_comp_ed, "outputs/4/table_4_1_1_3_comp_ed.png", vwidth = 16
 #     str_detect(type, "single parent") ~ "Famille monoparentale*",
 #     str_detect(type, "multigen") ~ "Ménage multigénérationnel",
 #     str_detect(type, "other") ~ "Autres ménages comptant une famille de recensement",
-#     str_detect(type, "sole") ~ "Ménage composé d'une seule personne",
+#     str_detect(type, "sole") ~ "Ménage composé d'une Personne seule",
 #     str_detect(type, "non cf") ~ "Ménage composé de deux personnes ou plus",
 #     TRUE ~ NA_character_)) |> 
 #   mutate(type = case_when(
@@ -910,7 +1008,7 @@ gtsave(table_4_1_1_3_comp_ed, "outputs/4/table_4_1_1_3_comp_ed.png", vwidth = 16
 #       "Famille monoparentale*", 
 #       "Ménage multigénérationnel", 
 #       "Autres ménages comptant une famille de recensement", 
-#       "Ménage composé d'une seule personne", 
+#       "Ménage composé d'une Personne seule", 
 #       "Ménage composé de deux personnes ou plus")))
 # 
 # #Plotting the plot
@@ -1011,7 +1109,7 @@ gtsave(table_4_1_1_3_comp_ed, "outputs/4/table_4_1_1_3_comp_ed.png", vwidth = 16
 #   gg_cc_tiles +
 #   geom_sf(aes(geometry = geometry, fill = `sole`), alpha = 0.9, color = "transparent") +
 #   scale_fill_manual(values = curbcut_scale,
-#                     name = "Nombre de ménages (une seule personne) (n)") +
+#                     name = "Nombre de ménages (une Personne seule) (n)") +
 #   gg_cc_theme +
 #   guides(fill = guide_legend(title.position = "top",
 #                              title.hjust = 0.5))
@@ -1038,33 +1136,64 @@ gtsave(table_4_1_1_3_comp_ed, "outputs/4/table_4_1_1_3_comp_ed.png", vwidth = 16
 # 4.1.1.4 Statut d'immigrant selon mode d'occupation ----------------------
 #Percentages based on provided PDF
 #https://observatoire.cmm.qc.ca/wp-content/uploads/2022/05/CMM_10e_Cahier_metropolitain_web.pdf
-df_4_1_1_4 <- data.frame(
-  Statut = c("Autochtone", "Autochtone", "Immigrant avant 2006",
-             "Immigrant avant 2006", "Immigrant de 2006 à 2016",
-             "Immigrant de 2006 à 2016", "Résident non permanent",
-             "Résident non permanent", "Non-immigrant / non-autochtone",
-             "Non-immigrant / non-autochtone"),
-  Type = c("Propriétaire", "Locataire", "Propriétaire", "Locataire",
-                       "Propriétaire", "Locataire", "Propriétaire", "Locataire",
-                       "Propriétaire", "Locataire"),
-  Pourcentage = c(0.21, 0.79, 0.51, 0.49, 0.17, 0.83, 0.07, 0.93, 0.42, 0.58)) |> 
-  mutate(prop = convert_pct(Pourcentage),
-         Statut = factor(Statut, levels = c("Autochtone", "Immigrant avant 2006",
-                                            "Immigrant de 2006 à 2016", "Résident non permanent",
-                                            "Non-immigrant / non-autochtone")),
-         Type = factor(Type, levels = c("Propriétaire", "Locataire")))
 
-plot_4_1_1_4 <- ggplot(df_4_1_1_4, aes(x = Statut, y = Pourcentage, fill = Type)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  geom_text(aes(label = prop), position = position_dodge(width = 0.9),
-            vjust = 2, size = 3, color = "white") +
-  scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
-  scale_x_discrete(labels = function(x) str_wrap(x, width = 18)) +
-  scale_y_continuous(labels = function(x) convert_pct(x)) +
-  labs(x = "Statut d'immigration", 
-       y = "Proportion des ménages") +
+# df_4_1_1_4 <- data.frame(
+#   Statut = c("Autochtone", "Autochtone", "Immigrant avant 2006",
+#              "Immigrant avant 2006", "Immigrant de 2006 à 2016",
+#              "Immigrant de 2006 à 2016", "Résident non permanent",
+#              "Résident non permanent", "Non-immigrant / non-autochtone",
+#              "Non-immigrant / non-autochtone"),
+#   Type = c("Propriétaire", "Locataire", "Propriétaire", "Locataire",
+#                        "Propriétaire", "Locataire", "Propriétaire", "Locataire",
+#                        "Propriétaire", "Locataire"),
+#   Pourcentage = c(0.21, 0.79, 0.51, 0.49, 0.17, 0.83, 0.07, 0.93, 0.42, 0.58)) |> 
+#   mutate(prop = convert_pct(Pourcentage),
+#          Statut = factor(Statut, levels = c("Autochtone", "Immigrant avant 2006",
+#                                             "Immigrant de 2006 à 2016", "Résident non permanent",
+#                                             "Non-immigrant / non-autochtone")),
+#          Type = factor(Type, levels = c("Propriétaire", "Locataire")))
+# 
+# plot_4_1_1_4 <- ggplot(df_4_1_1_4, aes(x = Statut, y = Pourcentage, fill = Type)) +
+#   geom_bar(stat = "identity", position = "dodge") +
+#   geom_text(aes(label = prop), position = position_dodge(width = 0.9),
+#             vjust = 2, size = 3, color = "white") +
+#   scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
+#   scale_x_discrete(labels = function(x) str_wrap(x, width = 18)) +
+#   scale_y_continuous(labels = function(x) convert_pct(x)) +
+#   labs(x = NULL, 
+#        y = "Proportion des ménages") +
+#   graph_theme
+
+# Créer les données du graphique
+data <- data.frame(
+  Groupe = c("Autochtone", "Immigrant avant\n 2006", "Immigrant de\n 2006 à 2016", 
+             "Résident non\n permanent", "Non-immigrant/\nnon-autochtone"),
+  "Locataires en logement subventionné" = c(4, 2, 3, 2, 2),
+  "Locataires en logement non subventionné" = c(53, 19, 51, 71, 30),
+  "Propriétaires en copropriété" = c(5, 9, 8, 9, 11),
+  "Propriétaires d'un logement en propriété absolue" = c(39, 71, 38, 18, 57)
+)
+
+# Transformer les données au format long pour ggplot
+data_long <- pivot_longer(data, cols = -Groupe, names_to = "Statut", values_to = "Pourcentage")
+data_long$Statut <- gsub("\\.", " ", data_long$Statut)
+data_long$Statut <- gsub("d un", "d'un", data_long$Statut)
+data_long$Groupe <- factor(data_long$Groupe, levels = c("Autochtone", "Immigrant avant\n 2006", "Immigrant de\n 2006 à 2016", 
+                                 "Résident non\n permanent", "Non-immigrant/\nnon-autochtone"))
+
+# Créer le graphique avec les bonnes couleurs et un empilement correct
+plot_4_1_1_4 <- 
+  ggplot(data_long, aes(x = Groupe, y = Pourcentage, fill = Statut)) +
+  geom_bar(stat = "identity", position = "fill") +
+  scale_fill_manual(values = c("Locataires en logement subventionné" = "#CD718C99", 
+                               "Locataires en logement non subventionné" = "#CD718C", 
+                               "Propriétaires en copropriété" = "#A3B0D199", 
+                               "Propriétaires d'un logement en propriété absolue" = "#A3B0D1"),
+                    guide = guide_legend(nrow = 2)) +
+  scale_y_continuous(labels = percent) +
+  labs(title = NULL, x = NULL, y = "Proportion des ménages", fill = NULL) +
   graph_theme +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 0, hjust = 0.5))  # Ajuster le texte de l'axe des x
 
 ggsave(plot = plot_4_1_1_4, "outputs/4/plot_4_1_1_4.pdf", width = 7.5, height = 6)
 

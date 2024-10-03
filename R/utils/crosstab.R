@@ -81,7 +81,7 @@ crosstab_get <- function(mode_occupation = c(total = "total"),
   allcrosstab <- allcrosstab[!total_rows, ]
   cat_rows <- 4 - sum(total_rows)
 
-  names(allcrosstab) <- c("DA_ID", sapply(2:ncol(allcrosstab), \(x) {
+  names(allcrosstab) <- c(paste0(scale, "_ID"), sapply(2:ncol(allcrosstab), \(x) {
     allcrosstab[[x]][1:cat_rows] |> paste0(collapse = "_")
   }))
   

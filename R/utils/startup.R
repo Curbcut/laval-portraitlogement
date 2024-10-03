@@ -52,6 +52,13 @@ laval_ct <- get_census(dataset = "CA21",
   select(GeoUID) |> 
   st_transform(crs = 4326)
 
+laval_ct_hou <- get_census(dataset = "CA21",
+                       regions = list(CSD = 2465005),
+                       level = "CT",
+                       geo_format = "sf") |> 
+  select(GeoUID, Households) |> 
+  st_transform(crs = 4326)
+
 lvl <- 
   get_census("CA21", regions = list(CSD = 2465005), level = "CSD", 
              geo_format = "sf") |> 
