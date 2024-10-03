@@ -243,6 +243,9 @@ plot_5_2_1_6_facet <-
   theme(legend.position = "bottom") +
   graph_theme
 
+ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_6_facet.pdf"),
+                plot = plot_5_2_1_6_facet, width = 7.5, height = 6)
+
 plot_5_2_1_6_change_facet <-
   rent_by_bedroom |> 
     arrange(zone, bedroom, year) |> 
@@ -263,6 +266,8 @@ plot_5_2_1_6_change_facet <-
   theme(legend.position = "bottom") +
   graph_theme
 
+ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_6_change_facet.pdf"),
+                plot = plot_5_2_1_6_change_facet, width = 7.5, height = 6)
 
 # Table with 5-year aggregations
 table_5_2_1_6_five_year <- 
@@ -284,6 +289,8 @@ table_5_2_1_6_five_year <-
   gt::gt() |> 
   gt::tab_header("Average monthly rent for purpose-built rentals by bedroom type")
 
+gtsave(table_5_2_1_6_five_year, "outputs/5/table_5_2_1_6_five_year.png", zoom = 1)
+
 # Map of average rents by five-year chunk
 map_5_2_1_6_annual <-
   rent_by_bedroom |> 
@@ -303,6 +310,9 @@ map_5_2_1_6_annual <-
   theme_void() +
   theme(legend.position = "bottom",
         legend.key.width = unit(60, "points"))
+
+ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_6_annual.pdf"),
+                plot = map_5_2_1_6_annual, width = 7.5, height = 6)
 
 rent_by_construction <- 
   map(1990:2023, \(x) {
@@ -351,6 +361,9 @@ plot_5_2_1_6_construction_facet <-
   theme(legend.position = "bottom") +
   graph_theme
 
+ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_6_construction_facet.pdf"),
+                plot = plot_5_2_1_6_construction_facet, width = 7.5, height = 6)
+
 # Table with 5-year aggregations
 table_5_2_1_6_construction_five_year <- 
   rent_by_construction |> 
@@ -371,6 +384,8 @@ table_5_2_1_6_construction_five_year <-
   gt::gt() |> 
   gt::tab_header(
     "Average monthly rent for purpose-built rentals by year of construction")
+
+gtsave(table_5_2_1_6_construction_five_year, "outputs/5/table_5_2_1_6_construction_five_year.png", zoom = 1)
 
 # Map of average rents by five-year chunk
 map_5_2_1_6_construction_annual <-
@@ -393,6 +408,8 @@ map_5_2_1_6_construction_annual <-
   theme(legend.position = "bottom",
         legend.key.width = unit(60, "points"))
 
+ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_6_construction_annual.pdf"),
+                plot = map_5_2_1_6_construction_annual, width = 7.5, height = 6)
 
 # 5.2.1.7 Taux d'inoccupation ---------------------------------------------
 
@@ -442,6 +459,9 @@ plot_5_2_1_7_facet <-
   theme(legend.position = "bottom") +
   graph_theme
 
+ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_6_construction_annual.pdf"),
+                plot = map_5_2_1_6_construction_annual, width = 7.5, height = 6)
+
 # Table with 5-year aggregations
 table_5_2_1_7_five_year <- 
   vacancy_by_bedroom |> 
@@ -463,6 +483,8 @@ table_5_2_1_7_five_year <-
   gt::gt() |> 
   gt::tab_header("Vacancy rate for purpose-built rentals by bedroom type")
 
+gtsave(table_5_2_1_7_five_year, "outputs/5/table_5_2_1_7_five_year.png", zoom = 1)
+
 # Map of vacancy rate by five-year chunk
 map_5_2_1_7_annual <-
   vacancy_by_bedroom |> 
@@ -483,6 +505,9 @@ map_5_2_1_7_annual <-
   theme_void() +
   theme(legend.position = "bottom",
         legend.key.width = unit(60, "points"))
+
+ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_7_annual.pdf"),
+                plot = map_5_2_1_7_annual, width = 7.5, height = 6)
 
 vacancy_by_rent <- 
   map(1990:2023, \(x) {
@@ -533,6 +558,9 @@ plot_5_2_1_7_rent_facet <-
   theme(legend.position = "bottom") +
   graph_theme
 
+ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_7_rent_facet.pdf"),
+                plot = plot_5_2_1_7_rent_facet, width = 7.5, height = 6)
+
 # Table with 5-year aggregations
 table_5_2_1_7_rent_five_year <-
   vacancy_by_rent |> 
@@ -548,6 +576,8 @@ table_5_2_1_7_rent_five_year <-
   mutate(across(-`Date Range`, scales::percent)) |> 
   gt::gt() |> 
   gt::tab_header("Vacancy rate for purpose-built rentals by bedroom type")
+
+gtsave(table_5_2_1_7_rent_five_year, "outputs/5/table_5_2_1_7_rent_five_year.png", zoom = 1)
 
 # Map of vacancy rate by five-year chunk
 map_5_2_1_7_rent_annual <-
@@ -569,6 +599,9 @@ map_5_2_1_7_rent_annual <-
   theme_void() +
   theme(legend.position = "bottom",
         legend.key.width = unit(60, "points"))
+
+ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_7_rent_annual.pdf"),
+                plot = map_5_2_1_7_rent_annual, width = 7.5, height = 6)
 
 vacancy_by_construction <- 
   map(1990:2023, \(x) {
@@ -616,6 +649,8 @@ plot_5_2_1_7_construction_facet <-
   theme(legend.position = "bottom") +
   graph_theme
 
+ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_7_construction_facet.pdf"),
+                plot = plot_5_2_1_7_construction_facet, width = 7.5, height = 6)
 
 # 6.1.12 Valeur foncière --------------------------------------------------
 
@@ -668,6 +703,9 @@ map_6_1_12 <-
   theme_void() +
   theme(legend.position = "bottom", legend.key.width = unit(60, "points"))
 
+ggplot2::ggsave(filename = here::here("outputs/6/map_6_1_12.pdf"),
+                plot = map_6_1_12, width = 7.5, height = 6)
+
 plot_6_1_12_boxplot <- 
   uef |> 
   mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
@@ -680,6 +718,9 @@ plot_6_1_12_boxplot <-
   scale_y_continuous("Assessed value", labels = scales::dollar) +
   scale_x_discrete("Property type") +
   theme_minimal()
+
+ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_12_boxplot.pdf"),
+                plot = plot_6_1_12_boxplot, width = 7.5, height = 6)
 
 plot_6_1_12_year_property <-
   uef |> 
@@ -697,6 +738,9 @@ plot_6_1_12_year_property <-
   ggtitle("Average annual per-property assessed value by property type") +
   theme_minimal() +
   theme(legend.position = "bottom")
+
+ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_12_year_property.pdf"),
+                plot = plot_6_1_12_year_property, width = 7.5, height = 6)
 
 plot_6_1_12_year_unit <- 
   uef |> 
@@ -716,6 +760,8 @@ plot_6_1_12_year_unit <-
   theme_minimal() +
   theme(legend.position = "bottom")
 
+ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_12_year_unit.pdf"),
+                plot = plot_6_1_12_year_unit, width = 7.5, height = 6)
 
 # Save --------------------------------------------------------------------
 

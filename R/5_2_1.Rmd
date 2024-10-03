@@ -81,11 +81,11 @@ three_2019 <- scales::dollar(rent_years$`3 Bedroom +`[7])
 
 In the 1990s, average rents in purpose-built rental buildings in Laval were stagnant; in 1990 the average monthly rent across all bedroom types was `r rent_90s[1]`, and by 1999 it had only increased slightly to `r rent_90s[2]`. In inflation-adjusted terms, rents actually declined city-wide in the 1990s. Rents started to increase in the early 2000s, and since 2010 in particular, average rents have been rising rapidly across all bedroom types.
 
-```{r plot_5_2_1_6_facet}
+```{r plot_5_2_1_6_facet, eval=FALSE}
 plot_5_2_1_6_facet
 ```
 
-```{r plot_5_2_1_6_change_facet}
+```{r plot_5_2_1_6_change_facet, eval=FALSE}
 plot_5_2_1_6_change_facet
 ```
 
@@ -97,7 +97,7 @@ Although all bedroom types have seen rapid rent increases in recent years, the i
 
 The increase in purpose-built rental rents has not been spread evenly across the City. For larger units, rents have become particularly high in the Chomedey/Sainte-Dorothée sector. By contrast, smaller units (bachelor and 1-bedroom suites) remain relatively affordable in the eastern portion of the island.
 
-```{r map_5_2_1_6_annual}
+```{r map_5_2_1_6_annual, eval=FALSE}
 map_5_2_1_6_annual
 ```
 
@@ -114,7 +114,7 @@ old_high_2023 <- scales::dollar(rent_years[1])
 
 Rents have risen particularly quickly in new buildings. While the average rent in 2023 reached `r new_2023` in buildings constructed in the year 2000 or later, the equivalent figure was between `r old_low_2023` and `r old_high_2023` in buildings constructed before 2000. This gap has been present since the beginning of the time series (1990), but it has widened substantially since 2020, when the rents in new construction skyrocketed relative to other construction dates.
 
-```{r plot_5_2_1_6_construction_facet}
+```{r plot_5_2_1_6_construction_facet, eval=FALSE}
 plot_5_2_1_6_construction_facet
 ```
 
@@ -136,7 +136,7 @@ The evolution of the vacancy rate in purpose-built rental buildings since 1990 i
 
 Vacancy rates have consistently been higher for smaller bedroom types—bachelor and one-bedroom apartments—and lower for family-sized units with two or more bedrooms. In fact, the vacancy rate for three-and-more-bedroom apartments in the last five years (2019-2023) was only `r three_br_vacancy`.
 
-```{r plot_5_2_1_7_facet}
+```{r plot_5_2_1_7_facet, eval=FALSE}
 plot_5_2_1_7_facet
 ```
 
@@ -146,13 +146,13 @@ table_5_2_1_7_five_year
 
 Over the last five years, the vacancy rate has been particularly low in the central part of the city: the Laval-des-Rapides and Vimont/Auteuil zones. The somewhat higher vacancy rate in the Chomedey/Sainte-Dorothée zone is likely a compositional effect of higher-rent units in that zone, as we explore momentarily.
 
-```{r map_5_2_1_7_annual}
+```{r map_5_2_1_7_annual, eval=FALSE}
 map_5_2_1_7_annual
 ```
 
 From 2012 through 2017 (CMHC does not have earlier data), there was very little difference in the vacancy when broken down among different rent levels. For example, from 2012-2015, all four quartiles of rent had vacancy rates between 2.2% and 2.7%. From 2018 onwards, however, high rent buildings have diverged from the others. The vacancy rate among top-quartile buildings has increased substantially—to an average of 5.5% in 2020-2023—at the same time as the vacancy rate among the other three quartiles has remained steady or even decreased. This pattern suggests that demand for higher-end rentals has slackened, and further analysis suggests it is specifically newly-constructed rental buildings which have seen vacancy rates climb.
 
-```{r plot_5_2_1_7_rent_facet}
+```{r plot_5_2_1_7_rent_facet, eval=FALSE}
 plot_5_2_1_7_rent_facet
 ```
 
@@ -160,13 +160,13 @@ plot_5_2_1_7_rent_facet
 table_5_2_1_7_rent_five_year
 ```
 
-```{r plot_5_2_1_7_construction_facet}
+```{r plot_5_2_1_7_construction_facet, eval=FALSE}
 plot_5_2_1_7_construction_facet
 ```
 
 High vacancy rates among newly constructed and high-rent apartment buildings are particularly noticeable in the Chomedey/Sainte-Dorothée zone, where there are not only an over-representation of this type of renetal unit, but where the vacancy rate within this submarket is higher than elsewhere in the city. This suggests that a spatial equilibrium in rental supply and demand has not been reached with newly constructed rental units. New rental units are coming on to the market disproportionately in Chomedey/Sainte-Dorothée (as we discuss in section 6.1), at high rents, and are remaining vacant at much higher than expected rates. Meanwhile, elsewhere in the city the vacancy rate for older and more modestly priced rental units is historically low. If this pattern continues into the future, a softening in rents in newer buildings in Chomedey/Sainte-Dorothée should be expected, alongside continued high rates of rent growth in other buildings.
 
-```{r map_5_2_1_7_rent_annual}
+```{r map_5_2_1_7_rent_annual, eval=FALSE}
 map_5_2_1_7_rent_annual
 ```
 
@@ -190,23 +190,23 @@ _Data source: Unité d'evaluation foncière_
 
 In 2019, the average assessed value of a residential property in Laval was `r scales::dollar(mean(uef$value))`. In both per-property and per-unit terms, detached homes had the highest average assessed value (`r uef_values$per_property[1]` per property, and `r uef_values$per_unit[1]` per unit), followed by "jumelé" (`r uef_values$per_property[2]` per property, and `r uef_values$per_unit[2]` per unit), then "en rangée" (`r uef_values$per_property[4]` per property, and `r uef_values$per_unit[4]` per unit), and finally "intégré" (`r uef_values$per_property[3]` per property, and `r uef_values$per_unit[3]` per unit).
 
-```{r plot_6_1_12_boxplot}
+```{r plot_6_1_12_boxplot, eval=FALSE}
 plot_6_1_12_boxplot
 ```
 
 All property types display a clear positive relationship between construction date and assessed value; newer properties have higher assessed values on average, although the relationship is stronger in per-property terms than in per-unit terms.
 
-```{r plot_6_1_12_year_property}
+```{r plot_6_1_12_year_property, eval=FALSE}
 plot_6_1_12_year_property
 ```
 
-```{r plot_6_1_12_year_unit}
+```{r plot_6_1_12_year_unit, eval=FALSE}
 plot_6_1_12_year_unit
 ```
 
 In general, assessed property values are higher in the south-western part of the city and lower in the north east. However, in per-square-foot terms, it is actually the central part of the city (H9B postal codes) where assessed values are highest.
 
-```{r map_6_1_12}
+```{r map_6_1_12, eval=FALSE}
 map_6_1_12
 ```
 
