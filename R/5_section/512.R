@@ -62,10 +62,10 @@ rep_plot <-
 #   patchwork::plot_layout(widths = c(1, 0.01, 1))
 
 ggplot2::ggsave(filename = here::here("outputs/5/5_1_2_1_reppct.pdf"), 
-                plot = rep_pct_plot, width = 6.5, height = 6)
+                plot = rep_pct_plot, width = 7.5, height = 6)
 
 ggplot2::ggsave(filename = here::here("outputs/5/5_1_2_1_rep.pdf"), 
-                plot = rep_plot, width = 6.5, height = 6)
+                plot = rep_plot, width = 7.5, height = 6)
 
 rep_census_CSD <- cancensus::get_census(dataset = "CA21",
                                     regions = list(CSD = 2465005),
