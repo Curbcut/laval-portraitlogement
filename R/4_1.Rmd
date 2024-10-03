@@ -6,6 +6,7 @@ output: html_document
 
 ```{r setup 4_1_markdown, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+source(here::here("R/utils/startup.R"))
 ```
 
 # 4.1.1.1 Répartition ménages selon mode d'occupation
@@ -109,51 +110,42 @@ _Source: Statistique Canada, Recensement de la population de 2021, analyse et tr
 
 Le graphique suivant confirme des tendances bien établies en matière de logement : un tiers des propriétaires lavallois réside dans des maisons individuelles non attenantes (32,0 %), et ils sont également plus nombreux à habiter dans des maisons en rangée ou jumelées. De leur côté, un tiers des locataires vit dans des appartements dans des immeubles de moins de cinq étages (33,2 %), et ils sont proportionnellement plus nombreux à occuper d'autres types d'appartements, notamment ceux dans des immeubles de plus grande hauteur. Ces tendances reflètent les réalités économiques, où l'accès à la propriété est généralement associé à des logements plus spacieux et individuels, tandis que les locataires, confrontés à des contraintes financières, optent pour des logements plus abordables, comme les appartements.
 
-```{r plot_4_1_1_6, include=TRUE, fig.cap="Typologie de l'habitat et mode d'occupation.", fig.align = 'center'}
+```{r plot_4_1_1_6, include=TRUE, fig.cap="Répartition des ménages selon le type de logement et le mode d'occupation", fig.align = 'center'}
 plot_4_1_1_6
 ```
 
 # 4.1.2.1 Projection des ménages
-_Source: 2011-2021 Census and ISQ_
 
-From 2011 to 2021, the city of Laval has seen the number of households grow `r diff_2011_2021`, from `r year_2011` to `r year_2021`. In the next 20 years, Laval is expected to see the growth of households slow down, seeing only `r diff_2021_2041` growth in the number of households, to `r year_2041` households in 2041. The city is expected to hit `r year_2028` households in 2028, the first time it will have over 180 000 households, with the city seeing `r year_2032` and `r year_2036` households in 2032 and 2036 respectively.
+_Source: Statistique Canada, Recensement de la population de 2011, 2016 et 2021, analyse et traitement des données par Curbcut ; Projections de ménages - MRC. (2024). Institut de la statistique du Québec. Récupéré au https://statistique.quebec.ca/fr/document/projections-de-menages-mrc-municipalites-regionales-de-comte_
+
+De 2011 à 2021, la ville de Laval a connu une croissance de `r diff_2011_2021` ménages, passant de `r year_2011` ménages en 2011 à `r year_2021` en 2021. Au cours des 20 prochaines années suivant le dernier recensement, soit d’ici 2041, la croissance du nombre de ménages devrait ralentir, avec une augmentation de seulement `r diff_2021_2041`, pour atteindre `r year_2041` ménages en 2041. La ville devrait compter environ `r year_2028` ménages en 2028, `r year_2032` en 2032 et `r year_2036` en 2036.
 
 ```{r plot_4_1_2_1, include=TRUE, fig.cap="Projection des ménages de 2021 à 2041.", fig.align = 'center'}
 plot_4_1_2_1
 ```
 
 # 4.1.2.2 Croissance prévue des ménages
-_Source: ISQ_
 
-While Laval as a whole is projected to grow from 2021 to 2041, this growth is not evenly spread by "age group of the reference-person". While some age groups, such as the 20-24, 25-29, and 45-49 year cohort all see growth under 10 %, some groups, such as 80-84 and 85+ year cohort, all see significant amounts of growth, doubling in population at `r change_84` and `r change_85` respectively, which is representative of Laval's aging population. Conversely, some groups, such as the 35-39 and 50-54 year cohorts for example, see some level of decline in their population. However, the 55-59 year cohort will see the largest decline out of all age groups, with the age group expecting to decline `r change_59`.
+Répétition 4.1.2.1
 
-```{r table_4_1_2_3_1, include=TRUE, fig.cap="Projections des ménages par groupe d'âge de 2021 à 2041", fig.align = 'center'}
-table_4_1_2_3_1
+# 4.1.2.3.1	Projections de la population selon le groupe d'âge
+
+_Source: Projections de population - MRC. (2024). Institut de la statistique du Québec. Récupéré au https://statistique.quebec.ca/fr/document/projections-de-population-mrc-municipalites-regionales-de-comte_
+
+Alors que Laval dans son ensemble devrait connaître une croissance de `r pop_growth` entre 2021 et 2041, cette progression démographique ne touchera pas tous les groupes d'âge de manière égale. Les projections indiquent une évolution marquée vers une population plus âgée, avec une augmentation substantielle des personnes de 65 ans et plus. Les groupes des 75 ans et plus, en particulier, connaîtront une forte croissance, tandis que les groupes plus jeunes resteront relativement stables ou afficheront une légère diminution. Ce phénomène s'inscrit dans une tendance plus générale observée à l'échelle du Québec, où le vieillissement de la population représente un enjeu de taille. À Laval, selon les prévisions pour la période 2021-2041, `r growth_attributed_to_65p` de la croissance de la population sera attribuable aux personnes de 65 ans et plus.
+
+```{r plot_4_1_2_3_1, include=TRUE, fig.cap="Projections du nombre d'individus par groupe d'âge de 2021 à 2041", fig.align = 'center'}
+plot_4_1_2_3_1
 ```
 
-# 4.1.2.3.1	Projections population/ménages selon groupe d'âge
+# 4.1.2.3.2 Composantes de la croissance démographique annuelle
 
+_Source: Composantes démographiques projetées, scénario Référence A2022, MRC du Québec, 2021-2041. (2022). Institut de la statistique du Québec. Récupéré au https://statistique.quebec.ca/fr/document/projections-de-population-mrc-municipalites-regionales-de-comte_
 
+Le graphique montre l'évolution projetée des composantes de la croissance démographique à Laval de 2022 à 2041. L'accroissement naturel, qui correspond à la différence entre les naissances et les décès, diminue graduellement pour devenir négatif vers 2030, reflétant une augmentation des décès et une stabilité du nombre de naissances. En parallèle, la migration interne est déficitaire, indiquant que Laval perd des résidents au profit d'autres régions du Québec.
 
+Le solde migratoire international devient la principale source de croissance démographique, jouant un rôle de plus en plus important pour compenser la baisse de la population due à l'accroissement naturel négatif. L'immigration internationale est donc cruciale pour maintenir la croissance démographique de Laval à long terme.
 
-
-
-
-
-
-
-
-
-
-# 4.1.2.3.2 Composantes de la croissance démographique annuelle (fécondité, mortalité, immigration)
-_Source: ISQ 2022_
-
-As mentioned in previous sections, Laval is projected to have an increase in population from 2021 to 2041. However, as shown in `r plot_4_1_2_3_2` and `r table_4_1_2_3_2`, Laval is already experiencing a decline of residents due to inter-provincial and internal migration, with growth in Laval being driven by international immigration, births outpacing deaths, and non-permanent resident growth. However, beginning in 2031, Laval is expected to no longer have growth from permanent residents, and beginning in 2035, deaths in Laval begins outpacing births. From that point onward, growth in Laval is projected to be driven by only international immigration.
-
-```{r plot_4_1_2_3_2, include=TRUE, fig.cap="Évolution nette de la population 2021-2041", fig.align = 'center'}
+```{r plot_4_1_2_3_2, include=TRUE, fig.cap="Composantes de la croissance démographique annuelle projetée à Laval de 2021 à 2040", fig.align = 'center'}
 plot_4_1_2_3_2
-```
-
-```{r table_4_1_2_3_2, include=TRUE, fig.cap="Composantes de la croissance démographique annuelle 2021-2041", fig.align = 'center'}
-table_4_1_2_3_2
 ```
