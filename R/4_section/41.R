@@ -264,10 +264,10 @@ revenu <- c("none"= "Sans revenu total", "10" = "  Supérieur à zéro, moins de
             "125" = "125 000 $ et plus")
 mode_occupation <- c(owner = "Propriétaire", tenant = "Locataire")
 
-data_4_1_1_2 <- crosstab_get(mode_occupation = mode_occupation, revenu = revenu) |> 
+data_4_1_1_2 <- crosstab_get(mode_occupation = mode_occupation, revenu = revenu, scale = "CSD") |> 
   mutate(owner_20 = owner_none + owner_10 + owner_2,
          tenant_20 = tenant_none + tenant_10 + tenant_2) |> 
-  select(-owner_none, -tenant_none, -owner_10, -tenant_10, -owner_2, -tenant_2, -CT_ID) |> 
+  select(-owner_none, -tenant_none, -owner_10, -tenant_10, -owner_2, -tenant_2, -CSD_ID) |> 
   summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
   pivot_longer(cols = everything(), names_to = "type", values_to = "count") |> 
   mutate(income = case_when(
@@ -727,8 +727,8 @@ composition <- c("wo_kids"= "  Ménage comptant une seule famille de recensement
                  "solo" = "Ménage composé d'une seule personne",
                  "other" = "  Ménage sans famille de recensement, composé de deux personnes ou plus")
 
-data_4_1_1_3_comp <- crosstab_get(mode_occupation = mode_occupation, composition = composition) |> 
-  select(-CT_ID) |> 
+data_4_1_1_3_comp <- crosstab_get(mode_occupation = mode_occupation, composition = composition, scale = "CSD") |> 
+  select(-CSD_ID) |> 
   summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
   pivot_longer(cols = everything(), names_to = "type", values_to = "count") |> 
   mutate(comp = case_when(

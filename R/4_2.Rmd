@@ -11,11 +11,33 @@ qs::qload(here::here("data", "section_4_2.qsm"))
 
 # 4.2.1 Revenu total annuel médian selon la composition des ménages, le mode d'occupation et l'âge du principal soutien
 
+_Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
+
+Le graphique suivant met en lumière les disparités de revenus entre les locataires et les propriétaires à Laval, en fonction de la composition familiale. L'intensité de l'opacité des barres indique la proportion de ménages dans chaque catégorie, mettant ainsi en évidence les situations les plus courantes pour chaque statut d'occupation. De manière générale, les propriétaires ont des revenus médians supérieurs à ceux des locataires dans toutes les catégories de ménages. Cette tendance souligne une corrélation forte entre la capacité d’acquérir un bien immobilier et un revenu plus élevé, mettant en évidence les défis financiers auxquels font face les ménages locataires.
+
+Les couples avec enfants, les couples sans enfants, et les ménages multigénérationnels propriétaires sont parmi les groupes aux revenus les plus élevés, dépassant souvent les 100 000 \$ de revenu annuel médian. Ce dernier groupe, en particulier, se démarque avec un revenu médian de `r rev_fun_421("Propriétaire", "multi")`, probablement en raison de la contribution de plusieurs adultes au revenu familial (bien que le nombre de ménages multigénérationnels reste relativement faible comparé à d’autres catégories). 
+
+Par contre, les familles monoparentales et les personnes seules, en particulier celles qui sont locataires, affichent des revenus significativement inférieurs, ce qui suggère une plus grande précarité économique. En fait, les personnes seules locataires ont un revenu médian de `r rev_fun_421("Locataire", "solo")`, alors que celui des propriétaires de cette catégorie reste modeste, à `r rev_fun_421("Propriétaire", "solo")`. Ces ménages sont également parmi les plus nombreux, notamment les personnes seules qui représentent près de 47,9 % des locataires, ce qui renforce leur vulnérabilité économique face au marché locatif.
+
+```{r plot_4_2_1, include=TRUE, fig.cap="Revenu annuel médian par statut d'occupation et composition familiale", fig.align = 'center'}
+plot_4_2_1
+```
+
 # 4.2.2 Proportion de ménages en situation de faible revenu selon le mode d'occupation
 
 # 4.2.3 Ménages ayant des besoins impérieux en logement selon le type de besoin et le mode d'occupation
 
 # 4.2.4 Montant du loyer/frais de logement en fonction du revenu et leur mode d'occupation (axe "prix/revenu" de l'abordabilité)
+
+Le graphique \@ref(fig:plot_4_2_4) présente les frais de logement médian pour les locataires et les propriétaires à Laval, répartis selon différentes tranches de revenu. L'intensité de l'opacité des barres indique la proportion de ménages dans chaque catégorie, mettant ainsi en évidence les situations les plus courantes pour chaque statut d'occupation. Les barres plus opaques représentent des tranches de revenus où il y a une concentration plus élevée de ménages selon le mode d'occupation (> 125 000 \$ chez les propriétaires, 20 - 39 999 \$ chez les locataires). 
+
+Pour les tranches de revenus inférieures à 60 000 \$, les frais de logement médians des locataires sont systématiquement plus élevés que ceux des propriétaires. Dans la tranche de revenu de 20 - 39 999 $, celle la plus fréquente chez les locataires, les loyers mensuels médians sont de `r loyer_fun_421("Locataire", "20 - 39 999 $")` (pour 15 010 ménages locataires) tandis que les frais de logement sont de `r loyer_fun_421("Propriétaire", "20 - 39 999 $")` pour les 9 230 ménages propriétaires. 
+
+À partir de la tranche de revenu de 60 000 \$ à 79 999 \$, cette tendance s’inverse. Les propriétaires ont alors des frais de logement médians qui dépassent ceux des locataires, et l'écart continue de croître dans les tranches de revenus supérieures. Pour les revenus de 100 000 \$ et plus, les propriétaires payent des frais de logement nettement plus élevés que les locataires, ce qui peut s’expliquer par l’accession à des logements de plus grande valeur et les coûts associés à la propriété.
+
+```{r plot_4_2_4, include=TRUE, fig.cap="Frais de logement médian par statut d'occupation et tranches de revenu", fig.align = 'center'}
+plot_4_2_4
+```
 
 # 4.2.5 Proportion de ménages consacrant plus de 30% et plus de 50% de leur revenu à se loger
 
