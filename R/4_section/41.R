@@ -727,8 +727,8 @@ composition <- c("wo_kids"= "  Ménage comptant une seule famille de recensement
                  "solo" = "Ménage composé d'une seule personne",
                  "other" = "  Ménage sans famille de recensement, composé de deux personnes ou plus")
 
-data_4_1_1_3_comp <- crosstab_get(mode_occupation = mode_occupation, composition = composition) |> 
-  select(-CT_ID) |> 
+data_4_1_1_3_comp <- crosstab_get(mode_occupation = mode_occupation, composition = composition, scale = "CSD") |> 
+  select(-CSD_ID) |> 
   summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
   pivot_longer(cols = everything(), names_to = "type", values_to = "count") |> 
   mutate(comp = case_when(
