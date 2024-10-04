@@ -120,4 +120,4 @@ ggplot2::ggsave(filename = here::here("outputs/6/6_2_2_nonluctypesall.pdf"),
 
 # 6.2.6 -------------------------------------------------------------------
 
-qs::qsavem(nonluc_types, nonluc_types_all, file = "data/section_4_2.qsm")
+qs::qsavem(nonluc_types, nonluc_types_all, file = "data/section_6_2.qsm")
