@@ -370,6 +370,67 @@ tenant_lowinc_50plus_pct <- convert_pct(z / denom)
 # 4.2.7 -------------------------------------------------------------------
 
 
+not_suitable_2021 <- get_census(dataset = "CA21",
+           regions = list(CSD = 2465005),
+           level = "CSD",
+           vectors = c("not_suitable" = "v_CA21_4262",
+                       "total" = "v_CA21_4260")
+)
+
+not_suitable_2016 <- get_census(dataset = "CA16",
+           regions = list(CSD = 2465005),
+           level = "CSD",
+           vectors = c("not_suitable" = "v_CA16_4861",
+                       "total" = "v_CA16_4859")
+)
+
+not_suitable_2011 <- get_census(dataset = "CA11",
+           regions = list(CSD = 2465005),
+           level = "CSD",
+           vectors = c("not_suitable" = "v_CA11N_2276",
+                       "total" = "v_CA11N_2274")
+)
+
+ns_2021 <- convert_pct(not_suitable_2021$not_suitable / not_suitable_2021$total)
+ns_2016 <- convert_pct(not_suitable_2016$not_suitable / not_suitable_2016$total)
+ns_2011 <- convert_pct(not_suitable_2011$not_suitable / not_suitable_2011$total)
+
+
+not_suitable_CT <- get_census(dataset = "CA21",
+                              regions = list(CSD = 2465005),
+                              level = "CT",
+                              vectors = c("not_suitable" = "v_CA21_4262",
+                                          "total" = "v_CA21_4260"),
+                              geo_format = "sf"
+)
+
+notsuitable <- interpolate(not_suitable_CT, additive_vars = c("not_suitable", "total"))
+
+notsuitable$not_suitable_prop <- notsuitable$not_suitable / notsuitable$total
+
+labels <- c("< 2 %", "2 % - 4 %", "4 % - 6 %", "6 % - 8 %", "> 8 %")
+notsuitable$bins <- cut(notsuitable$not_suitable_prop, 
+                        breaks = c(-Inf, 0.02, 0.04, 0.06, 0.08, Inf), 
+                        labels = labels, 
+                        include.lowest = TRUE)
+notsuitable$bins <- factor(notsuitable$bins, levels = labels)
+
+plot_4_2_7 <-
+  ggplot(notsuitable) +
+  gg_cc_tiles +
+  geom_sf(aes(fill = bins), lwd = 0, show.legend = TRUE, color = "transparent") + 
+  scale_fill_manual(values = curbcut_colors$left_5$fill[2:6],
+                    name = NULL,#"Proportion de ménages vivant dans\nun logement de taille non convenable",
+                    labels = labels,
+                    drop = FALSE,
+                    guide = guide_legend(title.position = "top", 
+                                         label.position = "bottom", 
+                                         nrow = 1)) +
+  gg_cc_theme
+
+ggsave(plot = plot_4_2_7, "outputs/4/plot_4_2_7.pdf", width = 6.5, height = 6)
+
+
 # 4.2.8 -------------------------------------------------------------------
 
 
@@ -458,5 +519,5 @@ qs::qsavem(#plot_4_2_1, plot_4_2_2, map_4_2_2,
            att_general_mean, att_fam, att_lessfn, att_other,
            att_sfplus, att_general_mean, att_programme_table, occ_rev_comp, rev_fun_421,
            loyer_fun_421, income_housingcost, tenant_lowinc_30plus_pct, tenant_lowinc_50plus_pct, 
-           plot_4_2_1, plot_4_2_4, plot_4_2_5,
+           plot_4_2_1, plot_4_2_4, plot_4_2_5, ns_2021, ns_2016, ns_2021,
            file = "data/section_4_2.qsm")

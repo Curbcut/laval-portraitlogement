@@ -56,9 +56,17 @@ Répétition 4.2.5
 
 # 4.2.7 Ménages en situation de surpeuplement (axe "taille" de l'abordabilité)
 
+Les données montrent une stabilité relative dans la proportion de ménages lavallois en situation de surpeuplement au cours des dix dernières années, avec des chiffres oscillant légèrement au dessus de 5 %. En 2011, `r ns_2011` des ménages vivaient dans des logements jugés trop petits pour leur taille, un chiffre qui a diminué à `r ns_2016` en 2016, avant de remonter légèrement à `r ns_2021` en 2021. Ces variations sont modestes et n’indiquent pas une amélioration marquée ni une détérioration significative des conditions de surpeuplement.
 
+Les secteurs du centre-sud de Laval, comme ceux entourant Chomedey, présentent une proportion plus élevée ménages vivant dans un logement de taille non convenable. Ce phénomène peut être lié à la densité de population et à la composition socio-économique de ces quartiers, qui comptent souvent plus de familles nombreuses ou à faible revenu, pour lesquelles il est plus difficile de trouver des logements adéquats.
+
+```{r plot_4_2_7, include=TRUE, fig.cap="Proportion de ménages vivant dans un logement de taille non convenable", fig.align = 'center'}
+plot_4_2_7
+```
 
 # 4.2.8 Ménages vivant dans un logement nécessitant des réparations majeures (axe "qualité" de l'abordabilité")
+
+Répétition 5.1.2.2 (les deux utilisent les données du recensement, donc le nombre de ménages vivant dans cette situation).
 
 # 4.2.9 Ratio salaires hebo médian/paiement hypothécaire mensuel type
 
