@@ -1,0 +1,53 @@
+---
+title: "11.1 Besoins des ménages et enjeux particuliers"
+author: "Curbcut"
+output: html_document
+---
+
+```{r setup_11_1, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+```
+
+# 11.1.1 Écart entre les besoins actuels de logement des ménages et l’offre résidentielle actuelle
+
+## Rental supply and demand
+
+The City has seen a recent shift to rental housing, and this trend is going to continue, given the fact that very little new ownership housing is being produced.
+
+Aggregated market signals suggest that demand for rental housing is running substantially above supply. After a period of relative stagnation in the 1990s, there has been a large increase in rents and a large decline in the vacancy rate in the last 20 years, with particularly rapid changes in both these indicators since 2010. When vacancy rates are below 3%, rents should be expected to increase due to high levels of tenant competition for units; the vacancy rate has averaged 1.9% over the last four years. The implication is that the City will require robust rental housing construction in the years to prevent further large rent increases.
+
+However, there is also an indication that supply and demand have become disconnected in different submarkets of the rental sector. The vacancy rate has fallen dramatically for the largest units; for 3+ bedroom units the average 2019-2023 vacancy rate was only 1.0%. It has also fallen quickly among lower-priced units. However, there has been a substantial *increase* in vacancy rate among expensive, newly built units. These units are not being absorbed as they come on the market. To some extent this is a natural pattern (new units often have higher vacancy rates than older units), but the pattern is stronger than at any point in the last 35 years.
+
+This suggests the possibility of a mismatch between new rental supply (higher-end units) and current demand (lower-end units with 3 or more bedrooms).
+
+## Rental versus ownership
+
+Although there has been a small shift away from homeownership and towards rental housing in the last five years, it remains the case that two thirds of Laval households are homeowners. However, there has been significant decline in new homeownership construction; there were only an average of 14.6 homeownership starts and 13.2 condominimum starts per year from 2019-2023, compared to 85.8 rental starts per year in the same time period.
+
+In addition to the general need for more housing starts and the specific need for more rental housing starts, therefore, additional homeownership units are going to be required, and given the scarcity of new greenfield opportunities the most plausible way to continue building for the ownership market will be through condominiums.
+
+
+# 11.1.2 Écart entre les besoins actuels de logement et services des ménages et l’offre
+
+From 2011 to 2021 there has been a clear shift in large dwelling units, with both the absolute and proportional number of 3-bedroom units declining and the absolute and proportional number of 4+ bedroom units increasing. Although we do not have data on housing starts by bedroom count, it is very likely that this trend reflects a shift to nearly all single-family home construction featuring 4+ bedroom units, alongside attrition among previously build 3-bedroom units. At the same time, from the perspective of family-size versus non-family-size units, bedroom counts have been basically stable: three-bedrooms have been replaced with four+ bedrooms, but the total percentage of family-sized (3+) units has remained the same since 2011. Meanwhile, the rental vacancy rate among 3+ bedroom units has declined much faster than for other bedroom types, implying that the market is not producing enough of these units to satisfy demand.
+
+An implication is that the supply of family-sized units has most been achieved through single-family homes, and as the amount of new single-family home construction has declined, there is an increasingly large gap between the supply of these larger units and the demand for them, particularly in the rental sector.
+
+
+# 11.1.3 Variation du nombre et des parts de logements par type de construction résidentielle
+
+Two major trends have been observed in housing construction in Laval: First, a progressive shift from single-family home construction (in the 1990s and 2000s) to condominium construction (in the late 2000s and early 2010s) to purpose-built rental (since the 2010s). Second, a general slowing of new housing starts, from a recent peak of 351 units per year in 2009-2013 to a 20-year low of 114 units per year in 2019-2023. The combination of these trends suggests both a continuation of the recently observed trend towards proportionately more renter households, and an overall decline in new household formation in the absence of policy supports to encourage new residential investment.
+
+
+# 11.1.4 Besoins en fonction des projections démographiques et autres
+
+The ISQ is projecting a slowing rate of household growth in Laval over the next 20 years (14.4% growth to 194,188 households by 2041, or 0.68% growth per year, compared to 0.95% growth per year from 2011-2021). However, even this rate of growth will not be achievable without a change to the current rate of housing construction. New housing starts have been trending downwards for the last 15 years, with a steeper decline since the pandemic and the subsequent spike in interest rates, and that trend will translate into a decline in new housing completions in the near future.
+
+We have observed an increase in single-person households in Laval over the last 25 years. This trend arguably reflects Laval's changing position in the greater Montreal region, as it has moved from bedroom community to central city, and this trend should be expected to continue in the absence of new future investments in family-sized housing units.
+
+
+# 11.1.5 Besoins spécifiques en logement social et abordable
+
+There are clear disparities between the need for affordable housing and the availability of such housing. Approximately seven percent of tenant households live in subsidized housing. However, a much greater share of tenant households live in substandard housing, when judged by the criteria of affordability, suitability or adequacy. The implication is that there is insufficient supply of housing to adequately meet the needs of Laval residents with low incomes.
+
+At the same time, it appears that the need for social and affordable housing is not becoming greater over time. On the one hand, the share of households in subsidized housing has remained steady over the last ten years. On the other, during the same time frame it is possible that the need for subsidized housing has declined somewhat, since core housing need prevalence has declined. (However, this trend relies on a data point from 2021 which may be unreliable, since temporary Covid low-income supports were in place in May 2021 when the census was enumerated.) This implies that, while the need for affordable housing remains acute, it has not been increasing over time.
