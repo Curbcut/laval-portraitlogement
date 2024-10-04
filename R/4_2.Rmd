@@ -56,13 +56,37 @@ Répétition 4.2.5
 
 # 4.2.7 Ménages en situation de surpeuplement (axe "taille" de l'abordabilité)
 
+Les données montrent une stabilité relative dans la proportion de ménages lavallois en situation de surpeuplement au cours des dix dernières années, avec des chiffres oscillant légèrement au dessus de 5 %. En 2011, `r ns_2011` des ménages vivaient dans des logements jugés trop petits pour leur taille, un chiffre qui a diminué à `r ns_2016` en 2016, avant de remonter légèrement à `r ns_2021` en 2021. Ces variations sont modestes et n’indiquent pas une amélioration marquée ni une détérioration significative des conditions de surpeuplement.
 
+Les secteurs du centre-sud de Laval, comme ceux entourant Chomedey, présentent une proportion plus élevée ménages vivant dans un logement de taille non convenable. Ce phénomène peut être lié à la densité de population et à la composition socio-économique de ces quartiers, qui comptent souvent plus de familles nombreuses ou à faible revenu, pour lesquelles il est plus difficile de trouver des logements adéquats.
+
+```{r plot_4_2_7, include=TRUE, fig.cap="Proportion de ménages vivant dans un logement de taille non convenable", fig.align = 'center'}
+plot_4_2_7
+```
 
 # 4.2.8 Ménages vivant dans un logement nécessitant des réparations majeures (axe "qualité" de l'abordabilité")
 
+Répétition 5.1.2.2 (les deux utilisent les données du recensement, donc le nombre de ménages vivant dans cette situation).
+
 # 4.2.9 Ratio salaires hebo médian/paiement hypothécaire mensuel type
 
+_Source: Portrait régional de l’habitation : 13 – Région administrative de Laval. (2020). Société d'habitation du Québec. Récupéré au https://www.habitation.gouv.qc.ca/fileadmin/internet/publications/portraits-regionaux/Portrait_habitation_region_13.pdf_
+
+En 2018, le ratio entre le salaire hebdomadaire médian et le paiement hypothécaire mensuel type à Laval était de 0,50, signifiant qu’un résident devait consacrer en moyenne 46 % de son revenu mensuel pour accéder à la propriété. Ce ratio, bien que plus favorable que la moyenne québécoise (0,67), indique une accessibilité difficile, positionnant Laval parmi les régions les moins accessibles au Québec. Entre 2013 et 2018, l'accessibilité à la propriété à Laval s'est détériorée, avec une diminution du ratio de 7 %, plaçant la région asvant-dernière dans le classement provincial pour l’accès à la propriété.
+
 # 4.2.10 Frais de logement
+
+_Source: SCHL_
+
+Les coûts des loyers à Laval ont considérablement augmenté au cours de la dernière décennie. En 2023, le loyer médian à Laval était de `r housing_loyer_2023` \$. De 2010 à 2023, les loyers médians à Laval ont augmenté de `r housing_loyer_var` en dollars courants.
+
+```{r housingLoyermed, include=TRUE, fig.cap="Évolution du loyer mensuel médian à Laval et au Québec (2010-2023)", fig.align = 'center'}
+housing_loyermed_plot
+```
+
+Tout comme les coûts des loyers, les frais de logement des ménages propriétaires de Laval ont augmenté de façon importante. Selon le recensement de 2021, les frais de logement mensuels médians des propriétaires de Laval s’élevaient à 1 330 \$, soit une augmentation de 11,8 % par rapport au 1 190 \$ de 2016.
+
+// TKTK Sépération par districts électoraux à venir
 
 # 4.2.11 Aide au logement
 
