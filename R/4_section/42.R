@@ -293,7 +293,75 @@ loyer_fun_421 <- function(mode_occupation, income) {
 
 # 4.2.5 -------------------------------------------------------------------
 
+occ_stress_lowinc <- crosstab_get(mode_occupation = c("owner" = "Propriétaire",
+                                 "tenant" = "Locataire"),
+             revenu = c("lowinc" = "Avec un faible revenu fondé sur la Mesure de faible revenu après impôt (MFR-ApI)",
+                        "total" = "Total - Revenu total du ménage"),
+             characteristic = setNames(c("Moins de 30 %",
+                                         "30 % ou plus", "50 % ou plus"), 
+                                       c("Moins de 30 %",
+                                         "30 % ou plus", "50 % ou plus")),
+             scale = "CSD") %>%
+  pivot_longer(cols = -CSD_ID, names_to = "category", values_to = "count") %>%
+  separate(category, into = c("occupation", "percent", "lowinc"), sep = "_") %>%
+  mutate(
+    occupation = recode(occupation, "owner" = "Propriétaire", "tenant" = "Locataire"),
+    percent = factor(percent, levels = c("Moins de 30 %", "30 % ou plus", "50 % ou plus"))
+  )
 
+plot_4_2_5 <- 
+  ggplot(occ_stress_lowinc, aes(x = occupation, y = count, fill = lowinc)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~ percent) +
+  labs(
+    x = NULL,
+    y = "Nombre de ménages",
+    fill = NULL,
+    title = NULL
+  ) +
+  scale_fill_manual(
+    values = c("total" = "#9E9090", "lowinc" = "#ADB033"),
+    labels = c("total" = "Tous les ménages", "lowinc" = "Faible revenu")
+  ) +
+  graph_theme +
+  scale_y_continuous(labels = convert_number)
+
+ggsave(plot = plot_4_2_5, "outputs/4/plot_4_2_5.pdf", width = 5, height = 7.5)
+
+
+# denom <- sum(occ_stress_lowinc$count[occ_stress_lowinc$lowinc == "total" &
+#                                        occ_stress_lowinc$occupation == "Locataire" &
+#                                        occ_stress_lowinc$percent %in% c("Moins de 30 %", "30 % ou plus")])
+# z <- sum(occ_stress_lowinc$count[occ_stress_lowinc$occupation == "Locataire" &
+#                                    occ_stress_lowinc$lowinc == "total" &
+#                                    occ_stress_lowinc$percent == "30 % ou plus"])
+# tenant_30plus_pct <- convert_pct(z / denom)
+# 
+# denom <- sum(occ_stress_lowinc$count[occ_stress_lowinc$lowinc == "total" &
+#                                        occ_stress_lowinc$occupation == "Propriétaire" &
+#                                        occ_stress_lowinc$percent %in% c("Moins de 30 %", "30 % ou plus")])
+# z <- sum(occ_stress_lowinc$count[occ_stress_lowinc$occupation == "Propriétaire" &
+#                                    occ_stress_lowinc$lowinc == "total" &
+#                                    occ_stress_lowinc$percent == "30 % ou plus"])
+# owner_30plus_pct <- convert_pct(z / denom)
+
+
+
+
+
+
+
+denom <- sum(occ_stress_lowinc$count[occ_stress_lowinc$lowinc == "lowinc" &
+                                       occ_stress_lowinc$occupation == "Locataire" &
+                                       occ_stress_lowinc$percent %in% c("Moins de 30 %", "30 % ou plus")])
+z <- sum(occ_stress_lowinc$count[occ_stress_lowinc$occupation == "Locataire" &
+                                   occ_stress_lowinc$lowinc == "lowinc" &
+                                   occ_stress_lowinc$percent == "30 % ou plus"])
+tenant_lowinc_30plus_pct <- convert_pct(z / denom)
+z <- sum(occ_stress_lowinc$count[occ_stress_lowinc$occupation == "Locataire" &
+                                   occ_stress_lowinc$lowinc == "lowinc" &
+                                   occ_stress_lowinc$percent == "50 % ou plus"])
+tenant_lowinc_50plus_pct <- convert_pct(z / denom)
 
 
 # 4.2.6 -------------------------------------------------------------------

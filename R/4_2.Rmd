@@ -41,7 +41,17 @@ plot_4_2_4
 
 # 4.2.5 Proportion de ménages consacrant plus de 30% et plus de 50% de leur revenu à se loger
 
+Le graphique suivant montre la répartition des ménages lavallois selon le statut d'occupation, le pourcentage de revenu consacré au logement, et le statut de faible revenu. Il permet de visualiser les différences entre les ménages à faible revenu et l'ensemble des ménages pour chaque niveau de stress financier lié au logement (moins de 30 %, 30 % ou plus, 50 % ou plus). Prendre en compte le statut de faible revenu est crucial pour évaluer le pourcentage de revenu consacré au logement, car cela met en évidence l'impact économique réel sur les ménages vulnérables. Dépenser plus de 30 % du revenu en logement peut être supportable pour un ménage à revenu élevé, mais c'est une pression significative pour un ménage locataire à faible revenu, limitant leur capacité à couvrir d'autres besoins essentiels. 
+
+Les locataires à faible revenu sont bien plus susceptibles que les propriétaires de consacrer une grande partie de leurs revenus au logement. Par exemple, une proportion significative de locataires à faible revenu (`r tenant_lowinc_30plus_pct`) dépense plus de 30 % de leur revenu pour se loger, et une part non négligeable (`r tenant_lowinc_50plus_pct`) dépasse même le seuil critique de 50 %, indiquant une vulnérabilité financière marquée. En comparaison, les propriétaires à faible revenu sont moins nombreux à se trouver dans ces situations de stress financier. La majorité des propriétaires dépensent moins de 30 % de leur revenu pour le logement, montrant une stabilité financière relative. Cette disparité entre locataires et propriétaires souligne que les locataires, surtout ceux à faible revenu, sont particulièrement exposés aux pressions économiques liées aux coûts de logement.
+
+```{r plot_4_2_5, include=TRUE, fig.cap="Distribution des ménages selon le statut d'occupation, le pourcentage de revenu consacré au logement et le statut de faible revenu", fig.align = 'center'}
+plot_4_2_5
+```
+
 # 4.2.6 Ménages locataires ayant de la difficulté à se loger (Ménage locataire sous le seuil de faible revenu et qui consacre 30 % et plus de son revenu à se loger.)
+
+Répétition 4.2.5
 
 # 4.2.7 Ménages en situation de surpeuplement (axe "taille" de l'abordabilité)
 
