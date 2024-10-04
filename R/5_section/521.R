@@ -459,8 +459,8 @@ plot_5_2_1_7_facet <-
   theme(legend.position = "bottom") +
   graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_6_construction_annual.pdf"),
-                plot = map_5_2_1_6_construction_annual, width = 7.5, height = 6)
+ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_7_facet.pdf"),
+                plot = plot_5_2_1_7_facet, width = 7.5, height = 6)
 
 # Table with 5-year aggregations
 table_5_2_1_7_five_year <- 

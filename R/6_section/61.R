@@ -216,9 +216,6 @@ map_6_1_1_annual_1 <-
   theme_void() +
   theme(legend.position = "bottom")
 
-ggplot2::ggsave(filename = here::here("outputs/6/map_6_1_1_annual_1.pdf"),
-                plot = map_6_1_1_annual_1, width = 6.5, height = 4)
-  
 map_6_1_1_annual_2 <- 
   completions_by_type |> 
   filter(!is.na(zone)) |>
@@ -243,11 +240,11 @@ map_6_1_1_annual_2 <-
   theme_void() +
   theme(legend.position = "bottom")
 
-ggplot2::ggsave(filename = here::here("outputs/6/map_6_1_1_annual_2.pdf"),
-                plot = map_6_1_1_annual_2, width = 6.5, height = 4)
-
 map_6_1_1_annual <- 
   patchwork::wrap_plots(map_6_1_1_annual_1, map_6_1_1_annual_2)
+
+ggplot2::ggsave(filename = here::here("outputs/6/map_6_1_1_annual.pdf"),
+                plot = map_6_1_1_annual, width = 7.5, height = 4)
 
 
 # 6.1.2 Mises en chantier par typologie -----------------------------------
@@ -391,9 +388,6 @@ map_6_1_2_annual_1 <-
   theme_void() +
   theme(legend.position = "bottom")
 
-ggplot2::ggsave(filename = here::here("outputs/6/map_6_1_2_annual_1.pdf"),
-                plot = map_6_1_2_annual_1, width = 6.5, height = 4)
-
 map_6_1_2_annual_2 <- 
   starts_by_type |> 
   filter(!is.na(zone)) |>
@@ -418,11 +412,11 @@ map_6_1_2_annual_2 <-
   theme_void() +
   theme(legend.position = "bottom")
 
-ggplot2::ggsave(filename = here::here("outputs/6/map_6_1_2_annual_2.pdf"),
-                plot = map_6_1_2_annual_2, width = 6.5, height = 4)
-
 map_6_1_2_annual <- 
   patchwork::wrap_plots(map_6_1_2_annual_1, map_6_1_2_annual_2)
+
+ggplot2::ggsave(filename = here::here("outputs/6/map_6_1_2_annual.pdf"),
+                plot = map_6_1_2_annual, width = 7.5, height = 4)
 
 
 # 6.1.3 Mises en chantier par mode d'occupation ---------------------------
