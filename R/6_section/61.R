@@ -91,6 +91,9 @@ plot_6_1_1_overall <-
   ggtitle("Annual housing completions") +
   graph_theme
 
+ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_1_overall.pdf"),
+                plot = plot_6_1_1_overall, width = 6.5, height = 4)
+
 # Table with 5-year aggregations
 table_6_1_1_five_year <- 
   completions_by_type |> 
@@ -110,6 +113,8 @@ table_6_1_1_five_year <-
   gt::gt() |> 
   gt::tab_header("Average annual housing completions by dwelling type")
 
+gtsave(table_6_1_1_five_year, "outputs/6/table_6_1_1_five_year.png", zoom = 1)
+
 # Comparison of long-term residential completion trends by building type
 plot_6_1_1_type <- 
   completions_by_type |> 
@@ -123,6 +128,9 @@ plot_6_1_1_type <-
   ggtitle("Annual housing completions by dwelling type") +
   theme_minimal() +
   theme(legend.position = "bottom")
+
+ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_1_type.pdf"),
+                plot = plot_6_1_1_type, width = 6.5, height = 4)
 
 # Variation with between-type difference emphasized
 plot_6_1_1_type_facet <-
@@ -142,6 +150,9 @@ plot_6_1_1_type_facet <-
   theme_minimal() +
   theme(legend.position = "bottom")
 
+ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_1_type_facet.pdf"),
+                plot = plot_6_1_1_type_facet, width = 6.5, height = 4)
+
 # Comparison of long-term residential completion trends by intended market
 plot_6_1_1_market <- 
   completions_by_market |> 
@@ -155,6 +166,9 @@ plot_6_1_1_market <-
   ggtitle("Annual housing completions by intended market") +
   theme_minimal() +
   theme(legend.position = "bottom")
+
+ggplot2::ggsave(filename = here::here("outputs/6/pplot_6_1_1_market.pdf"),
+                plot = plot_6_1_1_market, width = 6.5, height = 4)
 
 # Variation with between-market difference emphasized
 plot_6_1_1_market_facet <-
@@ -174,6 +188,9 @@ plot_6_1_1_market_facet <-
     ) +
   theme_minimal() +
   theme(legend.position = "bottom")
+
+ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_1_market_facet.pdf"),
+                plot = plot_6_1_1_market_facet, width = 6.5, height = 4)
 
 # Map of housing completions by five-year chunk
 map_6_1_1_annual_1 <- 
@@ -198,6 +215,9 @@ map_6_1_1_annual_1 <-
   scale_fill_viridis_b("Annual completions") +
   theme_void() +
   theme(legend.position = "bottom")
+
+ggplot2::ggsave(filename = here::here("outputs/6/map_6_1_1_annual_1.pdf"),
+                plot = map_6_1_1_annual_1, width = 6.5, height = 4)
   
 map_6_1_1_annual_2 <- 
   completions_by_type |> 
@@ -222,6 +242,9 @@ map_6_1_1_annual_2 <-
   scale_fill_viridis_b("Annual completions per 1000 dwellings") +
   theme_void() +
   theme(legend.position = "bottom")
+
+ggplot2::ggsave(filename = here::here("outputs/6/map_6_1_1_annual_2.pdf"),
+                plot = map_6_1_1_annual_2, width = 6.5, height = 4)
 
 map_6_1_1_annual <- 
   patchwork::wrap_plots(map_6_1_1_annual_1, map_6_1_1_annual_2)
@@ -262,6 +285,9 @@ plot_6_1_2_overall <-
   ggtitle("Annual housing starts") +
   graph_theme
 
+ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_overall.pdf"),
+                plot = plot_6_1_2_overall, width = 6.5, height = 4)
+
 # Table with 5-year aggregations
 table_6_1_2_five_year <- 
   starts_by_type |> 
@@ -281,6 +307,7 @@ table_6_1_2_five_year <-
          .before = Single) |> 
   gt::gt() |> 
   gt::tab_header("Average annual housing starts by dwelling type")
+gtsave(table_6_1_2_five_year, "outputs/6/table_6_1_2_five_year.png", zoom = 1)
 
 # Comparison of long-term residential start trends by building type
 plot_6_1_2_type <- 
@@ -295,6 +322,10 @@ plot_6_1_2_type <-
   ggtitle("Annual housing starts by dwelling type") +
   theme_minimal() +
   theme(legend.position = "bottom")
+
+ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_type.pdf"),
+                plot = plot_6_1_2_type, width = 6.5, height = 4)
+
 
 # Variation with between-type difference emphasized
 plot_6_1_2_type_facet <-
@@ -315,6 +346,10 @@ plot_6_1_2_type_facet <-
   theme_minimal() +
   theme(legend.position = "none")
 
+ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_type_facet.pdf"),
+                plot = plot_6_1_2_type_facet, width = 6.5, height = 4)
+
+
 # Pct of annual starts which are apartment
 plot_6_1_2_type_apart <- 
   starts_by_type |> 
@@ -328,6 +363,9 @@ plot_6_1_2_type_apart <-
   ggtitle(
     "Percentage of annual housing starts which are apartments") +
   theme_minimal()
+
+ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_type_apart.pdf"),
+                plot = plot_6_1_2_type_apart, width = 6.5, height = 4)
 
 # Map of housing starts by five-year chunk
 map_6_1_2_annual_1 <- 
@@ -353,6 +391,9 @@ map_6_1_2_annual_1 <-
   theme_void() +
   theme(legend.position = "bottom")
 
+ggplot2::ggsave(filename = here::here("outputs/6/map_6_1_2_annual_1.pdf"),
+                plot = map_6_1_2_annual_1, width = 6.5, height = 4)
+
 map_6_1_2_annual_2 <- 
   starts_by_type |> 
   filter(!is.na(zone)) |>
@@ -376,6 +417,9 @@ map_6_1_2_annual_2 <-
   scale_fill_viridis_b("Annual starts per 1000 dwellings") +
   theme_void() +
   theme(legend.position = "bottom")
+
+ggplot2::ggsave(filename = here::here("outputs/6/map_6_1_2_annual_2.pdf"),
+                plot = map_6_1_2_annual_2, width = 6.5, height = 4)
 
 map_6_1_2_annual <- 
   patchwork::wrap_plots(map_6_1_2_annual_1, map_6_1_2_annual_2)
@@ -413,6 +457,8 @@ table_6_1_3_five_year <-
   gt::gt() |> 
   gt::tab_header("Average annual housing starts by intended market")
 
+gtsave(table_6_1_3_five_year, "outputs/6/table_6_1_3_five_year.png", zoom = 1)
+
 # Comparison of long-term residential start trends by intended market
 plot_6_1_3_market <- 
   starts_by_market |> 
@@ -426,6 +472,9 @@ plot_6_1_3_market <-
   ggtitle("Annual housing starts by intended market") +
   theme_minimal() +
   theme(legend.position = "bottom")
+
+ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market.pdf"),
+                plot = plot_6_1_3_market, width = 6.5, height = 4)
 
 # Variation with between-type difference emphasized
 plot_6_1_3_market_facet <-
@@ -446,6 +495,9 @@ plot_6_1_3_market_facet <-
   theme_minimal() +
   theme(legend.position = "none")
 
+ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market_facet.pdf"),
+                plot = plot_6_1_3_market_facet, width = 6.5, height = 4)
+
 # Pct of annual starts which are rental
 plot_6_1_3_market_rental <-
   starts_by_market |> 
@@ -459,6 +511,9 @@ plot_6_1_3_market_rental <-
   ggtitle(
     "Percentage of annual housing starts which are intended for the rental market") +
   theme_minimal()
+
+ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market_rental.pdf"),
+                plot = plot_6_1_3_market_rental, width = 7.5, height = 4)
 
 
 # 6.1.5 Prix des logements neufs ------------------------------------------
@@ -518,6 +573,9 @@ plot_6_1_5_percentiles <-
   theme_minimal() +
   theme(legend.position = "bottom")
 
+ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_5_percentiles.pdf"),
+                plot = plot_6_1_5_percentiles, width = 7.5, height = 4)
+
 plot_6_1_5_units <- 
   new_prices |> 
   filter(year != 2019) |> 
@@ -528,6 +586,9 @@ plot_6_1_5_units <-
   ggtitle(
     "Annual absorbed homeowner and condominimum units") +
   theme_minimal()
+
+ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_5_units.pdf"),
+                plot = plot_6_1_5_units, width = 6.5, height = 4)
 
 
 # R Markdown --------------------------------------------------------------
