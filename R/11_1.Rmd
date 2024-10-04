@@ -12,6 +12,8 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 
 ## Rental supply and demand
 
+### ANGLAIS
+
 The City has seen a recent shift to rental housing, and this trend is going to continue, given the fact that very little new ownership housing is being produced.
 
 Aggregated market signals suggest that demand for rental housing is running substantially above supply. After a period of relative stagnation in the 1990s, there has been a large increase in rents and a large decline in the vacancy rate in the last 20 years, with particularly rapid changes in both these indicators since 2010. When vacancy rates are below 3%, rents should be expected to increase due to high levels of tenant competition for units; the vacancy rate has averaged 1.9% over the last four years. The implication is that the City will require robust rental housing construction in the years to prevent further large rent increases.
@@ -20,34 +22,79 @@ However, there is also an indication that supply and demand have become disconne
 
 This suggests the possibility of a mismatch between new rental supply (higher-end units) and current demand (lower-end units with 3 or more bedrooms).
 
+### FRANÇAIS
+
+La Ville a récemment observé un déplacement vers le logement locatif, et cette tendance est appelée à se poursuivre, étant donné que très peu de nouveaux logements sont construits ayant comme marché visé les propriétaires-occupants.
+
+Les indicateurs de marché agrégés suggèrent que la demande pour le logement locatif dépasse largement l'offre. Après une période de stagnation relative dans les années 1990, on observe une forte augmentation des loyers et une baisse importante du taux d’inoccupation au cours des 20 dernières années, avec des changements particulièrement rapides dans ces deux indicateurs depuis 2010. Lorsque le taux d’inoccupation est inférieur à 3 %, il est prévisible que les loyers augmentent en raison d'une concurrence accrue entre locataires pour les logements disponibles; or, ce taux a été en moyenne de 1,9 % au cours des quatre dernières années. Cela indique que la Ville aura besoin d'une construction locative robuste dans les années à venir pour éviter d'importantes hausses de loyers supplémentaires.
+
+Il semble aussi que l'offre et la demande se soient désynchronisées dans différents sous-marchés du secteur locatif. Le taux d'inoccupation a chuté de façon spectaculaire pour les plus grands logements; pour les unités de trois chambres ou plus, le taux d'inoccupation moyen entre 2019 et 2023 était de seulement 1,0 %. Ce taux a également diminué rapidement pour les logements à loyer plus bas. En revanche, on observe une augmentation significative du taux d'inoccupation parmi les unités coûteuses récemment construites. Ces unités ne sont pas absorbées au fur et à mesure de leur arrivée sur le marché. Dans une certaine mesure, ce phénomène est naturel (les nouvelles unités ont souvent des taux d'inoccupation plus élevés que les unités plus anciennes), mais l'ampleur du phénomène est plus marquée qu’à tout autre moment des 35 dernières années.
+
+Cela suggère la possibilité d’un décalage entre l'offre locative nouvelle (unités haut de gamme) et la demande actuelle (unités abordables de trois chambres ou plus).
+
 ## Rental versus ownership
+
+### ANGLAIS
 
 Although there has been a small shift away from homeownership and towards rental housing in the last five years, it remains the case that two thirds of Laval households are homeowners. However, there has been significant decline in new homeownership construction; there were only an average of 14.6 homeownership starts and 13.2 condominimum starts per year from 2019-2023, compared to 85.8 rental starts per year in the same time period.
 
 In addition to the general need for more housing starts and the specific need for more rental housing starts, therefore, additional homeownership units are going to be required, and given the scarcity of new greenfield opportunities the most plausible way to continue building for the ownership market will be through condominiums.
 
+### FRANÇAIS
+
+Bien qu’il y ait eu un léger déplacement de la propriété vers la location au cours des cinq dernières années, les deux tiers des ménages lavallois demeurent propriétaires. Cependant, on observe une diminution significative de la construction de nouvelles unités destinées à la propriété : en moyenne, il y a eu seulement 14,6 mises en chantier de logements en propriété et 13,2 mises en chantier de copropriétés par an entre 2019 et 2023, comparativement à 85,8 mises en chantier de logements locatifs par an durant la même période.
+
+En plus du besoin général d'augmenter le nombre de mises en chantier, et du besoin spécifique de logements locatifs, il sera donc également nécessaire de construire davantage d'unités en propriété. Compte tenu de la rareté des nouvelles opportunités de développement sur des terrains vierges, la voie la plus plausible pour soutenir le marché de la propriété à Laval sera le développement de nouvelles copropriétés.
 
 # 11.1.2 Écart entre les besoins actuels de logement et services des ménages et l’offre
+
+### ANGLAIS
 
 From 2011 to 2021 there has been a clear shift in large dwelling units, with both the absolute and proportional number of 3-bedroom units declining and the absolute and proportional number of 4+ bedroom units increasing. Although we do not have data on housing starts by bedroom count, it is very likely that this trend reflects a shift to nearly all single-family home construction featuring 4+ bedroom units, alongside attrition among previously build 3-bedroom units. At the same time, from the perspective of family-size versus non-family-size units, bedroom counts have been basically stable: three-bedrooms have been replaced with four+ bedrooms, but the total percentage of family-sized (3+) units has remained the same since 2011. Meanwhile, the rental vacancy rate among 3+ bedroom units has declined much faster than for other bedroom types, implying that the market is not producing enough of these units to satisfy demand.
 
 An implication is that the supply of family-sized units has most been achieved through single-family homes, and as the amount of new single-family home construction has declined, there is an increasingly large gap between the supply of these larger units and the demand for them, particularly in the rental sector.
 
+### FRANÇAIS
+
+Entre 2011 et 2021, on observe un changement notable dans la distribution des grands logements : le nombre absolu et proportionnel d'unités de trois chambres a diminué, tandis que celui des unités de quatre chambres ou plus a augmenté. Bien que nous ne disposions pas de données sur les mises en chantier par nombre de chambres, il est très probable que cette tendance reflète une orientation vers la construction de maisons unifamiliales comportant principalement quatre chambres ou plus, ainsi qu'une attrition des unités de trois chambres existantes. En termes de taille des unités adaptées aux familles, le nombre de chambres est resté relativement stable : les unités de trois chambres ont été remplacées par des unités de quatre chambres et plus, mais la proportion totale de logements de taille familiale (trois chambres ou plus) est restée constante depuis 2011.
+
+Cependant, le taux d’inoccupation locatif des unités de trois chambres et plus a diminué beaucoup plus rapidement que pour les autres types de logements, ce qui indique une offre insuffisante pour répondre à la demande. En conséquence, la majorité des unités de taille familiale semblent provenir des maisons unifamiliales. Étant donné le déclin des mises en chantier de maisons unifamiliales, un écart de plus en plus important se creuse entre l'offre de ces grandes unités et la demande, surtout dans le secteur locatif.
+
 
 # 11.1.3 Variation du nombre et des parts de logements par type de construction résidentielle
 
+### ANGLAIS
+
 Two major trends have been observed in housing construction in Laval: First, a progressive shift from single-family home construction (in the 1990s and 2000s) to condominium construction (in the late 2000s and early 2010s) to purpose-built rental (since the 2010s). Second, a general slowing of new housing starts, from a recent peak of 351 units per year in 2009-2013 to a 20-year low of 114 units per year in 2019-2023. The combination of these trends suggests both a continuation of the recently observed trend towards proportionately more renter households, and an overall decline in new household formation in the absence of policy supports to encourage new residential investment.
 
+### FRANÇAIS
+
+Deux grandes tendances ont été observées dans la construction de logements à Laval : premièrement, un passage progressif de la construction de maisons unifamiliales (dans les années 1990 et 2000) à la construction de condominiums (à la fin des années 2000 et au début des années 2010), puis à celle de logements locatifs dédiés (depuis les années 2010). Deuxièmement, un ralentissement général des nouvelles mises en chantier, passant d’un sommet récent de 351 unités par an entre 2009 et 2013 à un creux de 20 ans de seulement 114 unités par an entre 2019 et 2023. La combinaison de ces tendances suggère à la fois une poursuite de l’augmentation proportionnelle du nombre de ménages locataires et une diminution générale de la formation de nouveaux ménages propriétaires, à moins que des politiques de soutien ne soient mises en place pour encourager l’investissement résidentiel.
 
 # 11.1.4 Besoins en fonction des projections démographiques et autres
+
+### ANGLAIS
 
 The ISQ is projecting a slowing rate of household growth in Laval over the next 20 years (14.4% growth to 194,188 households by 2041, or 0.68% growth per year, compared to 0.95% growth per year from 2011-2021). However, even this rate of growth will not be achievable without a change to the current rate of housing construction. New housing starts have been trending downwards for the last 15 years, with a steeper decline since the pandemic and the subsequent spike in interest rates, and that trend will translate into a decline in new housing completions in the near future.
 
 We have observed an increase in single-person households in Laval over the last 25 years. This trend arguably reflects Laval's changing position in the greater Montreal region, as it has moved from bedroom community to central city, and this trend should be expected to continue in the absence of new future investments in family-sized housing units.
 
+### FRANÇAIS
+
+L'ISQ projette un ralentissement du taux de croissance des ménages à Laval au cours des 20 prochaines années, avec une augmentation de 14,4 % pour atteindre 194 188 ménages d'ici 2041, soit une croissance annuelle de 0,68 %, comparativement à 0,95 % par an entre 2011 et 2021. Toutefois, ce taux de croissance ne pourra être atteint sans une augmentation du rythme actuel de construction de logements. Les mises en chantier diminuent depuis 15 ans, avec une baisse plus marquée depuis la pandémie et la hausse subséquente des taux d'intérêt, ce qui se traduira par une diminution des achèvements de logements dans un avenir proche.
+
+De plus, Laval a connu une augmentation des ménages composés d’une seule personne au cours des 25 dernières années. Cette tendance semble refléter la transformation de Laval dans la région du Grand Montréal, passant de ville-dortoir à une ville centrale. En l'absence de nouveaux investissements dans des logements de taille familiale, cette tendance vers des ménages unipersonnels devrait se poursuivre.
 
 # 11.1.5 Besoins spécifiques en logement social et abordable
+
+### ANGLAIS
 
 There are clear disparities between the need for affordable housing and the availability of such housing. Approximately seven percent of tenant households live in subsidized housing. However, a much greater share of tenant households live in substandard housing, when judged by the criteria of affordability, suitability or adequacy. The implication is that there is insufficient supply of housing to adequately meet the needs of Laval residents with low incomes.
 
 At the same time, it appears that the need for social and affordable housing is not becoming greater over time. On the one hand, the share of households in subsidized housing has remained steady over the last ten years. On the other, during the same time frame it is possible that the need for subsidized housing has declined somewhat, since core housing need prevalence has declined. (However, this trend relies on a data point from 2021 which may be unreliable, since temporary Covid low-income supports were in place in May 2021 when the census was enumerated.) This implies that, while the need for affordable housing remains acute, it has not been increasing over time.
+
+### FRANÇAIS
+
+Il existe des disparités évidentes entre le besoin en logements abordables et leur disponibilité. Environ 7 % des ménages locataires vivent dans des logements subventionnés, mais une proportion bien plus importante vit dans des logements inadéquats selon les critères d’abordabilité, de taille convenable ou de qualité. Cela indique une offre insuffisante pour répondre adéquatement aux besoins des résidents à faible revenu de Laval.
+
+En même temps, il semble que le besoin en logements sociaux et abordables ne s'accentue pas avec le temps. D’une part, la proportion de ménages en logements subventionnés est restée stable au cours des dix dernières années. D’autre part, la prévalence des besoins impérieux en logement a légèrement diminué, ce qui pourrait indiquer un recul du besoin en logements subventionnés. Toutefois, cette tendance repose sur des données de 2021 qui pourraient être biaisées par les soutiens temporaires liés à la Covid-19, en vigueur au moment du recensement. Cela suggère que, bien que le besoin en logements abordables demeure critique, il ne semble pas augmenter avec le temps.
