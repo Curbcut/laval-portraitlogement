@@ -154,6 +154,118 @@ ggsave("outputs/4/map_4_2_2.png", plot = map_4_2_2, width = 600/72, height = 800
 
 # 4.2.4 -------------------------------------------------------------------
 
+rev <- c("none"= "Sans revenu total", "10" = "  Supérieur à zéro, moins de 10 000 $",
+         "2" = "10 000 $ à 19 999 $", "40" = "20 000 $ à 39 999 $",
+         "60" = "40 000 $ à 59 999 $", "80" = "60 000 $ à 79 999 $",
+         "100" = "80 000 $ à 99 999 $", "124" = "100 000 $ à 124 999 $",
+         "125" = "125 000 $ et plus")
+
+
+owner_income_housingcost <- crosstab_get(mode_occupation = c("owner" = "Propriétaire"),
+                                         revenu = rev,
+                                         characteristic = c("housingcost" = "Frais de logement mensuels médians propriétaire ($)"),
+                                         scale = "CSD") |> 
+  mutate(owner_housingcost_20 = owner_housingcost_none + owner_housingcost_10 + owner_housingcost_2) |> 
+  select(-owner_housingcost_none, -owner_housingcost_10, -owner_housingcost_2, -CSD_ID) |> 
+  pivot_longer(cols = everything(), names_to = "type", values_to = "housingcost") |> 
+  mutate(income = case_when(
+    str_detect(type, "20") ~ "< 19 999 $",
+    str_detect(type, "40") ~ "20 - 39 999 $",
+    str_detect(type, "60") ~ "40 - 59 999 $",
+    str_detect(type, "80") ~ "60 - 79 999 $",
+    str_detect(type, "100") ~ "80 - 99 999 $",
+    str_detect(type, "124") ~ "100 - 124 999 $",
+    str_detect(type, "125") ~ "> 125 000 $",
+    TRUE ~ NA_character_)) |> 
+  transmute(occupation = "Propriétaire", income, housingcost)
+owner_income_housingcost <- merge(
+  owner_income_housingcost, 
+  crosstab_get(mode_occupation = c("owner" = "Propriétaire"),
+               revenu = rev,
+               scale = "CSD") |> 
+    mutate(owner_20 = owner_none + owner_10 + owner_2) |> 
+    select(-owner_none, -owner_10, -owner_2, -CSD_ID) |> 
+    pivot_longer(cols = everything(), names_to = "type", values_to = "nb") |> 
+    mutate(income = case_when(
+      str_detect(type, "20") ~ "< 19 999 $",
+      str_detect(type, "40") ~ "20 - 39 999 $",
+      str_detect(type, "60") ~ "40 - 59 999 $",
+      str_detect(type, "80") ~ "60 - 79 999 $",
+      str_detect(type, "100") ~ "80 - 99 999 $",
+      str_detect(type, "124") ~ "100 - 124 999 $",
+      str_detect(type, "125") ~ "> 125 000 $",
+      TRUE ~ NA_character_)) |> 
+    transmute(occupation = "Propriétaire", income, nb),
+  by = c("occupation", "income"))
+
+tenant_income_housingcost <- crosstab_get(mode_occupation = c("tenant" = "Locataire"),
+                                          revenu = rev,
+                                          characteristic = c("housingcost" = "Frais de logement mensuels médians locataire ($)" ),
+                                          scale = "CSD") |> 
+  mutate(tenant_housingcost_20 = tenant_housingcost_none + tenant_housingcost_10 + tenant_housingcost_2) |> 
+  select(-tenant_housingcost_none, -tenant_housingcost_10, -tenant_housingcost_2, -CSD_ID) |> 
+  pivot_longer(cols = everything(), names_to = "type", values_to = "housingcost") |> 
+  mutate(income = case_when(
+    str_detect(type, "20") ~ "< 19 999 $",
+    str_detect(type, "40") ~ "20 - 39 999 $",
+    str_detect(type, "60") ~ "40 - 59 999 $",
+    str_detect(type, "80") ~ "60 - 79 999 $",
+    str_detect(type, "100") ~ "80 - 99 999 $",
+    str_detect(type, "124") ~ "100 - 124 999 $",
+    str_detect(type, "125") ~ "> 125 000 $",
+    TRUE ~ NA_character_)) |> 
+  transmute(occupation = "Locataire", income, housingcost)
+tenant_income_housingcost <- merge(
+  tenant_income_housingcost, 
+  crosstab_get(mode_occupation = c("tenant" = "Locataire"),
+               revenu = rev,
+               scale = "CSD") |> 
+    mutate(tenant_20 = tenant_none + tenant_10 + tenant_2) |> 
+    select(-tenant_none, -tenant_10, -tenant_2, -CSD_ID) |> 
+    pivot_longer(cols = everything(), names_to = "type", values_to = "nb") |> 
+    mutate(income = case_when(
+      str_detect(type, "20") ~ "< 19 999 $",
+      str_detect(type, "40") ~ "20 - 39 999 $",
+      str_detect(type, "60") ~ "40 - 59 999 $",
+      str_detect(type, "80") ~ "60 - 79 999 $",
+      str_detect(type, "100") ~ "80 - 99 999 $",
+      str_detect(type, "124") ~ "100 - 124 999 $",
+      str_detect(type, "125") ~ "> 125 000 $",
+      TRUE ~ NA_character_)) |> 
+    transmute(occupation = "Locataire", income, nb),
+  by = c("occupation", "income"))
+
+
+income_housingcost <- rbind(owner_income_housingcost, tenant_income_housingcost) |> 
+  mutate(income = factor(income, levels = c(
+    "< 19 999 $",
+    "20 - 39 999 $",
+    "40 - 59 999 $",
+    "60 - 79 999 $",
+    "80 - 99 999 $",
+    "100 - 124 999 $",
+    "> 125 000 $"))) %>%
+  # Make the alpha be dependent on the group
+  group_by(occupation) %>%
+  mutate(alpha_custom = scales::rescale(nb, to = c(0.4, 1)))
+
+plot_4_2_4 <- 
+  ggplot(income_housingcost, aes(x = income, y = housingcost, fill = occupation, alpha = alpha_custom)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = NULL, y = "Frais de logement", fill = NULL) +
+  scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
+  # scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
+  scale_y_continuous(labels = \(x) paste(convert_number(x), "$")) +
+  scale_alpha_continuous(range = c(0.4, 1), guide = "none") +
+  graph_theme
+
+ggsave(plot = plot_4_2_4, "outputs/4/plot_4_2_4.pdf", width = 7.5, height = 4)
+
+loyer_fun_421 <- function(mode_occupation, income) {
+  z <- income_housingcost$housingcost[income_housingcost$occupation == mode_occupation &
+                                     income_housingcost$income == income]
+  paste(convert_number(z), "$")
+}
 
 # 4.2.5 -------------------------------------------------------------------
 
@@ -250,4 +362,5 @@ gtsave(att_programme_table, "outputs/4/4_2_13_attprogrammetable.png", zoom = 1)
 # R Markdown --------------------------------------------------------------
 qs::qsavem(plot_4_2_1, plot_4_2_2, map_4_2_2, att_general_mean, att_fam, att_lessfn, att_other,
            att_sfplus, att_general_mean, att_programme_table, occ_rev_comp, rev_fun_421,
+           loyer_fun_421, income_housingcost,
            sfplus, file = "data/section_4_2.qsm")

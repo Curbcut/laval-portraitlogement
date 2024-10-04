@@ -71,6 +71,7 @@ crosstab_get <- function(mode_occupation = c(total = "total"),
   allcrosstab <- allcrosstab[, c(1, which(unlist(allcrosstab[which(allcrosstab$V1 == "characteristic"),]) %in% characteristic))]
   allcrosstab[which(allcrosstab$V1 == "characteristic"), ] <- 
     lapply(allcrosstab[which(allcrosstab$V1 == "characteristic"), ], function(x) {
+      print(x)
       ifelse(x %in% characteristic, names(characteristic)[match(x, characteristic)], x)
     })
   allcrosstab <- allcrosstab[, c(1, which(unlist(allcrosstab[which(allcrosstab$V1 == "composition"),]) %in% composition))]

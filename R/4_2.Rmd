@@ -29,6 +29,16 @@ plot_4_2_1
 
 # 4.2.4 Montant du loyer/frais de logement en fonction du revenu et leur mode d'occupation (axe "prix/revenu" de l'abordabilité)
 
+Le graphique \@ref(fig:plot_4_2_4) présente les frais de logement médian pour les locataires et les propriétaires à Laval, répartis selon différentes tranches de revenu. L'intensité de l'opacité des barres indique la proportion de ménages dans chaque catégorie, mettant ainsi en évidence les situations les plus courantes. Les barres plus opaques représentent des tranches de revenus où il y a une concentration plus élevée de ménages selon le mode d'occupation (> 125 000 \$ chez les propriétaires, 20 - 39 999 \$ chez les locataires). 
+
+Pour les tranches de revenus inférieures à 60 000 \$, les frais de logement médians des locataires sont systématiquement plus élevés que ceux des propriétaires. Dans la tranche de revenu de 20 - 39 999 $, celle la plus fréquente chez les locataires, les loyers mensuels médians sont de `r loyer_fun_421("Locataire", "20 - 39 999 $")` (pour 15 010 ménages locataires) tandis que les frais de logement sont de `r loyer_fun_421("Propriétaire", "20 - 39 999 $")` pour les 9 230 ménages propriétaires. 
+
+À partir de la tranche de revenu de 60 000 \$ à 79 999 \$, cette tendance s’inverse. Les propriétaires ont alors des frais de logement médians qui dépassent ceux des locataires, et l'écart continue de croître dans les tranches de revenus supérieures. Pour les revenus de 100 000 \$ et plus, les propriétaires payent des frais de logement nettement plus élevés que les locataires, ce qui peut s’expliquer par l’accession à des logements de plus grande valeur et les coûts associés à la propriété.
+
+```{r plot_4_2_4, include=TRUE, fig.cap="Frais de logement médian par statut d'occupation et tranches de revenu", fig.align = 'center'}
+plot_4_2_4
+```
+
 # 4.2.5 Proportion de ménages consacrant plus de 30% et plus de 50% de leur revenu à se loger
 
 # 4.2.6 Ménages locataires ayant de la difficulté à se loger (Ménage locataire sous le seuil de faible revenu et qui consacre 30 % et plus de son revenu à se loger.)
