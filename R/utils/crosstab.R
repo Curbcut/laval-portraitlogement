@@ -1,5 +1,6 @@
 ## Clean up, get DA data
 
+# # DA
 # allcrosstab <- tibble::as_tibble(data.table::fread("data/allcrosstab.csv", encoding = "Latin-1"))
 # DAIDs <- cancensus::get_census(dataset = "CA21",
 #                                regions = list(CSD = 2465005),
@@ -8,6 +9,7 @@
 # allcrosstab[1:4, 1] <- c("mode_occupation", "characteristic", "composition", "revenu")
 # qs::qsave(allcrosstab, file = "data/allcrosstab_Laval_DA.qs")
 # 
+# # CT
 # CTIDs <- cancensus::get_census(dataset = "CA21",
 #                                regions = list(CSD = 2465005),
 #                                level = "CT")$GeoUID
@@ -15,10 +17,15 @@
 # allcrosstab <- allcrosstab[c(1:4, which(allcrosstab$V1 %in% CTIDs)), ]
 # allcrosstab[1:4, 1] <- c("mode_occupation", "characteristic", "composition", "revenu")
 # qs::qsave(allcrosstab, file = "data/allcrosstab_Laval_CT.qs")
+# 
+# # CSD
+# allcrosstab <- allcrosstab[c(1:4, which(allcrosstab$V1 %in% "2465")), ]
+# allcrosstab[1:4, 1] <- c("mode_occupation", "characteristic", "composition", "revenu")
+# qs::qsave(allcrosstab, file = "data/allcrosstab_Laval_CSD.qs")
 
 # Get all options
 crosstab_list <- function(cat = c("mode_occupation", "characteristic", "composition", "revenu")) {
-  allcrosstab <- qs::qread("data/allcrosstab_Laval_DA.qs")
+  allcrosstab <- qs::qread("data/allcrosstab_Laval_CT.qs")
   sapply(cat, \(x) {
     allcrosstab[allcrosstab$V1 == x, 2:ncol(allcrosstab)] |> unlist() |> unname() |> unique()
   }, simplify = FALSE, USE.NAMES = TRUE)

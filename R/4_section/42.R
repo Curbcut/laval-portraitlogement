@@ -2,6 +2,49 @@ source("R/utils/startup.R")
 
 # 4.2.1 -------------------------------------------------------------------
 
+composition <- c("wo_kids"= "  Ménage comptant une seule famille de recensement, sans personnes additionnelles : couple sans enfants",
+                 "w_kids" = "  Ménage comptant une seule famille de recensement, sans personnes additionnelles : couple avec enfants",
+                 "mono" = "  Ménage comptant une seule famille de recensement, sans personnes additionnelles : famille monoparentale",
+                 "multi" = "Ménage multigénérationnel",
+                 "solo" = "Ménage composé d'une seule personne",
+                 "other" = "  Ménage sans famille de recensement, composé de deux personnes ou plus")
+
+occ_rev_comp <- crosstab_get(mode_occupation = c("Propriétaire" = "Propriétaire",
+                                 "Locataire" = "Locataire"),
+             revenu = c("rev_med" = "Revenu total médian ($)"),
+             composition = composition,
+             scale = "CSD") |> 
+  pivot_longer(cols = starts_with("Propriétaire") | starts_with("Locataire"),
+               names_to = c("mode_occupation", "composition"),
+               names_pattern = "(Propriétaire|Locataire)_(.*)_rev_med",
+               values_to = "median_revenue") |> 
+  mutate(comp_pretty = case_when(
+    str_detect(composition, "wo_kids") ~ "Couple sans enfants",
+    str_detect(composition, "w_kids") ~ "Couple avec enfants",
+    str_detect(composition, "mono") ~ "Famille monoparentale",
+    str_detect(composition, "multi") ~ "Ménage multigénérationnel",
+    str_detect(composition, "solo") ~ "Personne seule",
+    str_detect(composition, "other") ~ "Deux personnes ou plus",
+    TRUE ~ NA_character_))
+
+plot_4_2_1 <- 
+  ggplot(occ_rev_comp, aes(x = comp_pretty, y = median_revenue, fill = mode_occupation)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = NULL, y = "Revenu annuel médian", fill = NULL) +
+  scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
+  scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 12)) +
+  scale_y_continuous(labels = \(x) paste(convert_number(x), "$")) +
+  graph_theme
+
+ggsave(plot = plot_4_2_1, "outputs/4/plot_4_2_1.pdf", width = 7.5, height = 4)
+
+rev_fun_421 <- function(mode_occupation, composition) {
+  z <- occ_rev_comp$median_revenue[occ_rev_comp$mode_occupation == mode_occupation &
+                                occ_rev_comp$composition == composition]
+  paste(convert_number(z), "$")
+}
+
+
 # 4.2.2 -------------------------------------------------------------------
 #Setting up a pre-pivoted table to make proportion calculations easier later
 data_4_2_2_pivot <- read.csv("data/4/4_2_2.csv") |>
@@ -205,6 +248,6 @@ gtsave(att_programme_table, "outputs/4/4_2_13_attprogrammetable.png", zoom = 1)
 
 
 # R Markdown --------------------------------------------------------------
-qs::qsavem(plot_4_2_2, map_4_2_2, att_general_mean, att_fam, att_lessfn, att_other,
-           att_sfplus, att_general_mean, att_programme_table,
+qs::qsavem(plot_4_2_1, plot_4_2_2, map_4_2_2, att_general_mean, att_fam, att_lessfn, att_other,
+           att_sfplus, att_general_mean, att_programme_table, occ_rev_comp, rev_fun_421,
            sfplus, file = "data/section_4_2.qsm")
