@@ -100,7 +100,7 @@ Dans la Ville de Laval en 2021, il y avait 1 032 logements qui bénéficianet du
 
 _Source: Délais d'attente moyen par territoire. (Juillet 2024). Office municipal d'habitation de Laval._
 
-Les délais d'attente pour obtenir un logement subventionné à Laval varient considérablement. Le délai moyen, tous programmes, territoires et clientèles confondus, est de r att_general_mean jours.
+Les délais d'attente pour obtenir un logement subventionné à Laval varient considérablement. Le délai moyen, tous programmes, territoires et clientèles confondus, est de `r att_general_mean` jours.
 
 Parmi les clientèles visées, les familles affichent le délai moyen le plus élevé, atteignant `r att_fam` jours. Les personnes s'inscrivant aux programmes de 59 ans et moins attendent en moyenne `r att_lessfn` jours, tandis que pour celles dont la clientèle n’est pas spécifiée, le délai s’élève à `r att_other` jours. Les individus s'inscrivant aux programmes pour les personnes âgées de 65 ans et plus bénéficient du délai moyen le plus court, avec une attente de `r att_sfplus` jours.
 
