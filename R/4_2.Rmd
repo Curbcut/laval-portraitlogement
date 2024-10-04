@@ -7,6 +7,7 @@ output: html_document
 ```{r setup_4_2, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 qs::qload(here::here("data", "section_4_2.qsm"))
+source(here::here("R/utils/startup.R"))
 ```
 
 # 4.2.1 Revenu total annuel médian selon la composition des ménages, le mode d'occupation et l'âge du principal soutien
@@ -54,6 +55,8 @@ plot_4_2_5
 Répétition 4.2.5
 
 # 4.2.7 Ménages en situation de surpeuplement (axe "taille" de l'abordabilité)
+
+
 
 # 4.2.8 Ménages vivant dans un logement nécessitant des réparations majeures (axe "qualité" de l'abordabilité")
 
