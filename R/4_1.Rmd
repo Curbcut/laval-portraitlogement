@@ -43,7 +43,7 @@ map_tenant_hh
 
 _Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
 
-En 2021, bien que la majorité des ménages à Laval soient des propriétaires, la majorité de ceux ayant un revenu inférieur à 60 000 \$ étaient des locataires, avec 80 % des ménages gagnant moins de 20 000 \$ étant locataires, comme le montre le graphique \@ref(fig:plot_4_1_1_2). À l'inverse, parmi les ménages lavallois ayant un revenu annuel d'au moins 60 000 \$, la majorité étaient des propriétaires, avec plus de 90 % des ménages gagnant plus de 125 000 \$ étant propriétaires.
+En 2021, bien que la majorité des ménages à Laval soient des propriétaires, la majorité de ceux ayant un revenu inférieur à 60 000 \$ étaient des locataires, avec 72,5 % des ménages gagnant moins de 20 000 \$ étant locataires, comme le montre le graphique \@ref(fig:plot_4_1_1_2). À l'inverse, parmi les ménages lavallois ayant un revenu annuel d'au moins 60 000 \$, la majorité étaient des propriétaires, avec plus de 90 % des ménages gagnant plus de 125 000 \$ étant propriétaires.
 
 ```{r plot_4_1_1_2, include=TRUE, fig.cap="Type de ménage par tranche de revenu", fig.align = 'center'}
 plot_4_1_1_2
