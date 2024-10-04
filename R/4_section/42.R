@@ -439,6 +439,73 @@ ggsave(plot = plot_4_2_7, "outputs/4/plot_4_2_7.pdf", width = 6.5, height = 6)
 
 # 4.2.10 ------------------------------------------------------------------
 
+# Loyer médian ------------------------------------------------------------
+
+# Setting the years to pull data from
+years <- 2010:2023
+
+# Pulling average rent data
+avg_rent_cmhc <- function(geoid, years, geoname) {
+  map_dfr(years, function(cyear) {
+    get_cmhc(survey = "Rms", series = "Median Rent", dimension = "Bedroom Type",
+             breakdown = "Census Subdivision", geo_uid = geoid, year = cyear) |> 
+      mutate(Geography = geoname) |> 
+      filter(str_detect(`Bedroom Type`, "Total")) |> 
+      select(Geography, Year, Value)
+  })
+}
+
+#Grabbing annual average rent data from 2010 to 2023
+avg_rent_lvl <- avg_rent_cmhc(2465005, years, "Laval")
+
+
+# Manually inputting the province of Quebec's data as it's unavailable using the CMHC package
+# src = https://www.cmhc-schl.gc.ca/professionals/housing-markets-data-and-research/housing-data/data-tables/rental-market/rental-market-report-data-tables
+avg_rent_qc <- data.frame(
+  Geography = "Québec",
+  Year = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+           2020, 2021, 2022, 2023),
+  Value = c(648, 666, 693, 679, 691, 712, 727, 736, 761, 800, 845, 874, 952, 1022)
+)
+
+# Preparing the table for the line graph
+avg_rent_annual <- bind_rows(avg_rent_lvl, avg_rent_qc) |> 
+  mutate(Geography = factor(Geography, levels = c("Laval", "Québec")))
+avg_rent_annual_inf <- bind_rows(avg_rent_lvl_inf, avg_rent_qc_inf) |> 
+  mutate(Geography = factor(Geography, levels = c("Laval", "Québec")))
+
+# avg_rent_annual$indexed <- "Dollars courants (non ajusté)"
+# avg_rent_annual_inf$indexed <- "Ajusté à l'inflation ($ de 2023)"
+# avg_rent_annual <- rbind(avg_rent_annual_inf, avg_rent_annual)
+
+# Line graph
+housing_loyermed_plot <-
+  ggplot(avg_rent_annual, aes(x = Year, y = `Value`, group = Geography, color = Geography)) +
+  geom_line(linewidth = 1.5) +
+  labs(title = element_blank(),
+       x = NULL,
+       y = "Loyer mensuel médian ($)") +
+  scale_color_manual(values = c("Laval" = color_theme("greenecology"), "Québec" = color_theme("blueexplorer"))) +
+  scale_y_continuous(labels = convert_number) +
+  graph_theme +
+  theme(legend.title = element_blank())
+
+ggplot2::ggsave(filename = here::here("outputs/4/plot_4_2_10_loyer.pdf"),
+                plot = housing_loyermed_plot, width = 3, height = 3)
+
+housing_loyer_2023 <- avg_rent_annual$Value[
+  avg_rent_annual$Year == 2023 & avg_rent_annual$Geography == "Laval"]
+housing_loyer_2010 <- avg_rent_annual$Value[
+  avg_rent_annual$Year == 2010 & avg_rent_annual$Geography == "Laval"]
+housing_loyer_var <- convert_pct((housing_loyer_2023 - housing_loyer_2010) / housing_loyer_2010)
+
+
+
+
+
+
+
+
 
 # 4.2.11 ------------------------------------------------------------------
 
@@ -519,5 +586,6 @@ qs::qsavem(#plot_4_2_1, plot_4_2_2, map_4_2_2,
            att_general_mean, att_fam, att_lessfn, att_other,
            att_sfplus, att_general_mean, att_programme_table, occ_rev_comp, rev_fun_421,
            loyer_fun_421, income_housingcost, tenant_lowinc_30plus_pct, tenant_lowinc_50plus_pct, 
-           plot_4_2_1, plot_4_2_4, plot_4_2_5, ns_2021, ns_2016, ns_2021,
+           plot_4_2_1, plot_4_2_4, plot_4_2_5, ns_2021, ns_2016, ns_2011, plot_4_2_7,
+           housing_loyermed_plot, housing_loyer_2023, housing_loyer_2010, housing_loyer_var,
            file = "data/section_4_2.qsm")

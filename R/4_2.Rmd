@@ -70,7 +70,23 @@ Répétition 5.1.2.2 (les deux utilisent les données du recensement, donc le no
 
 # 4.2.9 Ratio salaires hebo médian/paiement hypothécaire mensuel type
 
+_Source: Portrait régional de l’habitation : 13 – Région administrative de Laval. (2020). Société d'habitation du Québec. Récupéré au https://www.habitation.gouv.qc.ca/fileadmin/internet/publications/portraits-regionaux/Portrait_habitation_region_13.pdf_
+
+En 2018, le ratio entre le salaire hebdomadaire médian et le paiement hypothécaire mensuel type à Laval était de 0,50, signifiant qu’un résident devait consacrer en moyenne 46 % de son revenu mensuel pour accéder à la propriété. Ce ratio, bien que plus favorable que la moyenne québécoise (0,67), indique une accessibilité difficile, positionnant Laval parmi les régions les moins accessibles au Québec. Entre 2013 et 2018, l'accessibilité à la propriété à Laval s'est détériorée, avec une diminution du ratio de 7 %, plaçant la région asvant-dernière dans le classement provincial pour l’accès à la propriété.
+
 # 4.2.10 Frais de logement
+
+_Source: SCHL_
+
+Les coûts des loyers à Laval ont considérablement augmenté au cours de la dernière décennie. En 2023, le loyer médian à Laval était de `r housing_loyer_2023` \$. De 2010 à 2023, les loyers médians à Laval ont augmenté de `r housing_loyer_var` en dollars courants.
+
+```{r housingLoyermed, include=TRUE, fig.cap="Évolution du loyer mensuel médian à Laval et au Québec (2010-2023)", fig.align = 'center'}
+housing_loyermed_plot
+```
+
+Tout comme les coûts des loyers, les frais de logement des ménages propriétaires de Laval ont augmenté de façon importante. Selon le recensement de 2021, les frais de logement mensuels médians des propriétaires de Laval s’élevaient à 1 330 \$, soit une augmentation de 11,8 % par rapport au 1 190 \$ de 2016.
+
+// TKTK Sépération par districts électoraux à venir
 
 # 4.2.11 Aide au logement
 
