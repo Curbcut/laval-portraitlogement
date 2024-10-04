@@ -27,13 +27,37 @@ occ_rev_comp <- crosstab_get(mode_occupation = c("Propriétaire" = "Propriétair
     str_detect(composition, "other") ~ "Deux personnes ou plus",
     TRUE ~ NA_character_))
 
+
+
+occ_rev_comp <- merge(
+  occ_rev_comp,
+  crosstab_get(mode_occupation = c("Propriétaire" = "Propriétaire",
+                                   "Locataire" = "Locataire"),
+               composition = composition,
+               scale = "CSD") |> 
+    pivot_longer(cols = starts_with("Propriétaire") | starts_with("Locataire"),
+                 names_to = c("mode_occupation", "composition"),
+                 names_pattern = "(Propriétaire|Locataire)_(.*)",
+                 values_to = "nb") |> 
+    mutate(comp_pretty = case_when(
+      str_detect(composition, "wo_kids") ~ "Couple sans enfants",
+      str_detect(composition, "w_kids") ~ "Couple avec enfants",
+      str_detect(composition, "mono") ~ "Famille monoparentale",
+      str_detect(composition, "multi") ~ "Ménage multigénérationnel",
+      str_detect(composition, "solo") ~ "Personne seule",
+      str_detect(composition, "other") ~ "Deux personnes ou plus",
+      TRUE ~ NA_character_)),
+  by = c("CSD_ID", "mode_occupation", "composition", "comp_pretty")) %>%
+  mutate(alpha_custom = scales::rescale(nb, to = c(0.4, 1)))
+
 plot_4_2_1 <- 
-  ggplot(occ_rev_comp, aes(x = comp_pretty, y = median_revenue, fill = mode_occupation)) +
+  ggplot(occ_rev_comp, aes(x = comp_pretty, y = median_revenue, fill = mode_occupation, alpha = alpha_custom)) +
   geom_bar(stat = "identity", position = "dodge") +
   labs(x = NULL, y = "Revenu annuel médian", fill = NULL) +
   scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
   scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 12)) +
   scale_y_continuous(labels = \(x) paste(convert_number(x), "$")) +
+  scale_alpha_continuous(range = c(0.4, 1), guide = "none") +
   graph_theme
 
 ggsave(plot = plot_4_2_1, "outputs/4/plot_4_2_1.pdf", width = 7.5, height = 4)
