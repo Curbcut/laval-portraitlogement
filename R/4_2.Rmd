@@ -26,7 +26,36 @@ plot_4_2_1
 
 # 4.2.2 Proportion de ménages en situation de faible revenu selon le mode d'occupation
 
+_Source: Crosstab_
+
+While Statistics Canada does not have an official definition of poverty, the agency provides several indicators to help measure the prevalence of low income in Canada, which includes, but is not limited to, low income cut-offs, market basket measure, and low income measure. For the purpose of this report, the low income measure used is the Low-income measure, after-tax (LIM-AT), defined as households that fall under 50 % of the median adjusted after‑tax income of private households.
+
+Laval as a whole has `r low_laval` of its households experiencing low-income, with this number skewing significantly towards tenant households (`r low_laval_tenant`), of whom are more likely to experience low-income, than owner households, which only saw `r low_laval_owner` of households experiencing low-income (\@ref(fig:table_4_2_2)). Furthermore, as shown by \@ref(fig:map_4_2_2) below, low-income households in Laval are not evenly distributed throughout the city. Electoral districts closer to the urban core of Laval, such as Souvenir-Labelle and Chomedey, have much higher rates of low-income households than the outskirts of Laval, potentially due to the higher proportion of tenant households in those districts, as well as a higher proportion of marginalized communities residing in those areas.
+
+```{r map_4_2_2, include=TRUE, fig.cap="Proportion de ménages à faible revenu par district électorale", fig.align = 'center'}
+map_4_2_2
+```
+
+```{r table_4_2_2, include=TRUE, fig.cap="Nombre et proportion de ménages à faible revenu par district électorale", fig.align = 'center'}
+table_4_2_2
+```
+
 # 4.2.3 Ménages ayant des besoins impérieux en logement selon le type de besoin et le mode d'occupation
+_Source: CMHC, Crosstab_
+
+```{r plot_4_2_3_evol, include=TRUE, fig.cap="Évolution des besoins impérieux en matière de logement (% de tous les ménages)", fig.align = 'center'}
+plot_4_2_3_evol
+```
+
+As shown in \@ref(fig:plot_4_2_3_evol) and \@ref(fig:table_4_2_3), from 2006 to 2021, the proportion of households in core need in Laval has dropped `r core_diff`, from `r core_2006` to `r 2021`. This drop was driven primarily from the decrease of households that were below the affordability standard, which saw a decrease similar to the total households in core need. However, the reduction of households that were below the adequacy and suitability standard also contributed to this drop, albeit much smaller. 
+
+One potential reason for this drop is the federal and provincial government assistance that was provided in 2020 during the COVID-19 pandemic, which saw agencies provide income support measures and mortgage payment deferrals to households to assist with living costs.
+
+```{r table_4_2_3, include=TRUE, fig.cap="Évolution des besoins impérieux en matière de logement (% des ménages en besoin impérieux hors total)", fig.align = 'center'}
+table_4_2_3
+```
+
+<!-- Acceptable housing table from PESL should go here -->
 
 # 4.2.4 Montant du loyer/frais de logement en fonction du revenu et leur mode d'occupation (axe "prix/revenu" de l'abordabilité)
 

@@ -69,112 +69,242 @@ rev_fun_421 <- function(mode_occupation, composition) {
 }
 
 
-# # 4.2.2 -------------------------------------------------------------------
-# #Setting up a pre-pivoted table to make proportion calculations easier later
-# data_4_2_2_pivot <- read.csv("data/4/4_2_2.csv") |>
-#   select(total.total, total.owner, total.coowner, total.tenant, total.cotenant,
-#          total.sub, total.unsub) |> 
-#   summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
-#   rename_with(~ gsub("total.", "low.", .)) |> 
-#   pivot_longer(cols = everything(),
-#                names_to = "variable",
-#                values_to = "values")
-# 
-# #Grabbing data for the plot
-# data_4_2_2 <- read.csv("data/4/4_2_2.csv") |> #Edited version of the spreadsheet
-#   select(-GeoUID) |> 
-#   summarise(across(everything(), \(x) sum(x, na.rm = TRUE))) |> 
-#   mutate(diff.total = total.total - low.total,
-#          diff.owner = total.owner - low.owner,
-#          diff.coowner = total.coowner - low.coowner,
-#          diff.tenant = total.tenant - low.cotenant,
-#          diff.cotenant = total.cotenant - low.cotenant,
-#          diff.sub = total.sub - low.sub,
-#          diff.unsub = total.unsub - low.unsub) |> 
-#   select(!starts_with("total")) |> 
-#   pivot_longer(cols = everything(),
-#                names_to = "variable",
-#                values_to = "value") |> 
-#   left_join(data_4_2_2_pivot, by = "variable") |> 
-#   mutate(prop = if_else(!is.na(values),
-#                         convert_pct(value / values),
-#                         NA_character_),
-#          hh = case_when(
-#            str_detect(variable, "total") ~ "Tous les ménages",
-#            str_detect(variable, "owner") & !str_detect(variable, "coowner") ~ "Propriétaire",
-#            str_detect(variable, "coowner") ~ "Propriétaire d’une copropriété",
-#            str_detect(variable, "tenant") & !str_detect(variable, "cotenant") ~ "Locataire",
-#            str_detect(variable, "cotenant") ~ "Locataire en copropriété",
-#            str_detect(variable, "sub") & !str_detect(variable, "unsub") ~ "Logement subventionné",
-#            str_detect(variable, "unsub") ~ "Logement non subventionné",
-#            TRUE ~ "Total"
-#          ),
-#          income = case_when(
-#            str_detect(variable, "low") ~ "Ménages à faible revenu",
-#            str_detect(variable, "diff") ~ "Tous les ménages",
-#            TRUE ~ "Other"
-#          )) |> 
-#   select(-values, -variable) |> 
-#   mutate(hh = factor(hh, levels = c(
-#     "Tous les ménages", 
-#     "Propriétaire", 
-#     "Propriétaire d’une copropriété", 
-#     "Locataire", 
-#     "Locataire en copropriété", 
-#     "Logement subventionné", 
-#     "Logement non subventionné")),
-#     income = factor(income, levels = c(
-#       "Tous les ménages", "Ménages à faible revenu"
-#     )))
-# 
-# #Plotting the bar graph
-# plot_4_2_2 <- ggplot(data_4_2_2, aes(x = hh, y = value, fill = income)) +
-#   geom_bar(stat = "identity") +
-#   geom_text(aes(label = prop), vjust = -0.5,
-#                                          size = 4, color = "black") +
-#   scale_fill_manual(values = c("Ménages à faible revenu" = "#A3B0D1", "Tous les ménages" = "#CD718C")) +
-#   labs(x = "", y = "Nombre de ménages (n)", fill = "Income Type") +
-#   scale_x_discrete(labels = function(x) str_wrap(x, width = 18)) +
-#   scale_y_continuous(labels = function(x) convert_number(x)) +
-#   graph_theme +
-#   theme(axis.text.x = element_text(angle = 45, hjust = 1),
-#         plot.caption = element_text(hjust = 0))
-# 
-# #Data for the map
-# data_4_2_2_map <- read.csv("data/4/4_2_2.csv") |> 
-#   as.data.frame() |> 
-#   mutate(GeoUID = sprintf("%.2f", as.numeric(GeoUID))) |>  # Ensure two decimal places
-#   mutate(GeoUID = as.character(GeoUID))
-# 
-# data_4_2_2_sf <- full_join(laval_ct, data_4_2_2_map, by = "GeoUID") |> 
-#   mutate(prop = low.total / total.total) |> 
-#   select(prop)
-# 
-# #Finding the appropriate breaks
-# #list(classInt::classIntervals(data_4_2_2_sf$prop, n = 5, style = "pretty")$brks)
-# `4_2_2_breaks` <- c(-Inf, 0.08, 0.12, 0.17, 0.25, Inf)
-# `4_2_2_breaks_labels` <- c("< 8,0 %", "8,0 - 12,0 %", "12,0 - 17,0 %", "17,0 - 25,0 %", "> 25,0 %")
-# 
-# #Pasting the breaks back into the data frame
-# data_4_2_2_sf <- data_4_2_2_sf |> 
-#   mutate("quantile" = cut(`prop`, breaks = `4_2_2_breaks`, include.lowest = TRUE,
-#                                 labels = `4_2_2_breaks_labels`))
-# 
-# map_4_2_2 <- ggplot(data = data_4_2_2_sf) +
-#   gg_cc_tiles +
-#   geom_sf(aes(geometry = geometry, fill = `quantile`), alpha = 0.9, color = "transparent") +
-#   scale_fill_manual(values = curbcut_scale,
-#                     name = "Proportion de ménages à faible revenu (%)") +
-#   gg_cc_theme +
-#   guides(fill = guide_legend(title.position = "top",
-#                              title.hjust = 0.5))
-# 
-# #Saving the visuals as images
-# ggsave("outputs/4/plot_4_2_2.png", plot = plot_4_2_2, width = 600/72, height = 800/72, dpi = 72)
-# ggsave("outputs/4/map_4_2_2.png", plot = map_4_2_2, width = 600/72, height = 800/72, dpi = 72)
+# 4.2.2 -------------------------------------------------------------------
+mode_occupation <- c(owner = "Propriétaire", tenant = "Locataire")
+
+data_4_2_2 <- crosstab_get(mode_occupation = mode_occupation, revenu = c("low" = "Avec un faible revenu fondé sur la Mesure de faible revenu après impôt (MFR-ApI)",
+                                                                         "total" = "Total - Revenu total du ménage")) |> 
+  mutate("total_low" = owner_low + tenant_low) |> 
+  full_join(laval_ct_hou, join_by("CT_ID" == "GeoUID")) |> 
+  st_as_sf() |> 
+  interpolate(additive_vars = c("owner_low", "tenant_low", "owner_total", "tenant_total", "total_low", "Households"))
+
+data_4_2_2_map <- data_4_2_2 |> 
+  mutate(low_prop = total_low / Households) |> 
+  mutate(low_quantile = cut(low_prop, breaks = classInt::classIntervals(low_prop, n = 5, style = "jenks")$brks, include.lowest = TRUE,
+                            labels = c("< 9,7 %", "9,7 - 12,1 %", "12,1 - 16,6 %", "16,6 - 20,4 %", "> 20,4 %")))
+
+map_4_2_2 <- ggplot(data = data_4_2_2_map) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = low_quantile), alpha = 0.9, color = "transparent", show.legend = TRUE) +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Proportion de ménages à faible revenu") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
+data_4_2_2_table <- data_4_2_2 |> 
+  st_drop_geometry() |> 
+  select(-ID) |> 
+  bind_rows(
+    summarise(
+      data_4_2_2,
+      NOM = "Laval (V)",
+      owner_total = sum(owner_total, na.rm = TRUE),
+      owner_low = sum(owner_low, na.rm = TRUE),
+      tenant_total = sum(tenant_total, na.rm = TRUE),
+      tenant_low = sum(tenant_low, na.rm = TRUE),
+      Households = sum(Households, na.rm = TRUE),
+      total_low = sum(total_low, na.rm = TRUE)
+    )
+  ) |> 
+  mutate(across(where(is.numeric) & !NOM, round, digits = 0)) |> 
+  mutate(tenant_low_prop = tenant_low / tenant_total,
+         owner_low_prop = owner_low / owner_total,
+         low_prop = total_low / Households) |> 
+  select(NOM, owner_total, owner_low, owner_low_prop, tenant_total, tenant_low,
+         tenant_low_prop, Households, total_low, low_prop) |> 
+  mutate(Laval_row = if_else(NOM == "Laval (V)", 1, 0)) |> 
+  arrange(desc(Laval_row)) |> 
+  select(-Laval_row) 
+
+table_4_2_2 <- data_4_2_2_table |> 
+  gt() |>
+  cols_label(
+    NOM = "District électorale",
+    owner_total = "Nombre de ménages (n)",
+    owner_low = "Ménages à faible revenu (n)",
+    owner_low_prop = "Ménages à faible revenu (%)",
+    tenant_total = "Nombre de ménages (n)",
+    tenant_low = "Ménages à faible revenu (n)",
+    tenant_low_prop = "Ménages à faible revenu (%)",
+    Households = "Nombre de ménages (n)",
+    total_low = "Ménages à faible revenu (n)",
+    low_prop = "Ménages à faible revenu (%)"
+  ) |>
+  tab_style(
+    style = cell_borders(sides = "right", color = "lightgrey", weight = px(2)),
+    locations = cells_body(columns = c(1, 4, 7))
+  ) |> 
+  tab_style(
+    style = cell_borders(sides = "bottom", color = "lightgrey", weight = px(2)),
+    locations = cells_body(rows = 1)
+  ) |> 
+  tab_spanner(
+    label = "Propriétaires",
+    columns = c(owner_total, owner_low, owner_low_prop)
+  ) |>
+  tab_spanner(
+    label = "Locataires",
+    columns = c(tenant_total, tenant_low, tenant_low_prop)
+  ) |>
+  tab_spanner(
+    label = "Total",
+    columns = c(Households, total_low, low_prop)
+  ) |> 
+  tab_style(
+    style = cell_fill(color = "#f0f0f0"),
+    locations = cells_body(rows = seq(2, nrow(data_4_2_2_table), by = 2))
+  ) |>
+  data_color(
+    columns = c(4, 7, 10),
+    colors = scales::col_numeric(
+      palette = c("white", color_theme("purpletransport")),
+      domain = NULL
+    )
+  ) |> 
+  fmt(columns = c(2, 3, 5, 6, 8, 9), fns = convert_number) |>
+  fmt(columns = c(4, 7, 10), fns = convert_pct) |> 
+  tab_style(
+    style = cell_text(font = font_local_name, size = px(13)),
+    locations = cells_body()) |>
+  tab_style(
+    style = cell_text(font = font_local_name, size = px(14)),
+    locations = cells_column_labels()) |>
+  tab_style(
+    style = cell_text(size = px(15)),
+    locations = cells_column_spanners()
+  ) |>
+  cols_width(
+    c(1) ~ px(75),
+    c(2, 5, 8) ~ px(90),
+    c(3, 6, 9) ~ px(110),
+    c(4, 7, 10) ~ px(115)
+  )
+
+low_laval <- data_4_2_2_table |> filter(NOM == "Laval (V)") |> pull(low_prop) |> convert_pct()
+low_laval_tenant <- data_4_2_2_table |> filter(NOM == "Laval (V)") |> pull(tenant_low_prop) |> convert_pct()
+low_laval_owner <- data_4_2_2_table |> filter(NOM == "Laval (V)") |> pull(owner_low_prop) |> convert_pct()
+
+ggsave(plot = map_4_2_2, "outputs/4/map_4_2_2.pdf", width = 7.5, height = 6)
+gtsave(table_4_2_2, "outputs/4/table_4_2_2.png", vwidth = 3200)
 
 # 4.2.3 -------------------------------------------------------------------
 
+data_4_2_3_percent <- get_cmhc(survey = "Core Housing Need", series = "Housing Standards",
+                               dimension = "% of Households in Core Housing Need", breakdown = "Historical Time Periods",
+                               geo_uid = 2465005)
+
+
+
+#Proportion of core housing by electoral district in 2021
+data_4_2_3_map <- get_census(
+  dataset = "CA21",
+  regions = list(CSD = 2465005),
+  level = "CT",
+  vectors = c("core" = "v_CA21_4303", "hh" = "v_CA21_4302"),
+  geo_format = "sf") |> 
+  select(GeoUID, core, hh) |> 
+  interpolate(additive_vars = c("core", "hh")) |> 
+  mutate(prop = core / hh) |> 
+  mutate(low_quantile = cut(prop, breaks = classInt::classIntervals(prop, n = 5, style = "jenks")$brks, include.lowest = TRUE,
+                            labels = c("< 4,0 %", "4,0 - 5,5 %", "5,5 - 7,8 %", "7,8 - 9,3 %", "> 9,3 %")))
+
+map_4_2_3 <- ggplot(data = data_4_2_3_map) +
+  gg_cc_tiles +
+  geom_sf(aes(geometry = geometry, fill = low_quantile), alpha = 0.9, color = "transparent", show.legend = TRUE) +
+  scale_fill_manual(values = curbcut_scale,
+                    name = "Proportion de ménages ayant des besoins impérieux") +
+  gg_cc_theme +
+  guides(fill = guide_legend(title.position = "top",
+                             title.hjust = 0.5))
+
+# Combine all data frames into one
+data_4_2_3_2021 <- do.call(rbind, data_list) |> 
+  filter(DateString == 2021 & `Households in Core Housing Need` == "Total") |> 
+  select(GeoUID, Value) |> 
+  full_join(laval_hh_2021, by = "GeoUID") |> 
+  st_as_sf() |> 
+  interpolate(additive_vars = c("Value", "households"))
+
+#Evolution of core housing
+laval_hh <- get_cmhc(survey = "Census", series = "All Households",
+                     dimension = "Age of Primary Household Maintainer",
+                     breakdown = "Historical Time Periods",
+                     geo_uid = 2465005) |> 
+  filter(`Age of Primary Household Maintainer` == "Total") |> 
+  select(DateString, Value)
+
+data_4_2_3_evol <- get_cmhc(survey = "Core Housing Need", series = "Housing Standards",
+                             dimension = "Households in Core Housing Need", breakdown = "Historical Time Periods",
+                             geo_uid = 2465005) |> 
+  rename("Count" = "Value") |> 
+  select(DateString, `Households in Core Housing Need`, Count) |> 
+  left_join(laval_hh, by = "DateString") |> 
+  filter(`Households in Core Housing Need` != "Above Standards",
+         `Households in Core Housing Need` != "Below One or More Housing Standards") |> 
+  mutate(`Households in Core Housing Need` = case_when(
+    `Households in Core Housing Need` == "Below Affordability Standard" ~ "Inférieur au seuil d'abordabilité",
+    `Households in Core Housing Need` == "Below Adequacy Standard" ~ "Inférieur au seuil de taille convenable",
+    `Households in Core Housing Need` == "Below Suitability Standard" ~ "Inférieur au seuil de qualité convenable",
+    `Households in Core Housing Need` == "Total" ~ "Nombre total de ménages dans le besoin impérieux",
+    TRUE ~ `Households in Core Housing Need`
+  )) |>
+  mutate(prop = Count / Value)
+
+plot_4_2_3_evol <- ggplot(data_4_2_3_evol, aes(x = DateString, y = prop, color = `Households in Core Housing Need`, group = `Households in Core Housing Need`)) +
+  geom_line(linewidth = 1.5) +
+  geom_point(size = 2) + 
+  labs(x = "",
+       y = "Proportion de ménages ayant\ndes besoins impérieux (%)",
+       color = "Housing Standard") +
+  scale_y_continuous(labels = function(x) convert_pct(x)) +
+  scale_color_manual(values = c(
+    "Inférieur au seuil d'abordabilité" = color_theme("yellowclimate"),
+    "Inférieur au seuil de taille convenable" = color_theme("purpletransport"),
+    "Inférieur au seuil de qualité convenable" = color_theme("pinkhealth"),
+    "Nombre total de ménages dans le besoin impérieux" = color_theme("blueexplorer")
+  )) +
+  graph_theme +
+  guides(color = guide_legend(nrow = 2))
+
+data_4_2_3_table <- get_cmhc(survey = "Core Housing Need", series = "Housing Standards",
+                             dimension = "% of Households in Core Housing Need", breakdown = "Historical Time Periods",
+                             geo_uid = 2465005) |> 
+  group_by(DateString, `% of Households in Core Housing Need`) |> 
+  summarise(
+    Value = sum(Value, na.rm = TRUE),
+    .groups = 'drop'
+  ) |> 
+  pivot_wider(
+    names_from = `% of Households in Core Housing Need`,
+    values_from = c(Value),
+    values_fill = list(Value = 0)
+  ) |> 
+  rename("Year" = DateString) |> 
+  select(-`Above Standards`) |> 
+  mutate(across(-Year, ~ .x / 100))
+
+table_4_2_3 <- data_4_2_3_table |> 
+  gt() |>
+  tab_style(
+    style = cell_fill(color = "#f0f0f0"),
+    locations = cells_body(rows = seq(2, nrow(data_4_2_3_table), by = 2))
+  ) |>
+  fmt(columns = c(2:6), fns = convert_pct) |> 
+  tab_style(
+    style = cell_text(font = font_local_name, size = px(13)),
+    locations = cells_body()) |>
+  tab_style(
+    style = cell_text(font = font_local_name, size = px(14)),
+    locations = cells_column_labels())
+
+core_2006 <- data_4_2_3_table |> filter(Year == 2006) |> pull(Total) |> convert_pct()
+core_2021 <- data_4_2_3_table |> filter(Year == 2021) |> pull(Total) |> convert_pct()
+core_diff <- data_4_2_3_table |> filter(Year == 2006 | Year == 2021) |> summarise(across(-Year, ~ .[Year == 2006] - .[Year == 2021])) |> pull(Total) |> convert_pct()
+
+ggsave(plot = plot_4_2_3_evol, "outputs/4/plot_4_2_3_evol.pdf", width = 7.5, height = 6)
+gtsave(table_4_2_3, "outputs/4/table_4_2_3.png", vwidth = 3200)
 
 # 4.2.4 -------------------------------------------------------------------
 
@@ -583,8 +713,9 @@ gtsave(att_programme_table, "outputs/4/4_2_13_attprogrammetable.png", zoom = 1)
 
 # R Markdown --------------------------------------------------------------
 qs::qsavem(#plot_4_2_1, plot_4_2_2, map_4_2_2, 
-           att_general_mean, att_fam, att_lessfn, att_other,
+           att_general_mean, att_fam, att_lessfn, att_other, map_4_2_2, table_4_2_2,
            att_sfplus, att_general_mean, att_programme_table, occ_rev_comp, rev_fun_421,
+           low_laval, low_laval_owner, low_laval_tenant, core_2006, core_2021, core_diff,
            loyer_fun_421, income_housingcost, tenant_lowinc_30plus_pct, tenant_lowinc_50plus_pct, 
            plot_4_2_1, plot_4_2_4, plot_4_2_5, ns_2021, ns_2016, ns_2011, plot_4_2_7,
            housing_loyermed_plot, housing_loyer_2023, housing_loyer_2010, housing_loyer_var,
