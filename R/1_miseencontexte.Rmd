@@ -1,0 +1,11 @@
+---
+title: "Mise en contexte"
+author: "Curbcut"
+output: html_document
+---
+
+-	Contexte mouvant de l’écosystème en habitation social et abordable depuis quelques années.
+-	Crise en habitation (quelques chiffres clés à Laval : taux d’inoccupation, loyers et prix des propriétés médians, démographie)
+-	Contexte économique (coûts de construction, main d’œuvre et matériaux, taux d’intérêt, etc.)
+-	OGAT Habitation ?
+-	Positionnement de la Ville de Laval pour contribuer à résoudre la crise en habitation (plan d’action 2020-2022, Sommet de l’habitation, etc.)
