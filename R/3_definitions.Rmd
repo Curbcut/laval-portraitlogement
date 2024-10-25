@@ -12,3 +12,4 @@ Logement social
 Logement abordable
 Logement lucratif
 Logement non lucratif
+Ménage à faible revenu

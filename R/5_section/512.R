@@ -5,15 +5,15 @@ source("R/utils/startup.R")
 
 rep_census <- cancensus::get_census(dataset = "CA21",
                                     regions = list(CSD = 2465005),
-                                    level = "DA",
+                                    level = "CT",
                                     vectors = c("total"= "v_CA21_4272",
                                                 "majorrep" = "v_CA21_4274"),
                                     geo_format = "sf")
 
-rep_census <- rep_census[c("total", "majorrep")]
+rep_census <- rep_census[c("total", "majorrep", "Population")]
 
 rep_sectors <- interpolate(from = rep_census, additive_vars = 
-                             c("total", "majorrep"))
+                             c("total", "majorrep", "Population"))
 rep_sectors$majorrep_pct <- rep_sectors$majorrep / rep_sectors$total
 
 # Create bins
@@ -36,15 +36,23 @@ rep_pct_plot <-
                                          nrow = 1)) +
   gg_cc_theme
 
+
+rep_census <- cancensus::get_census(dataset = "CA21",
+                                    regions = list(CSD = 2465005),
+                                    level = "DA",
+                                    vectors = c("total"= "v_CA21_4272",
+                                                "majorrep" = "v_CA21_4274"),
+                                    geo_format = "sf")
 # Create bins
-labels <- c("< 250", "250 - 350", "350 - 450", "450 - 550", "> 550")
-rep_sectors$bins <- cut(rep_sectors$majorrep, 
-                        breaks = c(-Inf, 250, 350, 450, 550, Inf), 
-                        labels = labels, 
-                        include.lowest = TRUE)
+labels <- c("< 5", "5 - 10", "10 - 15", "15 - 20", "> 20")
+rep_census$bins <- cut(rep_census$majorrep, 
+                       breaks = c(-Inf, 5, 10, 15, 20, Inf), 
+                       labels = labels, 
+                       include.lowest = TRUE)
+rep_census <- sf::st_transform(rep_census, crs = 32618)
 
 rep_plot <- 
-  ggplot(rep_sectors) +
+  ggplot(rep_census) +
   gg_cc_tiles +
   geom_sf(aes(fill = bins), lwd = 0, color = "transparent", show.legend = TRUE) + 
   scale_fill_manual(values = curbcut_colors$left_5$fill[2:6],
@@ -79,7 +87,7 @@ reparation_majeur <- convert_number_noround(rep_census_CSD$majorrep)
 
 # 5.1.2.2 -------------------------------------------------------------------
 
-rep_census_CSD_2016 <- cancensus::get_census(dataset = "CA21",
+rep_census_CSD_2016 <- cancensus::get_census(dataset = "CA16",
                                         regions = list(CSD = 2465005),
                                         level = "CSD",
                                         vectors = c("total"= "v_CA16_4870",
@@ -87,7 +95,7 @@ rep_census_CSD_2016 <- cancensus::get_census(dataset = "CA21",
                                         geo_format = "sf")
 reparation_majeur_pct_2016 <- rep_census_CSD_2016$majorrep / rep_census_CSD_2016$total
 
-rep_census_CSD_2011 <- cancensus::get_census(dataset = "CA21",
+rep_census_CSD_2011 <- cancensus::get_census(dataset = "CA11",
                                         regions = list(CSD = 2465005),
                                         level = "CSD",
                                         vectors = c("total"= "v_CA11N_2230",
@@ -95,7 +103,7 @@ rep_census_CSD_2011 <- cancensus::get_census(dataset = "CA21",
                                         geo_format = "sf")
 reparation_majeur_pct_2011 <- rep_census_CSD_2011$majorrep / rep_census_CSD_2011$total
 
-rep_census_CSD_2006 <- cancensus::get_census(dataset = "CA21",
+rep_census_CSD_2006 <- cancensus::get_census(dataset = "CA06",
                                         regions = list(CSD = 2465005),
                                         level = "CSD",
                                         vectors = c("total"= "v_CA06_105",
@@ -103,7 +111,7 @@ rep_census_CSD_2006 <- cancensus::get_census(dataset = "CA21",
                                         geo_format = "sf")
 reparation_majeur_pct_2006 <- rep_census_CSD_2006$majorrep / rep_census_CSD_2006$total
 
-rep_census_CSD_2001 <- cancensus::get_census(dataset = "CA21",
+rep_census_CSD_2001 <- cancensus::get_census(dataset = "CA01",
                                         regions = list(CSD = 2465005),
                                         level = "CSD",
                                         vectors = c("total"= "v_CA01_96",
@@ -111,7 +119,7 @@ rep_census_CSD_2001 <- cancensus::get_census(dataset = "CA21",
                                         geo_format = "sf")
 reparation_majeur_pct_2001 <- rep_census_CSD_2001$majorrep / rep_census_CSD_2001$total
 
-rep_census_CSD_1996 <- cancensus::get_census(dataset = "CA21",
+rep_census_CSD_1996 <- cancensus::get_census(dataset = "CA1996",
                                         regions = list(CSD = 2465005),
                                         level = "CSD",
                                         vectors = c("total"= "v_CA1996_1678",
@@ -125,10 +133,24 @@ data <- tibble::tibble(years = c(2021, 2016, 2011, 2006, 2001, 1996),
                            reparation_majeur_pct_2011,
                            reparation_majeur_pct_2006,
                            reparation_majeur_pct_2001,
-                           reparation_majeur_pct_1996))
+                           reparation_majeur_pct_1996),
+               majorrep_needed = c(
+                 rep_census_CSD$majorrep,
+                 rep_census_CSD_2016$majorrep,
+                 rep_census_CSD_2011$majorrep,
+                 rep_census_CSD_2006$majorrep,
+                 rep_census_CSD_2001$majorrep,
+                 rep_census_CSD_1996$majorrep
+               ),
+               dwellings = c(rep_census_CSD$Dwellings,
+                             rep_census_CSD_2016$Dwellings,
+                             rep_census_CSD_2011$Dwellings,
+                             rep_census_CSD_2006$Dwellings,
+                             rep_census_CSD_2001$Dwellings,
+                             rep_census_CSD_1996$Dwellings))
 
 rep_evol <- 
-ggplot(data, aes(x = years, y = rep_pct)) +
+  ggplot(data, aes(x = years, y = rep_pct)) +
   geom_line(color = color_theme("redhousing"), size = 1.2) +
   geom_point(size = 3, color = color_theme("redhousing")) +
   scale_y_continuous(labels = convert_pct, limits = c(0.04, 0.07)) +
@@ -138,6 +160,7 @@ ggplot(data, aes(x = years, y = rep_pct)) +
        x = "Années",
        y = "Nécessitant des réparations majeures") +
   graph_theme
+
 
 ggplot2::ggsave(filename = here::here("outputs/5/5_1_2_2_repevol.pdf"), 
                 plot = rep_evol, width = 6, height = 4)

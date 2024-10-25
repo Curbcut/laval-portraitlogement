@@ -13,33 +13,29 @@ qs::qload(here::here("data", "section_5_1_2.qsm"))
 
 _Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
 
-En 2021, `reparation_majeur` (`reparation_majeur_pct`) des logements de Laval présentaient des besoins en termes de réparations majeures, et ce sont les secteurs du centre-sud de Laval qui présentaient les plus grands besoins. À Duvernay-Pont-Viau et Marigot, plus de 700 logements nécessitaient des réparations majeures, représentant respectivement 10,2 % et 8,4 % des logements dans ces secteurs. En revanche, dans les quartiers d'Auteuil, Saint-Martin, Sainte-Dorothée et Fabreville, moins de 3 % des logements étaient concernés par de telles réparations, reflétant une meilleure condition générale du parc immobilier dans ces zones. Ces disparités mettent en lumière des défis spécifiques dans les secteurs plus anciens ou plus densément peuplés.
+En 2021, `reparation_majeur` (`reparation_majeur_pct`) des logements de Laval présentaient des besoins en termes de réparations majeures, et ce sont les secteurs du centre-sud de Laval qui présentaient les plus grands besoins. À Duvernay-Pont-Viau et Marigot, plus de 700 logements nécessitaient des réparations majeures, représentant respectivement 10,2 % et 8,4 % des logements dans ces secteurs. En revanche, dans les quartiers d'Auteuil, Saint-Martin, Sainte-Dorothée et Fabreville, moins de 3 % des logements étaient concernés par de telles réparations, ce qui reflète une meilleure condition générale du parc immobilier dans ces secteurs, probablement liée à la construction plus récente des habitations. Ces disparités mettent en lumière des défis spécifiques dans les secteurs plus anciens.
 
-```{r repPctPlot, include=TRUE, fig.cap="Pourcentage de logements nécessitant des réparations majeures à Laval en 2021, par secteur", fig.align = 'center'}
+```{r repPctPlot, include=TRUE, fig.cap="Pourcentage de logements nécessitant des réparations majeures, par secteur", fig.align = 'center'}
 rep_pct_plot
 ```
 
-```{r repPlot, include=TRUE, fig.cap="Nombre de logements nécessitant des réparations majeures à Laval en 2021, par secteur.", fig.align = 'center'}
+```{r repPlot, include=TRUE, fig.cap="Nombre de logements nécessitant des réparations majeures, par secteur.", fig.align = 'center'}
 rep_plot
 ```
 
 _Source: Portrait régional de l’habitation : 13 – Région administrative de Laval. (2020). Société d'habitation du Québec. Récupéré au https://www.habitation.gouv.qc.ca/fileadmin/internet/publications/portraits-regionaux/Portrait_habitation_region_13.pdf_
 
-En 2016, Laval présentait un parc immobilier relativement jeune par rapport à l'ensemble du Québec. Environ 50 % des logements de Laval avaient été construits après 1981, contre 42,9 % pour l'ensemble du Québec. Cette différence dans la composition du parc immobilier se reflétait dans les besoins de réparations majeures : seuls 5,1 % des logements de Laval nécessitaient des réparations majeures, un chiffre inférieur à la moyenne québécoise de 6,3 %.
+En 2016, Laval présentait un parc immobilier relativement jeune par rapport à l'ensemble du Québec. 50 % des logements de Laval avaient été construits après 1981, contre 42,9 % pour l'ensemble du Québec. Cette différence se reflétait dans les besoins de réparations majeures : seuls 5,1 % des logements de Laval nécessitaient des réparations majeures, un chiffre inférieur à la moyenne québécoise de 6,3 %.
 
-Les logements construits avant 1980 à Laval étaient plus susceptibles de nécessiter des réparations importantes. Parmi ceux datant d’avant 1960, 10,7 % nécessitaient des réparations majeures, tandis que ce chiffre était de 6,3 % pour les logements bâtis entre 1961 et 1980. En comparaison, les logements construits après 1981 avaient des besoins beaucoup plus faibles, avec seulement 2,7 % nécessitant des réparations majeures, un pourcentage cohérent avec la meilleure condition générale des logements récents.
+Les logements construits avant 1980 à Laval étaient plus susceptibles de nécessiter des réparations importantes. Parmi ceux datant d’avant 1960, 10,7 % nécessitaient des réparations majeures, tandis que ce chiffre était de 6,3 % pour les logements bâtis entre 1961 et 1980. En comparaison, les logements construits après 1981 avaient des besoins beaucoup plus faibles, avec seulement 2,7 % nécessitant des réparations majeures.
 
-Il est important de noter que ces données datent de 2016 et que la situation a pu évoluer depuis, en fonction de l'âge croissant du parc immobilier et des interventions de rénovation réalisées au cours des dernières années.
+Ces données datent de 2016 et la situation a pu évoluer depuis, en fonction de l'âge croissant du parc immobilier et des interventions de rénovation réalisées au cours des dernières années.
 
 # 5.1.2.2 Pourcentage de logement nécessitant des réparations majeures (%)
 
-Pour "...selon selon la période de construction, le mode d'occupation et l'indice de Pampalon, par aire de diffusion, et le mode de gouvernance (OBNL vs privé)", en attente de "Fichier interne Ville : CEG0454000-1_003_programme_renovation_residentielle_degre_reparation".
-
 _Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
 
-En ajout à la section précédente, le graphique \@ref(fig:repEvol) montre l'évolution à la baisse du pourcentage de logements nécessitant des réparations majeures. En 1996, 5,84 % des logements nécessitaient des réparations majeures. Ce chiffre a légèrement augmenté pour atteindre 5,85 % en 2001, avant de diminuer progressivement à 5,13 % en 2016, et enfin à 5,18 % en 2021.
-
-Malgré une amélioration générale, ce pourcentage reste relativement stable depuis 2011, oscillant autour de 5,1 %. Ainsi, bien que la proportion de logements nécessitant des réparations majeures ait diminué par rapport à la fin des années 1990, les besoins persistent à un niveau modéré au cours de la dernière décennie.
+En ajout à la section précédente, le graphique \@ref(fig:repEvol) montre la baisse du pourcentage de logements nécessitant des réparations majeures. En 1996, 5,84 % des logements (7 220 sur un total de 123 979 logements) nécessitaient des réparations majeures. Ce chiffre a légèrement augmenté pour atteindre 5,85 % en 2001 (7 755 logements sur 135 661), avant de diminuer progressivement à 5,13 % en 2016 (8 225 logements sur 165 686) et enfin à 5,18 % en 2021 (8 795 logements sur 176 115). Malgré une amélioration générale, ce pourcentage reste relativement stable depuis 2011, oscillant autour de 5,1 %. En 2011, 5,26 % des logements (soit 8 125 sur un total de 159 509) nécessitaient des réparations majeures.
 
 ```{r repEvol, include=TRUE, fig.cap="Évolution du pourcentage de logements nécessitant des réparations majeures à Laval entre 1996 et 2021", fig.align = 'center'}
 rep_evol
