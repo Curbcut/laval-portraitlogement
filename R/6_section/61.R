@@ -43,7 +43,7 @@ rm(cmhc_nbhd_2016, cmhc_nbhd_2017, cmhc_nbhd_2018, cmhc_nbhd_2019,
    cmhc_nbhd_2020, cmhc_nbhd_2021, cmhc_nbhd_2022, dwellings)
 
 
-# 6.1.1 Dév rés récent (répartition territoriale par type de logem --------
+c# 6.1.1 Dév rés récent (répartition territoriale par type de logem --------
 
 completions_by_type <- 
   map(1990:2023, \(x) {
@@ -53,7 +53,8 @@ completions_by_type <-
       dimension = "Dwelling Type",
       breakdown = "Survey Zones", 
       geo_uid = "2465005",
-      year = x)}) |> 
+      year = x,
+      frequency = "Annual")}) |> 
   bind_rows() |> 
   set_names(c("zone", "type", "value", "date", "year", "survey", "series"))
 
@@ -65,7 +66,8 @@ completions_by_market <-
       dimension = "Intended Market",
       breakdown = "Survey Zones", 
       geo_uid = "2465005",
-      year = x)}) |> 
+      year = x,
+      frequency = "Annual")}) |> 
   bind_rows() |> 
   set_names(c("zone", "market", "value", "date", "year", "survey", "series"))
 
@@ -107,6 +109,7 @@ table_6_1_1_five_year <-
   summarize(avg = mean(value), .by = c(`Date Range`, type)) |> 
   pivot_wider(names_from = type, values_from = avg) |> 
   mutate(Total = Single + `Semi-Detached` + Row + Apartment, .before = Single) |> 
+  mutate(across(Total:Apartment, \(x) scales::comma(x, 1))) |> 
   gt::gt() |> 
   gt::tab_header("Average annual housing completions by dwelling type")
 
@@ -237,7 +240,8 @@ starts_by_type <-
       dimension = "Dwelling Type",
       breakdown = "Survey Zones", 
       geo_uid = "2465005",
-      year = x)}) |> 
+      year = x,
+      frequency = "Annual")}) |> 
   bind_rows() |> 
   set_names(c("zone", "type", "value", "date", "year", "survey", "series"))
 
@@ -391,7 +395,8 @@ starts_by_market <-
       dimension = "Intended Market",
       breakdown = "Survey Zones", 
       geo_uid = "2465005",
-      year = x)}) |> 
+      year = x,
+      frequency = "Annual")}) |> 
   bind_rows() |> 
   set_names(c("zone", "market", "value", "date", "year", "survey", "series"))
 
