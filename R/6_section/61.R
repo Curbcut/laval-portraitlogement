@@ -43,7 +43,7 @@ rm(cmhc_nbhd_2016, cmhc_nbhd_2017, cmhc_nbhd_2018, cmhc_nbhd_2019,
    cmhc_nbhd_2020, cmhc_nbhd_2021, cmhc_nbhd_2022, dwellings)
 
 
-c# 6.1.1 Dév rés récent (répartition territoriale par type de logem --------
+# 6.1.1 Dév rés récent (répartition territoriale par type de logem --------
 
 completions_by_type <- 
   map(1990:2023, \(x) {
@@ -283,6 +283,7 @@ table_6_1_2_five_year <-
   pivot_wider(names_from = type, values_from = avg) |> 
   mutate(Total = Single + `Semi-Detached` + Row + Apartment, 
          .before = Single) |> 
+  mutate(across(Total:Apartment, \(x) scales::comma(x, 1))) |> 
   gt::gt() |> 
   gt::tab_header("Average annual housing starts by dwelling type")
 
