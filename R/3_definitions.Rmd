@@ -1,0 +1,21 @@
+Les termes utilisés dans le présent document sont ceux communément admis. Les sigles se retrouvent en fin de document.
+
+Toutefois, l’évolution de l’écosystème de l’habitation nécessite d’affronter la réalité : la notion d’abordabilité (prix, taille, qualité), et spécialement la dimension du prix, n’est actuellement pas définie de façon unique, consensuelle et généralisée au Québec et au Canada, aussi bien dans les différents paliers de gouvernement, que parmi les acteurs de l’habitation.
+
+De façon consensuelle, nous pouvons nous rallier à la définition selon laquelle l’abordabilité est un contexte économique, politique et XXXX fécond dans lequel chaque Lavallois.e, chaque Québécois.e, peut se loger selon ses besoins (ex. taille et qualité du logement) et ses capacités financières (ex. rapport entre son revenu et le montant de son loyer ou de son hypothèque) et où il.elle a la possibilité de déménager librement en sachant qu’il.elle pourra trouver sans heurts un autre logement abordable (prix, taille, qualité).
+
+Pour autant qu’on s’accorde sur cette définition, comment se traduit-elle « concrètement » dans, par exemple, les interventions municipales en habitation à Laval ?
+
+Afin de permettre une lecture éclairée du rapport, nous proposons donc les définitions suivantes
+ 
+Logement social : Le logement social est sans but lucratif; il permet d’échapper à la logique du profit. Sa vocation est de loger les gens à revenus faible et modeste. C’est une propriété collective, plutôt qu’individuelle. De plus, il est subventionné par les gouvernements, ce qui lui permet d’offrir des logements à un prix qui respecte la capacité de payer des locataires ou à tout le moins qui est inférieur au prix du marché. Il existe trois grandes formes de logement social au Québec : les habitations à loyer modique (HLM), les coopératives d’habitation (coop) et les organismes sans but lucratif (OSBL) d’habitation. (FRAPRU)
+
+Logement inabordable : Le logement inabordable se définit par le fait pour un ménage de consacrer 30 %
+ou plus de son revenu avant impôt aux frais de logement (qui comprend le loyer, les paiements hypothécaires, les services publics, les taxes foncières, etc.). (Stats Can)
+
+Logement lucratif : 
+
+Logement non lucratif : 
+
+Ménage à faible revenu : Les ménages à faible revenu sont définis à l’aide de la mesure du panier de consommation (MPC), qui calcule le coût d’un panier spécifique de biens et de services nécessaires à un niveau de vie modeste et de base. Les ménages dont le revenu disponible est inférieur au seuil de
+la MPC correspondant à leur taille et à leur zone géographique sont considérés comme des ménages à faible revenu. (Stats Can)
