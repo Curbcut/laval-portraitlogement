@@ -14,11 +14,13 @@ source(here::here("R/utils/startup.R"))
 
 _Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
 
-Le graphique suivant met en lumière les disparités de revenus entre les locataires et les propriétaires à Laval, en fonction de la composition familiale. L'intensité de l'opacité des barres indique la proportion de ménages dans chaque catégorie, mettant ainsi en évidence les situations les plus courantes pour chaque statut d'occupation. De manière générale, les propriétaires ont des revenus médians supérieurs à ceux des locataires dans toutes les catégories de ménages. Cette tendance souligne une corrélation forte entre la capacité d’acquérir un bien immobilier et un revenu plus élevé, mettant en évidence les défis financiers auxquels font face les ménages locataires.
+Le graphique suivant met en lumière les disparités de revenu entre les locataires et les propriétaires à Laval, en fonction de la composition du ménage. Les propriétaires ont des revenus médians supérieurs à ceux des locataires dans toutes les catégories de ménages. Cette tendance souligne une corrélation forte entre la possession d'un bien immobilier et un revenu annuel médian plus élevé, mettant en évidence les inégalités pour se constituer un patrimoine financier par l'immobilier selon son revenu.
 
-Les couples avec enfants, les couples sans enfants, et les ménages multigénérationnels propriétaires sont parmi les groupes aux revenus les plus élevés, dépassant souvent les 100 000 \$ de revenu annuel médian. Ce dernier groupe, en particulier, se démarque avec un revenu médian de `r rev_fun_421("Propriétaire", "multi")`, probablement en raison de la contribution de plusieurs adultes au revenu familial (bien que le nombre de ménages multigénérationnels reste relativement faible comparé à d’autres catégories). 
+Les couples avec enfants et les ménages multigénérationnels propriétaires sont les groupes disposant des revenus les plus élevés, avec des revenus annuels médians respectivement de `r rev_fun_421("Propriétaire", "w_kids")` et de `r rev_fun_421("Propriétaire", "multi")`, probablement en raison de la contribution de plusieurs adultes au revenu familial. 
 
-Par contre, les familles monoparentales et les personnes seules, en particulier celles qui sont locataires, affichent des revenus significativement inférieurs, ce qui suggère une plus grande précarité économique. En fait, les personnes seules locataires ont un revenu médian de `r rev_fun_421("Locataire", "solo")`, alors que celui des propriétaires de cette catégorie reste modeste, à `r rev_fun_421("Propriétaire", "solo")`. Ces ménages sont également parmi les plus nombreux, notamment les personnes seules qui représentent près de 47,9 % des locataires, ce qui renforce leur vulnérabilité économique face au marché locatif.
+Les familles monoparentales locataires et les locataires vivant seuls ont des revenus bien inférieurs à la médiane de `r hou_med_inc` pour l'ensemble des ménages, représentant respectivement `r loc_mono_vs_med`x et `r loc_solo_vs_med`x de ce montant. Cela suggère une plus grande précarité économique pour ces groupes. Effectivement, les personnes seules locataires ont un revenu médian de `r rev_fun_421("Locataire", "solo")`, alors que celui des propriétaires vivant seul de `r rev_fun_421("Propriétaire", "solo")`. Par ailleurs, les personnes seules sont surreprésentées parmi les locataires, représentent `r solo_tenant_pct` des locataires, ce qui renforce leur vulnérabilité dans le marché locatif, notamment abordable, où l'offre est insuffisante et les ménages aux revenu plus élevé ont alors un avantage compétitif.
+
+L'intensité de l'opacité des barres indique la proportion de ménages dans chaque catégorie, mettant ainsi en évidence les situations les plus courantes pour chaque statut d'occupation. Par exemple, bien que le revenu annuel médian des ménages multigénérationnels soit le plus élevé, ce groupe est minoritaire (`r multi_owner_pct`) en termes de nombre de ménages, d'où une opacité plus faible de la barre. En revanche, les barres des couples propriétaires avec enfants (`r wkids_owner_pct`) et des locataires vivant seuls (`r solo_tenant_pct`) sont plus foncées, car ces groupes sont les plus représentés selon leur statut d'occupation. 
 
 ```{r plot_4_2_1, include=TRUE, fig.cap="Revenu annuel médian par statut d'occupation et composition familiale", fig.align = 'center'}
 plot_4_2_1
@@ -26,59 +28,87 @@ plot_4_2_1
 
 # 4.2.2 Proportion de ménages en situation de faible revenu selon le mode d'occupation
 
+_Source: Crosstab_
+
+<!-- While Statistics Canada does not have an official definition of poverty, the agency provides several indicators to help measure the prevalence of low income in Canada, which includes, but is not limited to, low income cut-offs, market basket measure, and low income measure. For the purpose of this report, the low income measure used is the Low-income measure, after-tax (LIM-AT), defined as households that fall under 50 % of the median adjusted after‑tax income of private households.
+
+Laval as a whole has `r low_laval` of its households experiencing low-income, with this number skewing significantly towards tenant households (`r low_laval_tenant`), of whom are more likely to experience low-income, than owner households, which only saw `r low_laval_owner` of households experiencing low-income (\@ref(fig:table_4_2_2)). Furthermore, as shown by \@ref(fig:map_4_2_2) below, low-income households in Laval are not evenly distributed throughout the city. Electoral districts closer to the urban core of Laval, such as Souvenir-Labelle and Chomedey, have much higher rates of low-income households than the outskirts of Laval, potentially due to the higher proportion of tenant households in those districts, as well as a higher proportion of marginalized communities residing in those areas. -->
+
+```{r map_4_2_2, include=TRUE, fig.cap="Proportion de ménages à faible revenu par district électorale", fig.align = 'center'}
+#stop("COME BACK HERE")
+#map_4_2_2
+```
+
+```{r table_4_2_2, include=TRUE, fig.cap="Nombre et proportion de ménages à faible revenu par district électorale", fig.align = 'center'}
+#table_4_2_2
+```
+
 # 4.2.3 Ménages ayant des besoins impérieux en logement selon le type de besoin et le mode d'occupation
+_Source: CMHC, Crosstab_
 
-# 4.2.4 Montant du loyer/frais de logement en fonction du revenu et leur mode d'occupation (axe "prix/revenu" de l'abordabilité)
+```{r plot_4_2_3_evol, include=TRUE, fig.cap="Évolution des besoins impérieux en matière de logement (% de tous les ménages)", fig.align = 'center'}
+#stop("COME BACK HERE")
+#plot_4_2_3_evol
+```
 
-Le graphique \@ref(fig:plot_4_2_4) présente les frais de logement médian pour les locataires et les propriétaires à Laval, répartis selon différentes tranches de revenu. L'intensité de l'opacité des barres indique la proportion de ménages dans chaque catégorie, mettant ainsi en évidence les situations les plus courantes pour chaque statut d'occupation. Les barres plus opaques représentent des tranches de revenus où il y a une concentration plus élevée de ménages selon le mode d'occupation (> 125 000 \$ chez les propriétaires, 20 - 39 999 \$ chez les locataires). 
+<!-- As shown in \@ref(fig:plot_4_2_3_evol) and \@ref(fig:table_4_2_3), from 2006 to 2021, the proportion of households in core need in Laval has dropped `r core_diff`, from `r core_2006` to `r 2021`. This drop was driven primarily from the decrease of households that were below the affordability standard, which saw a decrease similar to the total households in core need. However, the reduction of households that were below the adequacy and suitability standard also contributed to this drop, albeit much smaller. 
 
-Pour les tranches de revenus inférieures à 60 000 \$, les frais de logement médians des locataires sont systématiquement plus élevés que ceux des propriétaires. Dans la tranche de revenu de 20 - 39 999 $, celle la plus fréquente chez les locataires, les loyers mensuels médians sont de `r loyer_fun_421("Locataire", "20 - 39 999 $")` (pour 15 010 ménages locataires) tandis que les frais de logement sont de `r loyer_fun_421("Propriétaire", "20 - 39 999 $")` pour les 9 230 ménages propriétaires. 
+One potential reason for this drop is the federal and provincial government assistance that was provided in 2020 during the COVID-19 pandemic, which saw agencies provide income support measures and mortgage payment deferrals to households to assist with living costs. -->
 
-À partir de la tranche de revenu de 60 000 \$ à 79 999 \$, cette tendance s’inverse. Les propriétaires ont alors des frais de logement médians qui dépassent ceux des locataires, et l'écart continue de croître dans les tranches de revenus supérieures. Pour les revenus de 100 000 \$ et plus, les propriétaires payent des frais de logement nettement plus élevés que les locataires, ce qui peut s’expliquer par l’accession à des logements de plus grande valeur et les coûts associés à la propriété.
+```{r table_4_2_3, include=TRUE, fig.cap="Évolution des besoins impérieux en matière de logement (% des ménages en besoin impérieux hors total)", fig.align = 'center'}
+table_4_2_3
+```
 
-```{r plot_4_2_4, include=TRUE, fig.cap="Frais de logement médian par statut d'occupation et tranches de revenu", fig.align = 'center'}
+
+<!-- Acceptable housing table from PESL should go here -->
+
+# 4.2.4 Montant du loyer/frais médian de logement en fonction du revenu et du mode d'occupation (axe "prix/revenu" de l'abordabilité)
+
+_Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
+
+Le graphique \@ref(fig:plot_4_2_4) présente les frais médian de logement pour les locataires et les propriétaires à Laval, répartis selon différentes tranches de revenu. L'intensité de l'opacité des barres indique la proportion de ménages dans chaque catégorie, mettant ainsi en évidence les situations les plus courantes pour chaque statut d'occupation. Les barres plus opaques représentent des tranches de revenus où il y a une concentration plus élevée de ménages selon le mode d'occupation (> 125 000 \$ chez les propriétaires, 20 - 39 999 \$ chez les locataires). 
+
+Pour les tranches de revenus inférieures à 60 000 \$, les frais médian de logement  des locataires sont systématiquement plus élevés que ceux des propriétaires. Dans la tranche de revenu de 20 - 39 999 $, celle la plus fréquente chez les locataires, les loyers mensuels médians sont de `r loyer_fun_421("Locataire", "20 - 39 999 $")` (pour 15 010 ménages locataires) tandis qu'ils sont de `r loyer_fun_421("Propriétaire", "20 - 39 999 $")` pour les 9 230 ménages propriétaires. 
+
+À partir de la tranche de revenu de 60 000 \$ à 79 999 \$, cette tendance s’inverse. Les propriétaires ont alors des frais de logement médians qui dépassent ceux des locataires, et l'écart continue de croître dans les tranches de revenus supérieures. Pour les revenus de 100 000 \$ et plus, les propriétaires paient des frais médian de logement `r prop_pay_more_100k` plus élevés que les locataires, ce qui peut s’expliquer par l’accession à des logements de plus grande valeur et les frais associés.
+
+" Pour les ménages propriétaires, les frais de logement englobent, s'il y a lieu, les paiements hypothécaires, l'impôt foncier et les charges de copropriété (communément appelés frais de condominium), ainsi que les frais d'électricité, de chauffage, d'eau et des autres services municipaux. Pour les ménages locataires, les frais de logement englobent, s'il y a lieu, le loyer et les frais d'électricité, de chauffage, d'eau et des autres services municipaux.  " https://www12.statcan.gc.ca/census-recensement/2021/ref/dict/az/Definition-fra.cfm?ID=households-menage033
+
+```{r plot_4_2_4, include=TRUE, fig.cap="Frais médian de logement par statut d'occupation et tranches de revenu", fig.align = 'center'}
 plot_4_2_4
 ```
 
-# 4.2.5 Proportion de ménages consacrant plus de 30% et plus de 50% de leur revenu à se loger
+# 4.2.5 4.2.5	Proportion de ménages, notamment locataires sous le seuil de faible revenu, consacrant plus de 30% et plus de 50% de leur revenu à se loger
 
-Le graphique suivant montre la répartition des ménages lavallois selon le statut d'occupation, le pourcentage de revenu consacré au logement, et le statut de faible revenu. Il permet de visualiser les différences entre les ménages à faible revenu et l'ensemble des ménages pour chaque niveau de stress financier lié au logement (moins de 30 %, 30 % ou plus, 50 % ou plus). Prendre en compte le statut de faible revenu est crucial pour évaluer le pourcentage de revenu consacré au logement, car cela met en évidence l'impact économique réel sur les ménages vulnérables. Dépenser plus de 30 % du revenu en logement peut être supportable pour un ménage à revenu élevé, mais c'est une pression significative pour un ménage locataire à faible revenu, limitant leur capacité à couvrir d'autres besoins essentiels. 
+Le graphique suivant montre la répartition des ménages lavallois selon le statut d'occupation, le pourcentage de revenu consacré aux frais de logement, et le statut de faible revenu. Il permet de visualiser les différences entre les ménages à faible revenu et l'ensemble des ménages pour chacune des trois tranches de taux d'effort pré-identifiées (moins de 30 %, 30 % ou plus, 50 % ou plus). Prendre en compte le statut de faible revenu est crucial pour évaluer le pourcentage de revenu consacré au logement, car cela met en évidence l'impact économique réel sur les ménages vulnérables. Une analyse par taux d'effort unique tout type de revenu confondu, comme le 30% communément admis, biaise la lecture. En effet, dépenser plus de 30 % du revenu en logement peut être supportable pour un ménage à revenu élevé, mais c'est une pression significative pour un ménage locataire à faible revenu, limitant leur capacité à couvrir d'autres besoins essentiels. 
 
-Les locataires à faible revenu sont bien plus susceptibles que les propriétaires de consacrer une grande partie de leurs revenus au logement. Par exemple, une proportion significative de locataires à faible revenu (`r tenant_lowinc_30plus_pct`) dépense plus de 30 % de leur revenu pour se loger, et une part non négligeable (`r tenant_lowinc_50plus_pct`) dépasse même le seuil critique de 50 %, indiquant une vulnérabilité financière marquée. En comparaison, les propriétaires à faible revenu sont moins nombreux à se trouver dans ces situations de stress financier. La majorité des propriétaires dépensent moins de 30 % de leur revenu pour le logement, montrant une stabilité financière relative. Cette disparité entre locataires et propriétaires souligne que les locataires, surtout ceux à faible revenu, sont particulièrement exposés aux pressions économiques liées aux coûts de logement.
+Une grande majorité de locataires à faible revenu (`r tenant_lowinc_30plus_pct`) dépense plus de 30 % de leur revenu pour se loger, et près d'un tiers (`r tenant_lowinc_50plus_pct`) dépasse même le seuil critique de 50 %, indiquant une vulnérabilité financière marquée. À noter que `r owner_lowinc_50plus_pct` des propriétaires à faible revenu consacrent plus de 50% de leur revenu pour se loger. La majorité des propriétaires dépensent moins de 30 % de leur revenu pour le logement. Cette disparité entre locataires et propriétaires souligne que les locataires, surtout ceux à faible revenu, sont particulièrement exposés aux pressions économiques liées aux coûts de logement.
 
 ```{r plot_4_2_5, include=TRUE, fig.cap="Distribution des ménages selon le statut d'occupation, le pourcentage de revenu consacré au logement et le statut de faible revenu", fig.align = 'center'}
 plot_4_2_5
 ```
 
-# 4.2.6 Ménages locataires ayant de la difficulté à se loger (Ménage locataire sous le seuil de faible revenu et qui consacre 30 % et plus de son revenu à se loger.)
-
-Répétition 4.2.5
-
 # 4.2.7 Ménages en situation de surpeuplement (axe "taille" de l'abordabilité)
 
-Les données montrent une stabilité relative dans la proportion de ménages lavallois en situation de surpeuplement au cours des dix dernières années, avec des chiffres oscillant légèrement au dessus de 5 %. En 2011, `r ns_2011` des ménages vivaient dans des logements jugés trop petits pour leur taille, un chiffre qui a diminué à `r ns_2016` en 2016, avant de remonter légèrement à `r ns_2021` en 2021. Ces variations sont modestes et n’indiquent pas une amélioration marquée ni une détérioration significative des conditions de surpeuplement.
+Les données montrent une stabilité relative dans la proportion de ménages lavallois en situation de surpeuplement au cours des dix dernières années, avec des chiffres oscillant légèrement au dessus de 5 %. En 2011, `r ns_2011` des ménages vivaient dans des logements jugés trop petits pour leur taille, un chiffre qui a diminué à `r ns_2016` en 2016, avant de remonter légèrement à `r ns_2021` en 2021. Ces variations sont modestes et n’indiquent pas une amélioration marquée ni une détérioration significative des conditions de surpeuplement. Cependant, considérant l'évolution démographique, le nombre de ménages en situation de surpeuplement a augmenté de X ménages.
 
-Les secteurs du centre-sud de Laval, comme ceux entourant Chomedey, présentent une proportion plus élevée ménages vivant dans un logement de taille non convenable. Ce phénomène peut être lié à la densité de population et à la composition socio-économique de ces quartiers, qui comptent souvent plus de familles nombreuses ou à faible revenu, pour lesquelles il est plus difficile de trouver des logements adéquats.
+Les secteurs du centre-sud de Laval, comme ceux entourant Chomedey, présentent une proportion plus élevée de ménages vivant dans un logement de taille non convenable. Ce phénomène peut être lié à la composition socio-économique de ces quartiers, qui comptent souvent plus de familles nombreuses ou à faible revenu, pour lesquelles il est plus difficile de trouver des logements adéquats.
 
 ```{r plot_4_2_7, include=TRUE, fig.cap="Proportion de ménages vivant dans un logement de taille non convenable", fig.align = 'center'}
 plot_4_2_7
 ```
 
-# 4.2.8 Ménages vivant dans un logement nécessitant des réparations majeures (axe "qualité" de l'abordabilité")
-
-Répétition 5.1.2.2 (les deux utilisent les données du recensement, donc le nombre de ménages vivant dans cette situation).
-
-# 4.2.9 Ratio salaires hebo médian/paiement hypothécaire mensuel type
+# 4.2.9 Ratio salaire hebdomadaire médian/paiement hypothécaire mensuel type
 
 _Source: Portrait régional de l’habitation : 13 – Région administrative de Laval. (2020). Société d'habitation du Québec. Récupéré au https://www.habitation.gouv.qc.ca/fileadmin/internet/publications/portraits-regionaux/Portrait_habitation_region_13.pdf_
 
-En 2018, le ratio entre le salaire hebdomadaire médian et le paiement hypothécaire mensuel type à Laval était de 0,50, signifiant qu’un résident devait consacrer en moyenne 46 % de son revenu mensuel pour accéder à la propriété. Ce ratio, bien que plus favorable que la moyenne québécoise (0,67), indique une accessibilité difficile, positionnant Laval parmi les régions les moins accessibles au Québec. Entre 2013 et 2018, l'accessibilité à la propriété à Laval s'est détériorée, avec une diminution du ratio de 7 %, plaçant la région asvant-dernière dans le classement provincial pour l’accès à la propriété.
+En 2018, le ratio entre le salaire hebdomadaire médian et le paiement hypothécaire mensuel type à Laval était de 0,50, signifiant qu’un résident devait consacrer en moyenne 46 % de son revenu mensuel pour son paiement hypothécaire. Ce ratio, bien que plus favorable que la moyenne québécoise (0,67), indique une accessibilité difficile, positionnant Laval parmi les régions les moins accessibles au Québec. Entre 2013 et 2018, l'accessibilité à la propriété à Laval s'est détériorée, avec une diminution du ratio de 7 %, plaçant la région asvant-dernière dans le classement provincial pour l’accès à la propriété.
 
 # 4.2.10 Frais de logement
 
 _Source: SCHL_
 
-Les coûts des loyers à Laval ont considérablement augmenté au cours de la dernière décennie. En 2023, le loyer médian à Laval était de `r housing_loyer_2023` \$. De 2010 à 2023, les loyers médians à Laval ont augmenté de `r housing_loyer_var` en dollars courants.
+Les coûts des loyers à Laval ont considérablement augmenté au cours de la dernière décennie. De 2010 à 2023, les loyers médians à Laval ont augmenté de `r housing_loyer_var` en dollars courants. En 2023, le loyer médian à Laval était de `r housing_loyer_2023` \$. Le loyer médian  cache par ailleurs la grande disparité de prix entre les logements locatifs occupés et inoccupés, les logements neufs et anciens et le prix selon le nombre de chambres à coucher.
 
 ```{r housingLoyermed, include=TRUE, fig.cap="Évolution du loyer mensuel médian à Laval et au Québec (2010-2023)", fig.align = 'center'}
 housing_loyermed_plot
@@ -88,43 +118,60 @@ Tout comme les coûts des loyers, les frais de logement des ménages propriétai
 
 // TKTK Sépération par districts électoraux à venir
 
-# 4.2.11 Aide au logement
+# 4.2.11 Aide au logement (aide à la pierre)
 
 _Source: Observatoire Grand Montréal. (2024). Communauté métropolitaine de Montréal. Récupéré au https://observatoire.cmm.qc.ca/grand-montreal-en-statistiques/_
 
 L'aide au logement à Laval regroupe plusieurs programmes offrant des logements subventionnés pour les ménages à faible ou modeste revenu, ainsi que ceux ayant des besoins particuliers.
 
-Logements sociaux et communautaires financés par la CMM: 2 571 logements
+Logements sociaux et communautaires financés par la CMM: 2 571 logements (2021)
 - Logements subventionnés par des programmes municipaux et gouvernementaux, destinés aux ménages à revenu modeste et aux clientèles ayant des besoins particuliers.
+Source: Société d'habitation du Québec (SHQ); Corporation d'habitation Jeanne-Mance (CHJM); Ville de Montréal. Traitement : CMM, 2021.
 
-Logements en COOP et OBNL d'habitation relevant d'anciens programmes: 1 535 logements
-- Logements gérés par des coopératives et OBNL sans but lucratif
+Logements gérés par des en coopératives d'habitation: 933 logements (2024)
+Source: Ville de Laval. (2024)
 
-Logements HLM publics: 1 120 logements
+Logements gérés par des organismes à but non lucratif: 2065 logements (2024)
+Source: Ville de Laval. (2024)
+
+Logements gérés par l'Office municipal d'habitation de Laval: 1 974 logements (2024)
 - Gérés par les Offices municipaux, ces logements sont destinés aux ménages à faible revenu, avec un loyer limité à 25 % du revenu familial.
+Source: Ville de Laval. (2024)
 
-AccèsLogis Québec : 893 logements logements
+AccèsLogis Québec : 1 108 logements logements (2024)
 - Programme favorisant la création de coopératives et d'OBNL d'habitation, il cible les ménages à revenu modeste et, dans certaines conditions, offre aussi un Supplément au loyer (PSL).
+Source : Société d'habitation du Québec (SHQ), 2021. 
 
-Logements du programme LAQ - volet social et communautaire: 271 logements
+Logements du programme LAQ - volet social et communautaire: 271 logements (2021)
 - Ce programme offre une aide financière pour stimuler la réalisation de logements abordables destinés aux ménages à revenu faible ou modeste.
+Source: Société d'habitation du Québec (SHQ), 2021.
 
-Logements HLM privés et autochtones: 80 logements
+Logements HLM privés et autochtones: 80 logements (2021)
 - Logements subventionnés pour les ménages à faible revenu, y compris ceux destinés aux Autochtones hors réserve, avec un loyer plafonné à 25 % du revenu.
+Source: Société d'habitation du Québec (SHQ), 2021.
 
+```{r aideAuLogement, include=TRUE, fig.cap="Répartition des logements sociaux et communautaires à Laval par programme", fig.align = 'center'}
+housing_loyermed_plot
+```
 
-# 4.2.12 Aide au paiement du loyer
+Répartition des logements sociaux et communautaires à Laval par programme
+
+# 4.2.12 Aide au paiement du loyer (aide à la personne)
 
 _Source: Observatoire Grand Montréal. (2024). Communauté métropolitaine de Montréal. Récupéré au https://observatoire.cmm.qc.ca/grand-montreal-en-statistiques/_
 
-Dans la Ville de Laval en 2021, il y avait 1 032 logements qui bénéficianet du programme Supplément au loyer (PSL). Ce programme "permet à des ménages à faible revenu d’habiter dans des logements qui font partie du marché locatif privé ou qui appartiennent à des coopératives d’habitation (COOP) ou à des organismes sans but lucratif (OSBL), tout en payant un loyer similaire à celui d’une habitation à loyer modique. Les locataires qui bénéficient de ce programme paient un loyer correspondant à 25 % de leur revenu."^[Programme de supplément au loyer (PSL). (2024). Société d'habitation du Québec. Récupéré au https://www.habitation.gouv.qc.ca/programme/programme/programme-de-supplement-au-loyer-psl]
+Dans la Ville de Laval en 2021, il y avait 1 032 personnes qui bénéficiaient du programme Supplément au loyer (PSL). Ce programme "permet à des ménages à faible revenu d’habiter dans des logements qui font partie du marché locatif privé ou qui appartiennent à des coopératives d’habitation (COOP) ou à des organismes sans but lucratif (OSBL), tout en payant un loyer similaire à celui d’une habitation à loyer modique. Les locataires qui bénéficient de ce programme paient un loyer correspondant à 25 % de leur revenu."^[Programme de supplément au loyer (PSL). (2024). Société d'habitation du Québec. Récupéré au https://www.habitation.gouv.qc.ca/programme/programme/programme-de-supplement-au-loyer-psl]
 
 
 # 4.2.13 Délai d'attente moyen pour l'obtention d'un HLM public ou d'un supplément au loyer régulier ou autre logement subventionné
 
 _Source: Délais d'attente moyen par territoire. (Juillet 2024). Office municipal d'habitation de Laval._
 
+<<<<<<< HEAD
 Les délais d'attente pour obtenir un logement subventionné à Laval varient considérablement. Le délai moyen, tous programmes, territoires et clientèles confondus, est de `r att_general_mean` jours.
+=======
+Les délais d'attente pour obtenir un logement subventionné à Laval varient considérablement. Le délai moyen, tous programmes, territoires et clientèles confondues, est de `r att_general_mean` jours.
+>>>>>>> ec98661c909b08bcb4bf53a51aeb6a7725a03e9f
 
 Parmi les clientèles visées, les familles affichent le délai moyen le plus élevé, atteignant `r att_fam` jours. Les personnes s'inscrivant aux programmes de 59 ans et moins attendent en moyenne `r att_lessfn` jours, tandis que pour celles dont la clientèle n’est pas spécifiée, le délai s’élève à `r att_other` jours. Les individus s'inscrivant aux programmes pour les personnes âgées de 65 ans et plus bénéficient du délai moyen le plus court, avec une attente de `r att_sfplus` jours.
 

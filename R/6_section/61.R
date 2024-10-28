@@ -53,7 +53,8 @@ completions_by_type <-
       dimension = "Dwelling Type",
       breakdown = "Survey Zones", 
       geo_uid = "2465005",
-      year = x)}) |> 
+      year = x,
+      frequency = "Annual")}) |> 
   bind_rows() |> 
   set_names(c("zone", "type", "value", "date", "year", "survey", "series"))
 
@@ -65,7 +66,8 @@ completions_by_market <-
       dimension = "Intended Market",
       breakdown = "Survey Zones", 
       geo_uid = "2465005",
-      year = x)}) |> 
+      year = x,
+      frequency = "Annual")}) |> 
   bind_rows() |> 
   set_names(c("zone", "market", "value", "date", "year", "survey", "series"))
 
@@ -110,6 +112,7 @@ table_6_1_1_five_year <-
   summarize(avg = mean(value), .by = c(`Date Range`, type)) |> 
   pivot_wider(names_from = type, values_from = avg) |> 
   mutate(Total = Single + `Semi-Detached` + Row + Apartment, .before = Single) |> 
+  mutate(across(Total:Apartment, \(x) scales::comma(x, 1))) |> 
   gt::gt() |> 
   gt::tab_header("Average annual housing completions by dwelling type")
 
@@ -257,7 +260,8 @@ starts_by_type <-
       dimension = "Dwelling Type",
       breakdown = "Survey Zones", 
       geo_uid = "2465005",
-      year = x)}) |> 
+      year = x,
+      frequency = "Annual")}) |> 
   bind_rows() |> 
   set_names(c("zone", "type", "value", "date", "year", "survey", "series"))
 
@@ -302,6 +306,7 @@ table_6_1_2_five_year <-
   pivot_wider(names_from = type, values_from = avg) |> 
   mutate(Total = Single + `Semi-Detached` + Row + Apartment, 
          .before = Single) |> 
+  mutate(across(Total:Apartment, \(x) scales::comma(x, 1))) |> 
   gt::gt() |> 
   gt::tab_header("Average annual housing starts by dwelling type")
 gtsave(table_6_1_2_five_year, "outputs/6/table_6_1_2_five_year.png", zoom = 1)
@@ -429,7 +434,8 @@ starts_by_market <-
       dimension = "Intended Market",
       breakdown = "Survey Zones", 
       geo_uid = "2465005",
-      year = x)}) |> 
+      year = x,
+      frequency = "Annual")}) |> 
   bind_rows() |> 
   set_names(c("zone", "market", "value", "date", "year", "survey", "series"))
 

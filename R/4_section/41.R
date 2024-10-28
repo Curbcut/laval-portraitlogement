@@ -118,7 +118,7 @@ plot_4_1_1_1 <- ggplot(pto, aes(x = Year, y = count, fill = type)) +
 #Grabbing the data to create a map
 pto_map <- get_census(dataset = "CA21",
              regions = list(CSD = 2465005),
-             level = "DA",
+             level = "CT",
              vectors = c("total" = "v_CA21_4288", "owner" = "v_CA21_4305",
                          "tenant" = "v_CA21_4313"),
              geo_format = "sf") |> 
@@ -167,6 +167,9 @@ tenant_hh_map$tenant_quantile <- factor(tenant_hh_map$tenant_quantile, levels = 
 #     tenant_quantile = cut(total, breaks = pto_tenant_breaks, include.lowest = TRUE,
 #                          labels = pto_tenant_breaks_labels)
 #   )
+
+nb_majority_owner_districts <- nrow(owner_hh_map[owner_hh_map$owner_pct >= 0.5,])
+nb_districts <- nrow(owner_hh_map)
 
 #Plotting total number of households
 map_total_hh <- ggplot(data = total_hh_map) +
@@ -256,6 +259,24 @@ ggsave(plot = map_owner_hh, "outputs/4/map_owner_hh.pdf", width = 7.5, height = 
 ggsave(plot = map_tenant_hh, "outputs/4/map_tenant_hh.pdf", width = 7.5, height = 6)
 gtsave(table_4_1_1_1, "outputs/4/table_4_1_1_1.png", zoom = 1)
 
+# Correlation between owner and typology?
+single_semi_row <- get_census(dataset = "CA21",
+                      regions = list(CSD = 2465005),
+                      level = "CT",
+                      vectors = c(total = "v_CA21_434", 
+                                  single = "v_CA21_435", 
+                                  semi = "v_CA21_436", 
+                                  row = "v_CA21_437"),
+                      geo_format = "sf")
+
+ssr_districts <- interpolate(single_semi_row, additive_vars = c("total", "single", "semi", "row")) |> 
+  mutate(house = (single + semi + row) / total)
+
+
+owner_house_cor <- cor(hh_map$owner_pct, ssr_districts$house) |> convert_number()
+
+
+
 # 4.1.1.2 Catégorie de revenu et mode d'occupation ------------------------
 revenu <- c("none"= "Sans revenu total", "10" = "  Supérieur à zéro, moins de 10 000 $",
             "2" = "10 000 $ à 19 999 $", "40" = "20 000 $ à 39 999 $",
@@ -295,6 +316,32 @@ data_4_1_1_2 <- crosstab_get(mode_occupation = mode_occupation, revenu = revenu,
           "80 - 99 999 $",
           "100 - 124 999 $",
           "> 125 000 $")))
+
+hou_med_inc <- cancensus::get_census("CA21", 
+                      vectors = c(med_inc = "v_CA21_906"), 
+                      regions = c("CSD" = 2465005))$med_inc |> 
+  convert_number() |> 
+  paste("$")
+
+
+less_80 <- data_4_1_1_2$count[data_4_1_1_2$income %in% c("20 - 39 999 $",
+                                        "40 - 59 999 $",
+                                        "60 - 79 999 $")] |> 
+  sum()
+tenant_less_80 <- 
+  data_4_1_1_2$count[data_4_1_1_2$income %in% c("20 - 39 999 $",
+                                                "40 - 59 999 $",
+                                                "60 - 79 999 $") &
+                       data_4_1_1_2$type == "Locataire"] |> 
+  sum()
+tenant_pct_less_80 <- (tenant_less_80 / less_80) |> convert_pct()
+
+faible_rev_occ <- 
+crosstab_get(mode_occupation = mode_occupation, 
+             revenu = c(faible_rev = "Avec un faible revenu fondé sur la Mesure de faible revenu après impôt (MFR-ApI)"), 
+                        scale = "CSD")
+
+faible_rev_owner <- convert_pct(faible_rev_occ$owner_faible_rev / (faible_rev_occ$owner_faible_rev + faible_rev_occ$tenant_faible_rev))
 
 data_4_1_1_2 <- 
 data_4_1_1_2 |> 
@@ -446,7 +493,7 @@ data_4_1_1_2_table <- interpolate(from = data_4_1_1_2_table_pre, additive_vars =
 
 data_4_1_1_2_table_tenant <- data_4_1_1_2_table[
   data_4_1_1_2_table$`Type de ménage` == "Locataire", c(1, 3:ncol(data_4_1_1_2_table))]
-names(data_4_1_1_2_table_owner)[2] <- "Nombre de ménages locataires"
+names(data_4_1_1_2_table_tenant)[2] <- "Nombre de ménages locataires"
 
 table_4_1_1_2_tenant <- data_4_1_1_2_table_tenant |> 
   gt() |> 
@@ -486,6 +533,11 @@ table_4_1_1_2_tenant <- data_4_1_1_2_table_tenant |>
 data_4_1_1_2_table_owner <- data_4_1_1_2_table[
   data_4_1_1_2_table$`Type de ménage` == "Propriétaire", c(1, 3:ncol(data_4_1_1_2_table))]
 names(data_4_1_1_2_table_owner)[2] <- "Nombre de ménages propriétaires"
+
+data_4_1_1_2_table_owner$`District électoral`[
+(data_4_1_1_2_table_owner$`20 - 39 999 $ (%)` +
+  data_4_1_1_2_table_owner$`40 - 59 999 $ (%)` +
+  data_4_1_1_2_table_owner$`60 - 79 999 $ (%)`) > 0.4]
 
 table_4_1_1_2_owner <- data_4_1_1_2_table_owner |> 
   gt() |> 
@@ -919,10 +971,11 @@ table_data_4_1_1_3_comp_ed_owner <-
 table_data_4_1_1_3_comp_ed_owner$Type_ménage <- 
   gsub(" \\(\\%\\)", "", table_data_4_1_1_3_comp_ed_owner$Type_ménage)
 
-plot_4_1_1_3_tenant <- ggplot(table_data_4_1_1_3_comp_ed_tenant) +
+plot_4_1_1_3_tenant <-
+ggplot(table_data_4_1_1_3_comp_ed_tenant) +
   geom_sf(aes(geometry = geometry, fill = Pourcentage)) +  
   facet_wrap(~ Type_ménage) +
-  scale_fill_gradientn(colors = c("#F0F0F0", "#F5D574", "#CD718C"),
+  scale_fill_gradientn(colors = c("#FFFFFF", "#F5D574", "#C9C3FA", "#CD718C"),
                        labels = convert_pct, trans = "sqrt",
                        limits = c(0, 0.5),
                        oob = scales::squish) +
@@ -934,7 +987,7 @@ plot_4_1_1_3_tenant <- ggplot(table_data_4_1_1_3_comp_ed_tenant) +
 plot_4_1_1_3_owner <- ggplot(table_data_4_1_1_3_comp_ed_owner) +
   geom_sf(aes(geometry = geometry, fill = Pourcentage)) +  
   facet_wrap(~ Type_ménage) +
-  scale_fill_gradientn(colors = c("#F0F0F0", "#F5D574", "#CD718C"),
+  scale_fill_gradientn(colors = c("#FFFFFF", "#F5D574", "#C9C3FA", "#CD718C"),
                        labels = convert_pct, trans = "sqrt",
                        limits = c(0, 0.5),
                        oob = scales::squish) +
@@ -1355,27 +1408,22 @@ plot_4_1_1_6 <- ggplot(data_4_1_1_6, aes(x = Build, y = Value, fill = Type)) +
 #     table.width = px(6 * 282)
 #   )
 
-sfh_laval <- data_4_1_1_6_table |> filter("Type de ménage" == "Total") |> pull(`Maison individuelle non attenante (%)`)
-apt_laval <- data_4_1_1_6_table |> filter("Type de ménage" == "Total") |> pull(`Appartement dans un immeuble de moins de cinq étages (%)`)
-sfh_owner <- data_4_1_1_6_table |> filter("Type de ménage" == "Propriétaire") |> pull(`Maison individuelle non attenante (%)`)
+# sfh_laval <- data_4_1_1_6_table |> filter("Type de ménage" == "Total") |> pull(`Maison individuelle non attenante (%)`)
+# apt_laval <- data_4_1_1_6_table |> filter("Type de ménage" == "Total") |> pull(`Appartement dans un immeuble de moins de cinq étages (%)`)
+# sfh_owner <- data_4_1_1_6_table |> filter("Type de ménage" == "Propriétaire") |> pull(`Maison individuelle non attenante (%)`)
 
 ggsave(plot = plot_4_1_1_6, "outputs/4/plot_4_1_1_6.pdf", width = 7.5, height = 4)
 # gtsave(table_4_1_1_6, "outputs/4/table_4_1_1_6.png", vwidth = 2400)
 
 # 4.1.2.1 Projection des ménages X-2046 (PRÉCISER JALONS, C17) -----------------
-#https://statistique.quebec.ca/fr/document/projections-de-menages-mrc-municipalites-regionales-de-comte
+#https://statistique.quebec.ca/fr/document/projections-de-menages-regions-administratives-et-regions-metropolitaines-rmr
 
-projection_4_1_2_1 <- read_excel("data/4/4_1_2_1.xlsx") |> 
-  slice(-c(1:2)) |> 
-  filter(`...2` == "Laval") |> 
-  select(-`Nombre de ménages privés, scénario Référence A2022, MRC du Québec, 2021-2041`,
-         -`...2`, -`...3`) |> 
-  rename(`2021` = `...4`, `2022` = `...5`, `2023` = `...6`, `2024` = `...7`,
-         `2025` = `...8`, `2026` = `...9`, `2027` = `...10`, `2028` = `...11`,
-         `2029` = `...12`, `2030` = `...13`, `2031` = `...14`, `2032` = `...15`,
-         `2033` = `...16`, `2034` = `...17`, `2035` = `...18`, `2036` = `...19`,
-         `2037` = `...20`, `2038` = `...21`, `2039` = `...22`, `2040` = `...23`, 
-         `2041` = `...24`)
+projection_4_1_2_1 <- read_excel("data/4/Ménages_Total_RA_base_2024.xlsx", 
+                                 skip = 5) |> 
+  filter(`...3` == "Laval",
+         `...1` == "Référence A2024") |>
+  select(4:34) |> 
+  mutate(`2021` = as.numeric(`2021`))
 
 census16_4_1_2_1 <- get_census(dataset = "CA16",
                                regions = list(CSD = 2465005),
@@ -1392,7 +1440,7 @@ data_4_1_2_1 <- get_census(dataset = "CA11",
   pivot_longer(cols = everything(), names_to = "Year", values_to = "Households") |> 
   mutate(Year = as.character(Year))
 
-all_years <- data.frame(Year = as.character(2011:2041))
+all_years <- data.frame(Year = as.character(2011:2051))
 
 data_4_1_2_1_complete <- all_years %>%
   left_join(data_4_1_2_1, by = "Year") |> 
@@ -1401,9 +1449,11 @@ data_4_1_2_1_complete <- all_years %>%
 year_2011 <- data_4_1_2_1_complete |> filter(Year == "2011") |> pull(Households)
 year_2021 <- data_4_1_2_1_complete |> filter(Year == "2021") |> pull(Households)
 year_2041 <- data_4_1_2_1_complete |> filter(Year == "2041") |> pull(Households)
-year_2028 <- data_4_1_2_1_complete |> filter(Year == "2028") |> pull(Households) |> convert_number()
-year_2032 <- data_4_1_2_1_complete |> filter(Year == "2032") |> pull(Households) |> convert_number()
-year_2036 <- data_4_1_2_1_complete |> filter(Year == "2036") |> pull(Households) |> convert_number()
+year_2029 <- data_4_1_2_1_complete |> filter(Year == "2029") |> pull(Households) |> convert_number()
+year_2033 <- data_4_1_2_1_complete |> filter(Year == "2033") |> pull(Households) |> convert_number()
+year_2037 <- data_4_1_2_1_complete |> filter(Year == "2037") |> pull(Households) |> convert_number()
+year_2046 <- data_4_1_2_1_complete |> filter(Year == "2046") |> pull(Households) |> convert_number()
+year_2051 <- data_4_1_2_1_complete |> filter(Year == "2051") |> pull(Households) |> convert_number()
 
 diff_2011_2021 <- convert_pct((year_2021-year_2011)/year_2011)
 diff_2021_2041 <- convert_pct((year_2041-year_2021)/year_2021)
@@ -1418,11 +1468,11 @@ data_4_1_2_1_complete$Year <- as.numeric(data_4_1_2_1_complete$Year)
 custom_labels <- c(
   "2010" = "2010", 
   "2020" = "2020", 
-  "2028" = "2028", 
-  "2030" = "2030", 
-  "2032" = "2032", 
-  "2036" = "2036", 
-  "2040" = "2040"
+  "2029" = "2029", 
+  "2033" = "2033", 
+  "2037" = "2037", 
+  "2040" = "2040",
+  "2050" = "2050"
 )
 
 plot_4_1_2_1 <-
@@ -1435,41 +1485,68 @@ plot_4_1_2_1 <-
             aes(group = 1, linetype = "Ménages projetés"),
             linewidth = 1.5, 
             na.rm = TRUE) +
-  geom_vline(xintercept = 2028, color = color_theme("redhousing"), size = 1) +
-  geom_vline(xintercept = 2032, color = color_theme("redhousing"), size = 1) +
-  geom_vline(xintercept = 2036, color = color_theme("redhousing"), size = 1) +
-  scale_x_continuous(breaks = c(2010, 2020, 2028, 2030, 2032, 2036, 2040),
-                     limits = c(2010, 2040)) +
+  geom_vline(xintercept = 2029, color = color_theme("redhousing"), size = 1) +
+  geom_vline(xintercept = 2033, color = color_theme("redhousing"), size = 1) +
+  geom_vline(xintercept = 2037, color = color_theme("redhousing"), size = 1) +
+  scale_x_continuous(breaks = c(2010, 2020, 2029, 2033, 2037, 2040, 2050),
+                     limits = c(2010, 2050)) +
   scale_y_continuous(labels = function(x) convert_number(x)) +
   labs(x = "", y = "Nombre de ménages (n)", linetype = "") +
   graph_theme +
   theme(
-    axis.text.x = element_text(color = ifelse(custom_labels %in% c("2028", "2032", "2036"), 
+    axis.text.x = element_text(color = ifelse(custom_labels %in% c("2029", "2033", "2037"), 
                                               color_theme("redhousing"), "black"))
   )
 
 ggsave(plot = plot_4_1_2_1, "outputs/4/plot_4_1_2_1.pdf", width = 7.5, height = 6)
 
-# 4.1.2.2 Croissance prévue des ménages ---------------------------------------
 
 
 
-# 4.1.2.3.1 Projections population/ménages selon groupe d'âge ----------------
-#https://statistique.quebec.ca/fr/document/projections-de-menages-mrc-municipalites-regionales-de-comte
-projection_4_1_2_3_1 <- read_excel("data/Pop_GrAge_Sexe_MRC_majA2022.xlsx", skip = 4) |> 
-  filter(`...2` == "Laval") |> 
-  transmute(`Année` = `...4`,
-         `0-4` = n...13, `5-9` = ...14, `10-14` = ...15,
-         `15-19` = `...16`, `20-24` = `...17`,
-         `25-29` = `...18`, `30-34` = `...19`, `35-39` = `...20`, `40-44` = `...21`,
-         `45-49` = `...22`, `50-54` = `...23`, `55-59` = `...24`, `60-64` = `...25`,
-         `65-69` = `...26`, `70-74` = `...27`, `75-79` = `...28`, `80-84` = `...29`,
-         `85+` = `...30`)
+
+menage_age <- read_excel("data/4/Ménages_GrAge_RA_base_2024.xlsx", skip = 5) |> 
+  filter(`...3` == "Laval",
+         `...1` == "Référence A2024") |> 
+  rename(`Année` = `...4`) |> 
+  mutate_all(as.numeric)
 
 
 # Reshape the data from wide to long format
-projection_long <- pivot_longer(projection_4_1_2_3_1, cols = `0-4`:`85+`, names_to = "Groupe d'âge")
-projection_long <- projection_long[projection_long$Année %in% c(2021, 2041), ]
+projection_long <- pivot_longer(menage_age, cols = `15-19`:`90+`, names_to = "Groupe d'âge")
+projection_long <- projection_long[projection_long$Année %in% c(2021, 2051), ]
+projection_long$`Groupe d'âge` <- factor(projection_long$`Groupe d'âge`,
+                                         levels = unique(projection_long$`Groupe d'âge`))
+
+# Create the bar plot using ggplot2
+plot_4_1_2_1_hou_age <-
+  ggplot(projection_long, aes(x = `Groupe d'âge`, y = value, fill = as.factor(Année))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = NULL, 
+       x = NULL, 
+       y = "Nombre de ménages") +
+  scale_y_continuous(labels = convert_number) +
+  scale_fill_manual(values = c("2021" = color_theme("yellowclimate"), "2051" = color_theme("pinkhealth")))+
+  graph_theme
+
+ggsave(plot = plot_4_1_2_1_hou_age, "outputs/4/plot_4_1_2_1_hou_age.pdf", width = 7.5, height = 6)
+
+
+
+
+
+
+# 4.1.2.3 Projections population/ménages selon groupe d'âge ----------------
+#https://statistique.quebec.ca/fr/document/projections-de-population-mrc-municipalites-regionales-de-comte
+projection_4_1_2_3_1 <- read_excel("data/4/PopGrAS_RA_base_2024.xlsx", skip = 5) |> 
+  filter(`...3` == "Laval",
+         `...1` == "Référence A2024") |> 
+  rename(`Année` = `...4`) |> 
+  mutate_all(as.numeric)
+
+
+# Reshape the data from wide to long format
+projection_long <- pivot_longer(projection_4_1_2_3_1, cols = `0-4`:`100+`, names_to = "Groupe d'âge")
+projection_long <- projection_long[projection_long$Année %in% c(2021, 2051), ]
 projection_long$`Groupe d'âge` <- factor(projection_long$`Groupe d'âge`,
                                          levels = unique(projection_long$`Groupe d'âge`))
 
@@ -1481,7 +1558,7 @@ plot_4_1_2_3_1 <-
        x = NULL, 
        y = "Nombre d'individus") +
   scale_y_continuous(labels = convert_number) +
-  scale_fill_manual(values = c("2021" = color_theme("yellowclimate"), "2041" = color_theme("pinkhealth")))+
+  scale_fill_manual(values = c("2021" = color_theme("yellowclimate"), "2051" = color_theme("pinkhealth")))+
   graph_theme
 
 ggsave(plot = plot_4_1_2_3_1, "outputs/4/plot_4_1_2_3_1.pdf", width = 7.5, height = 4)
@@ -1494,11 +1571,11 @@ sum_2021 <-
                               projection_long$`Groupe d'âge` %in% c("65-69", "70-74", "75-79", "80-84", "85+")])
 
 sum_2041 <- 
-sum(projection_long$value[projection_long$Année == 2041 & 
-                        projection_long$`Groupe d'âge` %in% c("65-69", "70-74", "75-79", "80-84", "85+")])
+  sum(projection_long$value[projection_long$Année == 2041 & 
+                              projection_long$`Groupe d'âge` %in% c("65-69", "70-74", "75-79", "80-84", "85+")])
 growth_65p <- sum_2041 - sum_2021
 
-growth_attributed_to_65p <- convert_pct(growth_65p / growth)
+growth_attributed_to_65p <- convert_pct(growth_65p / growth_total)
 
 
 # table_4_1_2_3_1 <- projection_4_1_2_3_1 |> 
@@ -1666,8 +1743,11 @@ qs::qsavem(plot_4_1_1_1, map_total_hh, map_owner_hh, map_tenant_hh, table_4_1_1_
            plot_4_1_1_2, table_4_1_1_2, plot_4_1_1_3_comp, table_4_1_1_3_comp,
            table_4_1_1_3_comp_ed, plot_4_1_1_4, plot_4_1_1_5, renter_15, renter_25, plot_4_1_1_6,
            table_4_1_1_6, sfh_laval, sfh_owner, apt_laval, diff_2011_2021, diff_2021_2041,
-           year_2011, year_2021, year_2028, year_2032, year_2036, year_2041, plot_4_1_2_1,
+           year_2011, year_2021, year_2029, year_2033, year_2037, year_2041, plot_4_1_2_1,
            change_59, change_84, change_85, plot_4_1_2_3_2,
            table_4_1_1_2_owner, table_4_1_1_2_tenant, pop_growth, growth_attributed_to_65p,
            plot_4_1_1_3_tenant, plot_4_1_1_3_owner, plot_4_1_2_3_1,
+           nb_majority_owner_districts, nb_districts, owner_house_cor,
+           hou_med_inc, tenant_pct_less_80, faible_rev_owner, year_2046,
+           year_2051, plot_4_1_2_1_hou_age,
            file = "data/section_4_1.qsm")

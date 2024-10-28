@@ -17,7 +17,7 @@ qs::qload(here::here("data/section_4_1.qsm"))
 
 _Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
 
-De 2001 à 2021, la ville de Laval a vu son nombre de ménages augmenter de `r total_prop_diff`, passant de `r total_hh_01` à `r total_hh_21`. Comme illustré ci-dessous au graphique \@ref(fig:plot_4_1_1_1), bien que le nombre de ménages propriétaires ait augmenté en termes absolus, leur proportion est restée relativement stable au cours des deux décennies, variant entre 66,4 % et 69,4 %. Cependant, cette apparente stabilité cache un changement important entre 2016 et 2021, période durant laquelle la proportion de ménages propriétaires a reculé de 69,4 % à 66,7 %. De manière opposée, la proportion de ménages locataires, qui oscillait entre 30,7 % et 33,5 % durant ces 20 ans, a enregistré une hausse significative de 2,9 % entre 2016 et 2021, passant de 30,6 % à 33,5 %.
+De 2001 à 2021, la ville de Laval a vu son nombre de ménages augmenter de `r total_prop_diff`, passant de `r total_hh_01` à `r total_hh_21`. Bien que le nombre de ménages propriétaires ait augmenté en termes absolus (Graphique \@ref(fig:plot_4_1_1_1)), leur proportion est restée relativement stable au cours des deux décennies, variant entre 66,4 % et 69,4 %. Cependant, cette apparente stabilité cache un changement important entre 2016 et 2021, période durant laquelle la proportion de ménages propriétaires a reculé de 69,4 % à 66,7 %. De manière opposée, la proportion de ménages locataires, qui oscillait entre 30,7 % et 33,5 % durant ces 20 ans, a enregistré une hausse significative de 2,9 % entre 2016 et 2021, passant de 30,6 % à 33,5 %.
 
 Ces tendances révèlent un changement structurel dans la dynamique du marché résidentiel à Laval. Entre 2006 et 2011, l'essentiel de la croissance des ménages a été tiré par les propriétaires, reflétant probablement un contexte économique favorable à l'accès à la propriété, avec une augmentation nette de la proportion de ménages propriétaires. En revanche, la période 2016 à 2021 marque un renversement de tendance. Durant ces années, bien que le nombre total de ménages ait continué de croître, cette croissance semble avoir été largement absorbée par les locataires, indiquant un changement dans les conditions économiques ou les préférences résidentielles.
 
@@ -25,7 +25,9 @@ Ces tendances révèlent un changement structurel dans la dynamique du marché r
 plot_4_1_1_1
 ```
 
-Comme la ville de Laval affiche une proportion plus élevée de ménages propriétaires, la majorité des districts électoraux de Laval comptent davantage de ménages propriétaires que de locataires. C'est particulièrement notable dans des districts comme Auteuil et Saint-François, où, comme le montre la carte \@ref(fig:map_owner_hh), les ménages propriétaires représentent plus de 85 % des ménages. Les districts avec une forte proportion de ménages propriétaires se trouvent généralement en périphérie du centre-ville. À l'inverse, les zones plus proches du centre-sud, telles que Souvenir-Labelle et Concorde-Bois-de-Boulogne, présentent une proportion plus élevée de ménages locataires..
+Ce sont nb_majority_owner_districts des nb_districts districts électoraux de 2021 de Laval qui comptent davantage de ménages propriétaires que de locataires. C'est particulièrement notable dans des districts comme Auteuil et Saint-François, où (Figure \@ref(fig:map_owner_hh)) les ménages propriétaires représentent plus de 85 % des ménages. Les districts avec une forte proportion de ménages propriétaires se trouvent généralement en périphérie du centre-sud de la ville À l'inverse, les zones plus proches du centre-sud, telles que Souvenir-Labelle et Concorde-Bois-de-Boulogne, présentent une proportion plus élevée de ménages locataires.
+
+ENCADRÉ: La corrélation linéaire est positive et très forte (`r owner_house_cor`) entre le pourcentage de ménages propriétaires et la proportion de maisons unifamiliales, jumelées ou en rangée, indiquant une relation étroite entre la typologie des habitations et la propriété dans les districts lavallois. Dans les districts où il y a un pourcentage plus élevé de maisons unifamiliales, jumelées ou en rangée, on observe également un pourcentage plus élevé de ménages propriétaires.
 
 ```{r map_total_hh, include=TRUE, fig.cap="Nombre total de ménages par district électoral", fig.align = 'center'}
 map_total_hh
@@ -43,7 +45,7 @@ map_tenant_hh
 
 _Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
 
-En 2021, bien que la majorité des ménages à Laval soient des propriétaires, la majorité de ceux ayant un revenu inférieur à 60 000 \$ étaient des locataires, avec 72,5 % des ménages gagnant moins de 20 000 \$ étant locataires, comme le montre le graphique \@ref(fig:plot_4_1_1_2). À l'inverse, parmi les ménages lavallois ayant un revenu annuel d'au moins 60 000 \$, la majorité étaient des propriétaires, avec plus de 90 % des ménages gagnant plus de 125 000 \$ étant propriétaires.
+En 2021, la majorité (`r tenant_pct_less_80`) des ménages ayant un revenu annuel brut inférieur à 80 000 \$ (le revenu médian annuel brut des ménages étant de `r hou_med_inc`) étaient locataires. Parmi les ménages gagnant moins de 20 000 \$ annuellement, 72,5 % étaient locataires (Graphique \@ref(fig:plot_4_1_1_2)). À l'inverse, parmi les ménages lavallois ayant un revenu annuel d'au moins 60 000 \$, la majorité étaient propriétaires. Plus de 90 % des ménages gagnant plus de 125 000 \$ par an étaient propriétaires. `r faible_rev_owner` des ménages sous le seuil de faible revenu (Mesure de faible revenu après impôt: https://www12.statcan.gc.ca/census-recensement/2021/ref/dict/az/Definition-fra.cfm?ID=fam021) étaient propriétaires.
 
 ```{r plot_4_1_1_2, include=TRUE, fig.cap="Type de ménage par tranche de revenu", fig.align = 'center'}
 plot_4_1_1_2
@@ -51,9 +53,9 @@ plot_4_1_1_2
 
 Au niveau des districts électoraux, plusieurs tendances émergent en ce qui concerne la répartition des ménages propriétaires et locataires selon les tranches de revenu. De manière générale, plus un ménage a un revenu élevé, plus il est susceptible d'être propriétaire de son logement. Cependant, le seuil de revenu à partir duquel cette tendance se manifeste varie selon les districts.
 
-Dans les districts de L'Abord-à-Plouffe, Souvenir-Labelle et Chomedey, la proportion de ménages propriétaires dans les tranches de revenus plus faibles est plus élevée que la moyenne lavalloise.  Dans ces districts, plus de 30 % des ménages propriétaires ont un revenu inférieur à 60 000 \$. Ces ménages, qui ont pu accéder à la propriété malgré des revenus modestes, témoignent peut-être une offre de logements moins coûteux ou un ancrage de longue date dans ces quartiers.
+Dans les districts de L'Abord-à-Plouffe, Souvenir-Labelle, Chomedey et Laval-des-Rapides, la proportion de ménages propriétaires dans les tranches de revenus plus faibles est plus élevée que la moyenne lavalloise. Effectivement, dans ces districts, plus de 40 % des ménages propriétaires ont un revenu inférieur à 80 000 \$.
 
-En revanche, certains districts comme Laval-les-Îles, Saint-François, Auteuil et Fabreville montrent une situation différente, avec une proportion plus importante des ménages locataires se retrouvant dans les tranches de revenus plus élevées. Dans ces districts, plus de 20 % des ménages locataires ont un revenu de plus de 100 000 \$. Cette situation pourrait être le signe de plusieurs facteurs : un marché immobilier local plus restreint, des prix d'achat trop élevés pour permettre l'accession à la propriété même pour des ménages à revenus élevés, ou encore un choix délibéré de louer plutôt que d'acheter, peut-être pour plus de flexibilité ou à cause de la rareté des logements adaptés aux besoins de ces ménages.
+En revanche, dans les districts de Laval-les-Îles, Saint-François, Auteuil et Fabreville, plus de 20 % des ménages locataires ont un revenu de plus de 100 000 \$. Une analyse croisée avec d'autres données (prix des logements, conditions d'accession à la propriété, nombre et caractéristiques des logements disponibles en fonction des besoins, évolution comportementale par rapport à l'accession à la propriété, etc.) permettrait de mieux comprendre ces disparités territoriales.
 
 ```{r table_4_1_1_2_tenant, include=TRUE, fig.cap="Catégorie de revenu des ménages locataires par district électoral", fig.align = 'center'}
 table_4_1_1_2_tenant
@@ -67,13 +69,17 @@ table_4_1_1_2_owner
 
 _Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
 
-Le graphique \@ref(fig:plot_4_1_1_3_comp) illustre que les couples avec et sans enfants, ainsi que les ménages multigénérationnels, sont majoritairement propriétaires, ce qui reflète une forte tendance des ménages familiaux à accéder à la propriété. En revanche, 47,4 % des locataires sont des personnes vivant seules, comparativement à seulement 19,2 % des propriétaires. De plus, bien qu’il y ait davantage de familles monoparentales parmi les propriétaires, la proportion de locataires est plus élevée dans ce type de ménage, indiquant une plus grande précarité d’accès à la propriété pour ces familles.
+Le graphique \@ref(fig:plot_4_1_1_3_comp) illustre que la majorité des ménages composés d'au moins deux adultes tendent à être propriétaires, surtout les familles, à l'exception des personnes seules et des ménages de deux personnes ou plus sans lien familial, où les locataires sont majoritaires.
+
+Les pourcentages indiqués sur les barres du graphique \@ref(fig:plot_4_1_1_3_comp) représentent la proportion des différents types de ménages parmi l'ensemble des propriétaires ou des locataires. Par exemple, 47,4 % des locataires sont des personnes vivant seules, comparativement à seulement 19,2 % des propriétaires. De plus, bien qu’il y ait davantage de familles monoparentales parmi les propriétaires, la proportion de locataires est plus élevée dans ce type de ménage, indiquant une plus grande précarité d’accès à la propriété pour ces familles.
 
 ```{r plot_4_1_1_3_comp, include=TRUE, fig.cap="Nombre de ménages par type et répartition en pourcentage selon le statut d’occupation", fig.align = 'center'}
 plot_4_1_1_3_comp
 ```
 
-Les deux séries de cartes suivantes présentent les proportions de ménages locataires et propriétaires sur l'ensemble de Laval, selon leur composition. Ces visualisations permettent d'identifier des tendances spécifiques dans la répartition de chaque groupe de ménages par statut d’occupation (locataires ou propriétaires). Parmi les ménages locataires, une proportion importante est composée de personnes seules, surtout dans les secteurs centraux et sud de Laval, où elles représentent souvent plus de 40 à 50 % des locataires. De plus, les familles monoparentales sont proportionnellement plus présentes parmi les locataires que parmi les propriétaires. À l'inverse, les couples avec et sans enfants et les ménages multigénérationnels sont bien plus représentés parmi les propriétaires.
+Les deux séries de cartes suivantes présentent les proportions de ménages locataires et propriétaires sur l'ensemble de Laval, selon leur composition. Ces visualisations permettent d'identifier des tendances spécifiques dans la répartition de chaque groupe de ménages par statut d’occupation (locataires ou propriétaires). 
+
+Parmi les ménages locataires, les personnes seules représentent souvent plus de 40 à 50 % des locataires, particulièrement dans les secteurs centraux et sud de Laval. Les familles monoparentales sont proportionnellement plus présentes parmi les locataires que parmi les propriétaires. À l'inverse, les couples avec ou sans enfants et les ménages multigénérationnels sont bien plus représentés parmi les propriétaires.
 
 ```{r plot_4_1_1_3_tenant, include=TRUE, fig.cap="Composition des ménages locataires par district électoral", fig.align = 'center'}
 plot_4_1_1_3_tenant
@@ -86,9 +92,9 @@ plot_4_1_1_3_owner
 
 _Source: Statistique Canada, Recensement de la population de 2016, analyse et traitement des données par la CMM. Récupéré au https://observatoire.cmm.qc.ca/wp-content/uploads/2022/05/CMM_10e_Cahier_metropolitain_web.pdf_
 
-Le graphique \@ref(fig:plot_4_1_1_4) illustre la répartition du statut d’occupation des ménages à Laval selon différents groupes d’immigration, en comparant les proportions de locataires (en logements subventionnés et non subventionnés) et de propriétaires (en copropriété ou en pleine propriété). Les immigrants arrivés avant 2006 présentent le taux le plus élevé de propriétaires (80 %, dont 71 % en pleine propriété), ce qui suggère une forte intégration dans le marché immobilier à long terme. À l’inverse, les immigrants arrivés entre 2006 et 2016, les autochtones et les résidents non permanents affichent une majorité de ménages locataires, respectivement 54 %, 57 % et 73 %.
+Le graphique \@ref(fig:plot_4_1_1_4) illustre la répartition du statut d’occupation des ménages à Laval selon différents groupes d’immigration, en comparant les proportions de locataires (en logements subventionnés et non subventionnés) et de propriétaires (en copropriété ou en pleine propriété). Les immigrants arrivés avant 2006 présentent le taux le plus élevé de propriétaires (80 %, dont 71 % en pleine propriété), ce qui suggère une forte intégration dans le marché immobilier à long terme et potentiellement des conditions plus favorables à l'accession à la propriété avant 2006. À l’inverse, les immigrants arrivés entre 2006 et 2016, les autochtones et les résidents non permanents affichent une majorité de ménages locataires, respectivement 54 %, 57 % et 73 %.
 
-```{r plot_4_1_1_4, include=TRUE, fig.cap="Proportion des statut d'occupation des ménages selon le statut d'immigration", fig.align = 'center'}
+```{r plot_4_1_1_4, include=TRUE, fig.cap="Proportion des statuts d'occupation des ménages selon le statut d'immigration", fig.align = 'center'}
 plot_4_1_1_4
 ```
 
@@ -96,7 +102,7 @@ plot_4_1_1_4
 
 _Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
 
-À Laval, la grande majorité des ménages dont le principal soutien est âgé de 15 à 24 ans sont des locataires, représentant 83,8 % des ménages de cette tranche d’âge. Cette tendance se poursuit pour le groupe des 25 à 34 ans, où les ménages locataires restent majoritaires, mais l’écart avec les propriétaires se réduit considérablement, avec 53,4 % de locataires.
+À Laval, la grande majorité des ménages dont le principal soutien est âgé de 15 à 24 ans est locataire, représentant 83,8 % des ménages de cette tranche d’âge. Cette tendance se poursuit pour le groupe des 25 à 34 ans, où les ménages locataires restent majoritaires, mais l’écart avec les propriétaires se réduit considérablement, avec 53,4 % de locataires.
 
 Cette tendance s'inverse à partir du groupe des 35 à 44 ans où les deux tiers (65,5 %) sont propriétaires, proportion qui augmente à 74,6 % pour le groupe des 45 à 54 ans et qui reste stable à 74,0 % pour les 55 à 64 ans. À partir de 65 ans et plus, on observe une diminution progressive de la proportion de propriétaires, bien que ceux-ci restent majoritaires.
 
@@ -108,7 +114,9 @@ plot_4_1_1_5
 
 _Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
 
-Le graphique suivant confirme des tendances bien établies en matière de logement : un tiers des propriétaires lavallois réside dans des maisons individuelles non attenantes (32,0 %), et ils sont également plus nombreux à habiter dans des maisons en rangée ou jumelées. De leur côté, un tiers des locataires vit dans des appartements dans des immeubles de moins de cinq étages (33,2 %), et ils sont proportionnellement plus nombreux à occuper d'autres types d'appartements, notamment ceux dans des immeubles de plus grande hauteur. Ces tendances reflètent les réalités économiques, où l'accès à la propriété est généralement associé à des logements plus spacieux et individuels, tandis que les locataires, confrontés à des contraintes financières, optent pour des logements plus abordables, comme les appartements.
+Le graphique suivant confirme des tendances bien établies en matière de logement : un tiers des propriétaires lavallois réside dans des maisons individuelles non attenantes (32,0 %), et ils sont également plus nombreux, en proportion, à habiter dans des maisons en rangée (1,9 %) ou jumelées (6,4 %) comparativement aux locataires, dont seulement 0,6 % vivent dans des maisons en rangée et 0,8 % dans des maisons jumelées. Un tiers des locataires vit dans des appartements dans des immeubles de moins de cinq étages (33,2 %), et globalement, la quasi-totalité des locataires habitent dans un appartement (de plain-pied dans un duplex à immeubles de cinq étages ou plus).
+
+Pour approfondir l'analyse de la typologie des logements selon le mode d'occupation et l'âge du principal soutien du ménage, il serait nécessaire d'accéder à des données plus détaillées du recensement canadien. Ces données permettraient de mieux comprendre les choix de logement selon les tranches d'âge, en particulier pour les 65 ans et plus.
 
 ```{r plot_4_1_1_6, include=TRUE, fig.cap="Répartition des ménages selon le type de logement et le mode d'occupation", fig.align = 'center'}
 plot_4_1_1_6
@@ -116,12 +124,18 @@ plot_4_1_1_6
 
 # 4.1.2.1 Projection des ménages
 
-_Source: Statistique Canada, Recensement de la population de 2011, 2016 et 2021, analyse et traitement des données par Curbcut ; Projections de ménages - MRC. (2024). Institut de la statistique du Québec. Récupéré au https://statistique.quebec.ca/fr/document/projections-de-menages-mrc-municipalites-regionales-de-comte_
+_Source: Statistique Canada, Recensement de la population de 2011, 2016 et 2021, analyse et traitement des données par Curbcut ; Projections de ménages - Régions administratives et régions métropolitaines (RMR). (2024). Institut de la statistique du Québec. Récupéré au https://statistique.quebec.ca/fr/document/projections-de-menages-regions-administratives-et-regions-metropolitaines-rmr ; Projections de ménages - Régions administratives et régions métropolitaines (RMR). (2024). Institut de la statistique du Québec. Récupéré au https://statistique.quebec.ca/fr/document/projections-de-menages-regions-administratives-et-regions-metropolitaines-rmr_
 
-De 2011 à 2021, la ville de Laval a connu une croissance de `r diff_2011_2021` ménages, passant de `r year_2011` ménages en 2011 à `r year_2021` en 2021. Au cours des 20 prochaines années suivant le dernier recensement, soit d’ici 2041, la croissance du nombre de ménages devrait ralentir, avec une augmentation de seulement `r diff_2021_2041`, pour atteindre `r year_2041` ménages en 2041. La ville devrait compter environ `r year_2028` ménages en 2028, `r year_2032` en 2032 et `r year_2036` en 2036.
+De 2011 à 2021, la ville de Laval a connu une croissance de `r diff_2011_2021` ménages, passant de `r year_2011` ménages en 2011 à `r year_2021` en 2021. Au cours des 20 prochaines années suivant le dernier recensement, soit d’ici 2041, la croissance du nombre de ménages devrait ralentir, avec une augmentation de seulement `r diff_2021_2041`, pour atteindre `r year_2041` ménages en 2041. La ville devrait compter environ `r year_2029` ménages en 2029, `r year_2033` en 2033, `r year_2037` en 2037, `r year_2046` en 2046 et `r year_2051` en 2051.
 
-```{r plot_4_1_2_1, include=TRUE, fig.cap="Projection des ménages de 2021 à 2041.", fig.align = 'center'}
+```{r plot_4_1_2_1, include=TRUE, fig.cap="Projection des ménages de 2021 à 2051.", fig.align = 'center'}
 plot_4_1_2_1
+```
+
+Selon les projections démographiques, on observe une diminution notable des ménages dont le principal soutien est âgé de moins de 45 ans, reflétant un vieillissement de la population. Les tranches d'âge de 45 à 59 ans, actuellement dans les plus nombreuses en 2021, verront une baisse en 2051, tandis que le nombre de ménages dont le principal soutien est âgé de 65 ans et plus augmentera considérablement. Cela représente un inversion de la pyramide des âges, avec une concentration croissante de ménages plus âgés.
+
+```{r plot_4_1_2_1_hou_age, include=TRUE, fig.cap="Projections du nombre de ménages par groupe d'âge de 2021 à 2051", fig.align = 'center'}
+plot_4_1_2_1_hou_age
 ```
 
 # 4.1.2.2 Croissance prévue des ménages
@@ -132,9 +146,11 @@ Répétition 4.1.2.1
 
 _Source: Projections de population - MRC. (2024). Institut de la statistique du Québec. Récupéré au https://statistique.quebec.ca/fr/document/projections-de-population-mrc-municipalites-regionales-de-comte_
 
-Alors que Laval dans son ensemble devrait connaître une croissance de `r pop_growth` entre 2021 et 2041, cette progression démographique ne touchera pas tous les groupes d'âge de manière égale. Les projections indiquent une évolution marquée vers une population plus âgée, avec une augmentation substantielle des personnes de 65 ans et plus. Les groupes des 75 ans et plus, en particulier, connaîtront une forte croissance, tandis que les groupes plus jeunes resteront relativement stables ou afficheront une légère diminution. Ce phénomène s'inscrit dans une tendance plus générale observée à l'échelle du Québec, où le vieillissement de la population représente un enjeu de taille. À Laval, selon les prévisions pour la période 2021-2041, `r growth_attributed_to_65p` de la croissance de la population sera attribuable aux personnes de 65 ans et plus.
+Alors que la population de Laval dans son ensemble devrait connaître une croissance de `r pop_growth` entre 2021 et 2041, cette progression démographique ne touchera pas tous les groupes d'âge de manière égale. Les projections indiquent une évolution marquée vers une population plus âgée, avec une augmentation substantielle du nombre d'individus de 65 ans et plus. Les groupes des 75 ans et plus, en particulier, connaîtront une forte croissance, tandis que les groupes des moins de 45 ans resteront relativement stables et, dans les cas des 45-65 ans afficheront une légère diminution. 
 
-```{r plot_4_1_2_3_1, include=TRUE, fig.cap="Projections du nombre d'individus par groupe d'âge de 2021 à 2041", fig.align = 'center'}
+Ce phénomène s'inscrit dans une tendance plus générale observée à l'échelle du Québec, où le vieillissement de la population représente un enjeu de taille. À Laval, selon les prévisions pour la période 2021-2041, `r growth_attributed_to_65p` de la croissance de la population sera attribuable aux personnes de 65 ans et plus.
+
+```{r plot_4_1_2_3_1, include=TRUE, fig.cap="Projections du nombre d'individus par groupe d'âge de 2021 à 2051", fig.align = 'center'}
 plot_4_1_2_3_1
 ```
 
@@ -142,9 +158,9 @@ plot_4_1_2_3_1
 
 _Source: Composantes démographiques projetées, scénario Référence A2022, MRC du Québec, 2021-2041. (2022). Institut de la statistique du Québec. Récupéré au https://statistique.quebec.ca/fr/document/projections-de-population-mrc-municipalites-regionales-de-comte_
 
-Le graphique montre l'évolution projetée des composantes de la croissance démographique à Laval de 2022 à 2041. L'accroissement naturel, qui correspond à la différence entre les naissances et les décès, diminue graduellement pour devenir négatif vers 2030, reflétant une augmentation des décès et une stabilité du nombre de naissances. En parallèle, la migration interne est déficitaire, indiquant que Laval perd des résidents au profit d'autres régions du Québec.
+Le graphique montre l'évolution projetée des composantes de la croissance démographique à Laval de 2021 à 2041. L'accroissement naturel, qui correspond à la différence entre les naissances et les décès, diminue graduellement pour devenir négatif vers 2030, reflétant une augmentation des décès et une stabilité du nombre de naissances. En parallèle, la migration interne est déficitaire, indiquant que Laval perd des résidents au profit d'autres régions du Québec.
 
-Le solde migratoire international devient la principale source de croissance démographique, jouant un rôle de plus en plus important pour compenser la baisse de la population due à l'accroissement naturel négatif. L'immigration internationale est donc cruciale pour maintenir la croissance démographique de Laval à long terme.
+Le solde migratoire international devient la principale source de croissance démographique, jouant un rôle de plus en plus important pour compenser la baisse de la population due à l'accroissement naturel négatif. L'immigration internationale semble donc cruciale pour maintenir la croissance démographique de Laval à long terme.
 
 ```{r plot_4_1_2_3_2, include=TRUE, fig.cap="Composantes de la croissance démographique annuelle projetée à Laval de 2021 à 2040", fig.align = 'center'}
 plot_4_1_2_3_2

@@ -13,7 +13,7 @@ library(patchwork)
 
 ```
 
-# 6.1.1 Dév rés récent (répartition territoriale par type de logement et typologie)
+# 6.1.1 Développement résidentiel récent (répartition territoriale par type de logement et typologie)
 
 ```{r s_6_1_1, include = FALSE}
 

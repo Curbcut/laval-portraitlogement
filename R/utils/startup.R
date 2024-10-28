@@ -22,10 +22,11 @@ source(here::here("R/utils/interpolation.R"))
 # loadfonts(device = "win", quiet = TRUE)
 # windowsFonts(`KMR Apparat Regular`=windowsFont(font_local_name))
 # font_local_name %in% names(windowsFonts())
-font_add(family = "KMR Apparat Regular", regular = here::here("data/fonts/KMR-Apparat-Regular.ttf"))
-font_add(family = "KMR-Apparat-Regular", regular = here::here("data/fonts/KMR-Apparat-Regular.ttf"))
+tryCatch({
+  font_add(family = "KMR Apparat Regular", regular = here::here("data/fonts/KMR-Apparat-Regular.ttf"))
+  font_add(family = "KMR-Apparat-Regular", regular = here::here("data/fonts/KMR-Apparat-Regular.ttf"))
+}, error = function(e) cat("Fonts didn't load"))
 showtext_auto()
-
 
 font_local_name <- "KMR Apparat Regular"
 

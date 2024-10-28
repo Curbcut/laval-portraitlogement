@@ -1,5 +1,13 @@
+---
+title: "Méthodologie"
+author: "Curbcut"
+output: html_document
+---
+
 note sur aggrégation census: https://www12.statcan.gc.ca/census-recensement/2011/dp-pd/prof/help-aide/N2.cfm?Lang=F
 
 expliquer les échelles territoriales
 
 interpolation
+
+distictrs électoraux de 2021
