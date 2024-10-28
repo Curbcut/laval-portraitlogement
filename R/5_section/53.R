@@ -14,6 +14,7 @@ commute16v <- c("total" = "v_CA16_5777",
                 "diffcsd_diffcd" = "v_CA16_5786", 
                 "diff_prov" = "v_CA16_5789")
 
+
 #Creating a function to grab data for commute destination and to calculate new vectors to be used
 commute_grabber <- function(dyear, cvector, cyear){
   get_census(dataset = dyear, 
@@ -231,12 +232,14 @@ map_5_3_3 <- ggplot(data = res_aines) +
 ggsave(plot = map_5_3_3, "outputs/5/map_5_3_3_res_aines.pdf", width = 7.5, height = 6)
 
 # Table
-persones_ages <- get_census(dataset = "CA21",
+persones_ages_census <- get_census(dataset = "CA21",
                             regions = list(CSD = 2465005),
                             level = "CSD",
                             vectors = c("v_CA21_290", "v_CA21_308", "v_CA21_326"))
 
-persones_ages <- rowSums(persones_ages[c(11:13)], )
+persones_ages <- rowSums(persones_ages_census[c(11:13)], )
+deficit <- convert_number_noround(persones_ages - sum(res_aines$places))
+persones_ages_pct <- convert_pct(persones_ages / persones_ages_census$Population)
 persones_ages <- convert_number_noround(persones_ages)
 
 
@@ -303,6 +306,19 @@ cor_aines_rpa <- gsub("\\.", ",", cor_aines_rpa)
 
 places_rpa <- convert_number_noround(sum(res_aines$places))
 
+
+household_maintainer <-   get_census(dataset = "CA21", 
+                                     regions = list(CSD = 2465005), 
+                                     level = "CSD",
+                                     vectors = c("75-85" = "v_CA21_4286",
+                                                 "85+" = "v_CA21_4287",
+                                                 "maintainers" = "v_CA21_4279"))
+household_maintainer$`75+` <- household_maintainer$`75-85` + household_maintainer$`85+`
+seventyfiveplus_households <- convert_number_noround(household_maintainer$`75+`)
+household_maintainer$seventyfive_pct <- household_maintainer$`75+` / household_maintainer$maintainers
+seventyfiveplus_households_pct <- convert_pct(household_maintainer$seventyfive_pct)
+
+
 # 5.3.4 -------------------------------------------------------------------
 
 # 5.3.5 -------------------------------------------------------------------
@@ -320,5 +336,6 @@ qs::qsavem(emploi_outside_CSD_2016, emploi_outside_CSD, emploi_within_CSD_2016,
            emploi_within_CSD,
            emploi_place_atwork_2001, emploi_place_atwork_2016, emploi_place_atwork,
            emploi_place_home_2016, emploi_place_home, res_aines_table, map_5_3_3,
-           persones_ages, cor_aines_rpa, places_rpa,
+           persones_ages, cor_aines_rpa, places_rpa, seventyfiveplus_households,
+           seventyfiveplus_households_pct, persones_ages_pct, deficit,
            file = "data/section_5_3.qsm")

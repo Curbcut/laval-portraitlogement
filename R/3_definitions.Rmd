@@ -12,4 +12,5 @@ Logement social
 Logement abordable
 Logement lucratif
 Logement non lucratif
-Ménage à faible revenu
+Ménage à faible revenu (MFR-ApI) : selon les tailles de ménage
+Taux d'effort

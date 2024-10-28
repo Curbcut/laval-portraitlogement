@@ -13,7 +13,7 @@ qs::qload(here::here("data", "section_5_4.qsm"))
 
 _Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
 
-Pour calculer la mixité sociale, nous avons utilisé des données du recensement pour cinq grandes dimensions : les catégories socioprofessionnelles, les origines ethniques et culturelles, les tranches d'âge, les niveaux de revenu et les niveaux d'éducation.
+Pour évaluer la mixité sociale, nous avons utilisé cinq grandes dimensions des données du recensement : les catégories socioprofessionnelles, les origines ethniques et culturelles, les tranches d'âge, les niveaux de revenu et les niveaux d'éducation.
 
 - Définition: Mixité sociale
   - La mixité (parfois appelée diversité) sociale réfère à la présence simultanée ou la cohabitation, en un même secteur géographique, de personnes appartenant à des catégories socioprofessionnelles, à des cultures, à des nationalités, à des tranches d'âge différentes. Cette notion, appliquée à un milieu de vie (un quartier par exemple), suppose une forme d'hétérogénéité en opposition avec des milieux de vie homogènes destinés à une proportion restreinte de la population (communauté ou classe sociale précise).^[Collectivitesviables.org. (2024). Mixité sociale. Récupéré de https://collectivitesviables.org/sujets/mixite-sociale/]
