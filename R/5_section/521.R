@@ -213,7 +213,7 @@ new_prices <-
     2023, 801000, 909000, 999000, 1096000, 970000, 1065369, 82) |> 
   mutate(ratio_80_20 = p80 / p20)
 
-plot_5_2_1_percentiles <-
+plot_5_2_1_1_percentiles <-
   new_prices |> 
   pivot_longer(c(p20, p40, median, p60, p80)) |> 
   mutate(name = case_when(
@@ -235,7 +235,7 @@ plot_5_2_1_percentiles <-
     "Average annual price for absorbed homeowner and condominimum units") +
   graph_theme
 
-plot_5_2_1_units <-
+plot_5_2_1_1_units <-
   new_prices |> 
   ggplot(aes(year, units)) +
   geom_line() +
@@ -246,18 +246,7 @@ plot_5_2_1_units <-
     graph_theme
 
 
-
-
-# 5.2.1.2 -----------------------------------------------------------------
-
-# 5.2.1.3 -----------------------------------------------------------------
-
-# 5.2.1.4 -----------------------------------------------------------------
-
-# 5.2.1.5 -----------------------------------------------------------------
-
-
-# 5.2.1.6 Loyer moyen des logements locatifs selon le nombre de ch --------
+# 5.2.1.2 Loyer moyen des logements locatifs selon le nombre de ch --------
 
 rent_by_bedroom <- 
   map(1990:2023, \(x) {
@@ -291,7 +280,7 @@ rent_by_bedroom <-
   rent_by_bedroom |> 
   bind_rows(rent_by_bedroom_z)
 
-plot_5_2_1_6_facet <-
+plot_5_2_1_2_facet <-
   rent_by_bedroom |> 
   filter(is.na(zone)) |>
   ggplot(aes(year, value, group = bedroom)) +
@@ -301,11 +290,9 @@ plot_5_2_1_6_facet <-
   scale_x_continuous("Year") +
   facet_wrap(~bedroom) +
   ggtitle("Average monthly rent for purpose-built rentals, by bedroom type") +
-  theme_minimal() +
-  theme(legend.position = "bottom") +
   graph_theme
 
-plot_5_2_1_6_change_facet <-
+plot_5_2_1_2_change_facet <-
   rent_by_bedroom |> 
     arrange(zone, bedroom, year) |> 
   mutate(value = slider::slide_dbl(value, \(x) x[2] - x[1], .before = 1, 
@@ -321,13 +308,10 @@ plot_5_2_1_6_change_facet <-
   facet_wrap(~bedroom) +
   ggtitle(
       "Year-over-year change in average monthly rent for purpose-built rentals, by bedroom type") +
-  theme_minimal() +
-  theme(legend.position = "bottom") +
   graph_theme
 
-
 # Table with 5-year aggregations
-table_5_2_1_6_five_year <- 
+table_5_2_1_2_five_year <- 
   rent_by_bedroom |> 
   filter(is.na(zone)) |>
   mutate("Date Range" = case_when(
@@ -347,7 +331,7 @@ table_5_2_1_6_five_year <-
   gt::tab_header("Average monthly rent for purpose-built rentals by bedroom type")
 
 # Map of average rents by five-year chunk
-map_5_2_1_6_annual <-
+map_5_2_1_2_annual <-
   rent_by_bedroom |> 
   filter(!is.na(zone)) |>
   mutate(date = case_when(
@@ -358,13 +342,13 @@ map_5_2_1_6_annual <-
   inner_join(cmhc_zones) |> 
   st_as_sf() |> 
   ggplot(aes(fill = avg)) +
-  geom_sf(colour = "white", lwd = 0.5) +
+  gg_cc_tiles +
+  geom_sf(colour = "transparent", lwd = 0) +
   facet_grid(rows = vars(bedroom), cols = vars(date)) +
-  scale_fill_viridis_b("Average monthly rent", labels = scales::dollar, 
-                       n.breaks = 6) +
-  theme_void() +
-  theme(legend.position = "bottom",
-        legend.key.width = unit(60, "points"))
+
+  scale_fill_stepsn("Average monthly rent", labels = scales::dollar, 
+                    colours = curbcut_colors$left_5$fill[2:6]) +
+  gg_cc_theme
 
 rent_by_construction <- 
   map(1990:2023, \(x) {
@@ -398,7 +382,7 @@ rent_by_construction <-
   rent_by_construction |> 
   bind_rows(rent_by_construction_z)
 
-plot_5_2_1_6_construction_facet <-
+plot_5_2_1_2_construction_facet <-
   rent_by_construction |> 
   filter(is.na(zone), !is.na(value)) |>
   ggplot(aes(year, value, group = construction)) +
@@ -409,12 +393,10 @@ plot_5_2_1_6_construction_facet <-
   facet_wrap(~construction) +
   ggtitle(
     "Average monthly rent for purpose-built rentals, by year of construction") +
-  theme_minimal() +
-  theme(legend.position = "bottom") +
   graph_theme
 
 # Table with 5-year aggregations
-table_5_2_1_6_construction_five_year <- 
+table_5_2_1_2_construction_five_year <- 
   rent_by_construction |> 
   filter(is.na(zone), !is.na(value)) |>
   mutate("Date Range" = case_when(
@@ -434,29 +416,8 @@ table_5_2_1_6_construction_five_year <-
   gt::tab_header(
     "Average monthly rent for purpose-built rentals by year of construction")
 
-# Map of average rents by five-year chunk
-map_5_2_1_6_construction_annual <-
-  rent_by_construction |> 
-  filter(!is.na(zone)) |>
-  mutate(date = case_when(
-    year >= 2019 ~ "2019-2023",
-    year >= 2014 ~ "2014-2018",
-    year >= 2010 ~ "2009-2013")) |> 
-  summarize(avg = mean(value, na.rm = TRUE), 
-            .by = c(date, zone, construction)) |> 
-  inner_join(cmhc_zones) |> 
-  st_as_sf() |> 
-  ggplot(aes(fill = avg)) +
-  geom_sf(colour = "white", lwd = 0.5) +
-  facet_grid(rows = vars(construction), cols = vars(date)) +
-  scale_fill_viridis_b("Average monthly rent", labels = scales::dollar, 
-                       n.breaks = 6) +
-  theme_void() +
-  theme(legend.position = "bottom",
-        legend.key.width = unit(60, "points"))
 
-
-# 5.2.1.7 Taux d'inoccupation ---------------------------------------------
+# 5.2.1.3 Taux d'inoccupation ---------------------------------------------
 
 vacancy_by_bedroom <- 
   map(1990:2023, \(x) {
@@ -782,11 +743,11 @@ plot_6_1_12_year_unit <-
 # Save --------------------------------------------------------------------
 
 qs::qsavem(#prix_sur_marche_table, 
-  new_prices, plot_5_2_1_percentiles, plot_5_2_1_units,
-  rent_by_bedroom, plot_5_2_1_6_facet, plot_5_2_1_6_change_facet,
-  table_5_2_1_6_five_year, map_5_2_1_6_annual, rent_by_construction,
-  plot_5_2_1_6_construction_facet, table_5_2_1_6_construction_five_year, 
-  map_5_2_1_6_construction_annual, vacancy_by_bedroom, vacancy_by_rent, 
+  new_prices, plot_5_2_1_1_percentiles, plot_5_2_1_1_units,
+  rent_by_bedroom, plot_5_2_1_2_facet, plot_5_2_1_2_change_facet,
+  table_5_2_1_2_five_year, map_5_2_1_2_annual, rent_by_construction,
+  plot_5_2_1_2_construction_facet, table_5_2_1_2_construction_five_year, 
+  vacancy_by_bedroom, vacancy_by_rent, 
   plot_5_2_1_7_facet, table_5_2_1_7_five_year, map_5_2_1_7_annual, 
   plot_5_2_1_7_rent_facet, table_5_2_1_7_rent_five_year, 
   map_5_2_1_7_rent_annual, plot_5_2_1_7_construction_facet, 
