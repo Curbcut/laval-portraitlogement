@@ -13,7 +13,7 @@ qs::qload(here::here("data", "section_5_2_1.qsm"))
 
 # 5.2.1.1 Sur le marché de la propriété (Prix médian par typologie et secteur Lavallois)
 
-_Source: Statistiques immobilières. (2024). Centris.  Récupéré au https://www.centris.ca/fr/outils/statistiques-immobilieres_
+_Sources: Statistiques immobilières. (2024). Centris.  Récupéré au https://www.centris.ca/fr/outils/statistiques-immobilieres. TKTK CMHC Market Absorption Survey_
 
 Les prix médians des propriétés à Laval varient significativement en fonction du secteur, du type de logement et du nombre de chambres à coucher (entre autres), avec des écarts marqués entre les unifamiliales, les copropriétés et les plex (2 à 5 logements). En ce qui concerne les maisons unifamiliales, le secteur de Sainte-Dorothée affiche le prix médian le plus élevé, atteignant 665 000 \$, suivi de Duvernay avec 630 000 \$. À l'inverse, le secteur de Laval-Ouest enregistre le prix médian le plus bas à 449 500 \$. Pour les copropriétés, les prix médians sont plus accessibles, notamment à Laval-des-Rapides où le prix médian est de 340 000 \$, tandis qu'à Sainte-Dorothée, il atteint 418 000 \$. Les plex, bien que présents en plus faible volume, affichent des prix médians élevés, en particulier dans les secteurs de Chomedey (797 500 \$) et Laval-des-Rapides (739 500 \$).
 
@@ -21,7 +21,7 @@ Les prix médians des propriétés à Laval varient significativement en fonctio
 # prix_sur_marche_table
 ```
 
-
+La SCHL recueille des données sur les prix de vente des logements neufs en propriété et en copropriété. Selon ces données, Laval a connu des augmentations annuelles remarquablement constantes des prix des logements neufs depuis les années 1990. En 1998, le prix de vente moyen d’un logement nouvellement absorbé était de 133 508 $, tandis qu'en 2023, il atteignait 1 065 369 $, soit une augmentation de 698 %. Au fil du temps, le segment haut de gamme du marché a enregistré des hausses de prix proportionnellement plus rapides que le segment bas de gamme. En 1998, le prix de vente de l’unité nouvellement absorbée du 80e centile était 48 % plus élevé que celui de l’unité du 20e centile, alors qu’en 2020, cet écart était passé à 74 %. (Les trois années suivantes ont vu ce ratio diminuer, mais la volatilité de la tendance rend difficile de déterminer si cela reflète un changement durable des conditions du marché.)
 
 
 
@@ -41,7 +41,7 @@ ratios <-
 
 ```
 
-_Data source: CMHC Market Absorption Survey_
+_Data source: _
 
 CMHC collects data on the selling prices of newly absorbed homeowner and condominium units. According to this data, Laval has seen remarkably consistent annual increases in new housing prices since the 1990s. In 1998, the average selling price of a newly absorbed unit was `r scales::dollar(new_prices$average[1])`, while in 2023 it was `r scales::dollar(new_prices$average[26])`--an increase of `r scales::percent(new_prices$average[26] / new_prices$average[1] - 1)`. Over time, the high-end of the market has seen faster proportionate price increases than the low end of the market. In 1998, the 80th-percentile newly absorbed unit sold for `r ratios[1]` more than the 20th-percentile unit, while in 2020 it was `r ratios[2]`. (The subsequent three years have seen this ratio decline again, but the volatility of the trend makes it too soon to know if that reflects a substantive shift in market conditions.)
 
