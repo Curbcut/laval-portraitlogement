@@ -288,7 +288,7 @@ table_6_1_2_five_year <-
   gt::tab_header("Average annual housing starts by dwelling type")
 
 # Comparison of long-term residential start trends by building type
-plot_6_1_2_type <- 
+plot_6_1_2_type <-
   starts_by_type |> 
   filter(is.na(zone)) |>
   filter(type != "All") |>
@@ -296,9 +296,10 @@ plot_6_1_2_type <-
   geom_line() +
   scale_y_continuous("Starts") +
   scale_x_continuous("Year") +
-  scale_colour_discrete("Dwelling type") +
+  scale_colour_manual("Dwelling type", 
+                      values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
   ggtitle("Annual housing starts by dwelling type") +
-  theme_minimal() +
+  graph_theme
   theme(legend.position = "bottom")
 
 # Variation with between-type difference emphasized
@@ -313,7 +314,8 @@ plot_6_1_2_type_facet <-
   gghighlight::gghighlight(use_direct_label = FALSE) +
   scale_y_continuous("Starts") +
   scale_x_continuous("Year") +
-  scale_colour_discrete("Dwelling type") +
+  scale_colour_manual("Dwelling type", 
+                      values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
   facet_wrap(~type) +
   ggtitle(
     "Annual housing starts by dwelling type (five-year moving average)") +

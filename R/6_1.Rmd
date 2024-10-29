@@ -91,13 +91,49 @@ map_6_1_1_annual
 ```{r s_6_1_2, include = FALSE}
 
 # Min and max 5-year avg
-start_min_max <- 
+starts_maxima <- 
   starts_by_type |> 
   filter(is.na(zone)) |>
   filter(type == "All") |> 
   mutate(value_trend = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
-         .by = type) |>
-  filter(value_trend %in% c(min(value_trend), max(value_trend)))
+         .by = type) |> 
+  mutate(
+    max = slider::slide_lgl(
+      value_trend, \(x) all(x[3] >= x, na.rm = TRUE), .before = 2, .after = 2),
+    min = slider::slide_lgl(
+      value_trend, \(x) all(x[3] <= x, na.rm = TRUE), .before = 2, .after = 2)) |> 
+  filter(max | min) |> 
+  mutate(max = if_else(year == min(year), TRUE, max),
+         min = if_else(year == min(year), FALSE, min),
+         max = if_else(year == max(year), FALSE, max),
+         min = if_else(year == max(year), TRUE, min)) |> 
+  mutate(value_trend = scales::comma(value_trend, 1)) |> 
+  filter(max)
+
+starts_minima <- 
+  starts_by_type |> 
+  filter(is.na(zone)) |>
+  filter(type == "All") |> 
+  mutate(value_trend = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
+         .by = type) |> 
+  mutate(
+    max = slider::slide_lgl(
+      value_trend, \(x) all(x[3] >= x, na.rm = TRUE), .before = 2, .after = 2),
+    min = slider::slide_lgl(
+      value_trend, \(x) all(x[3] <= x, na.rm = TRUE), .before = 2, .after = 2)) |> 
+  filter(max | min) |> 
+  mutate(max = if_else(year == min(year), TRUE, max),
+         min = if_else(year == min(year), FALSE, min),
+         max = if_else(year == max(year), FALSE, max),
+         min = if_else(year == max(year), TRUE, min)) |> 
+  mutate(value_trend = scales::comma(value_trend, 1)) |> 
+  filter(min)
+
+max_years <- paste(paste(starts_maxima$year[1:2], collapse = ", "), starts_maxima$year[3], sep = " and ")
+max_vals <- paste(paste(starts_maxima$value_trend[1:2], collapse = ", "), starts_maxima$value_trend[3], sep = " and ")
+
+min_years <- paste(paste(starts_minima$year[1:2], collapse = ", "), starts_minima$year[3], sep = " and ")
+min_vals <- paste(paste(starts_minima$value_trend[1:2], collapse = ", "), starts_minima$value_trend[3], sep = " and ")
 
 # Start % in Chomedey/Sainte-Dorothée
 start_pct <- 
@@ -118,7 +154,7 @@ starts_21_23 <-
 
 _Data source: CMHC Starts and Completions Survey._
 
-From the mid-1990s through 2010, the number of annual housing starts in Laval was increasing steadily, albeit with some year-to-year fluctuation. Since 2010, however, the trend has reversed, and a five-year moving average of starts shows a clear decline over the last 15 years. The five-year period with the most completions has been `r paste0(start_min_max$year[1] - 2, "-", start_min_max$year[1] + 2)`, when there was an average of `r start_min_max$value_trend[1]` housing units started each year. By contrast, in the period `r paste0(start_min_max$year[2] - 2, "-", start_min_max$year[2] - 2)` only `r start_min_max$value_trend[2]` housing units were started on average each year.
+Since 1990, housing starts in Laval have varied cyclically, with three distinct peaks and troughs. Rolling five-year averages of housing starts peaked in `r max_years` at `r max_vals` respectively, and bottomed out at `r min_years` at `r min_vals` respectively. (However, although 2023 saw a recent low in housing starts, it is likely that the five-year average will continue to decline for the next several years, given the fact that only `r scales::comma(starts_minima$value[3], 1)`) housing units were initiated in 2023.
 
 ```{r plot_6_1_2_overall}
 plot_6_1_2_overall
@@ -128,11 +164,7 @@ plot_6_1_2_overall
 table_6_1_2_five_year
 ```
 
-Prior to 2000, most newly initated housing projects in Laval comprised single-family homes, with some semi-detached homes also being constructed particularly in the early 1990s. However, since 2000, there has been a substantial shift away from single-detached homes and towards apartments. Annual single-family housing starts peaked in 2003 and have been declining every year since (albeit with minor fluctuations). By contrast, since 2000 apartment starts have surged. On the one hand, apartment projects have been steadily increasing as a proportion of total starts. In 2023, in fact, every single housing start was for an apartment project. On the other hand, the absolute number of housing starts—apartments included—has been declining. Over the last three years (2021-2023), there have only been `r starts_21_23` housing units initiated in Laval. The implication is that housing completions will soon catch up to this trend, and that very few housing units will be added to the City's total housing stock in the next few years. 
-
-```{r plot_6_1_2_type}
-plot_6_1_2_type
-```
+Prior to 2000, most newly initated housing projects in Laval comprised single-family homes, with some semi-detached homes also being constructed particularly in the early 1990s. However, since 2000, there has been a substantial shift away from single-detached homes and towards apartments. Annual single-family housing starts peaked in 2003 and have been declining every year since (albeit with minor fluctuations). By contrast, since 2000 apartment starts have surged. On the one hand, apartment projects have been steadily increasing as a proportion of total starts. Every year since 2005, apartment projects have been a majority of all housing starts, and every year since 2015 they have been three quarters or more of all starts. On the other hand, the absolute number of housing starts—apartments included—has been declining. Over the last three years (2021-2023), there have only been `r starts_21_23` housing units initiated in Laval. The implication is that housing completions will soon catch up to this trend, and that very few housing units will be added to the City's total housing stock in the next few years. 
 
 ```{r plot_6_1_2_type_facet}
 plot_6_1_2_type_facet
