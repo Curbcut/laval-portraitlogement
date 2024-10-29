@@ -632,7 +632,7 @@ plot_5_2_1_3_construction_facet <-
   graph_theme
 
 
-# 6.1.12 Valeur foncière --------------------------------------------------
+# 5.2.1.4 Valeur foncière (secteur lucratif, secteur non lucratif) --------
 
 # Get UEF
 uef <-
@@ -664,7 +664,7 @@ fst <-
   filter(CFSAUID %in% uef$FST) |> 
   rename(FST = CFSAUID)
 
-map_6_1_12 <- 
+map_5_2_1_4 <- 
   uef |> 
   summarize(`Per property` = mean(value),
             `Per unit` = sum(value) / sum(units),
@@ -675,15 +675,14 @@ map_6_1_12 <-
   st_as_sf() |> 
   st_filter(laval_sectors) |> 
   ggplot(aes(fill = value)) +
+  # gg_cc_tiles +
   geom_sf() +
-  scale_fill_viridis_b("Average assessed value", 
-                       n.breaks = 6, labels = scales::dollar) +
+  scale_fill_stepsn("Average assessed value", colours = curbcut_colors$left_5$fill[2:6]) +
   facet_wrap(~name) +
   ggtitle("Average assessed property value by forward sortation area (2019)") +
-  theme_void() +
-  theme(legend.position = "bottom", legend.key.width = unit(60, "points"))
+  gg_cc_theme
 
-plot_6_1_12_boxplot <- 
+plot_5_2_1_4_boxplot <- 
   uef |> 
   mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
   mutate(`Per unit` = value / units) |> 
@@ -694,9 +693,9 @@ plot_6_1_12_boxplot <-
   facet_wrap(~name) +
   scale_y_continuous("Assessed value", labels = scales::dollar) +
   scale_x_discrete("Property type") +
-  theme_minimal()
+  graph_theme
 
-plot_6_1_12_year_property <-
+plot_5_2_1_4_year_property <-
   uef |> 
   mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
   summarize(n = n(), value = mean(value), .by = c(year_built, type)) |> 
@@ -710,10 +709,9 @@ plot_6_1_12_year_property <-
   scale_x_continuous("Year of construction") +
   scale_size_area("Number of properties") +
   ggtitle("Average annual per-property assessed value by property type") +
-  theme_minimal() +
-  theme(legend.position = "bottom")
+  graph_theme
 
-plot_6_1_12_year_unit <- 
+plot_5_2_1_4_year_unit <- 
   uef |> 
   mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
   summarize(n = sum(units), value = sum(value) / sum(units), 
@@ -728,8 +726,7 @@ plot_6_1_12_year_unit <-
   scale_x_continuous("Year of construction") +
   scale_size_area("Number of properties") +
   ggtitle("Average annual per-unit assessed value by property type") +
-  theme_minimal() +
-  theme(legend.position = "bottom")
+  graph_theme
 
 
 # Save --------------------------------------------------------------------
@@ -743,6 +740,6 @@ qs::qsavem(#prix_sur_marche_table,
   plot_5_2_1_3_facet, table_5_2_1_3_five_year, map_5_2_1_3_annual, 
   plot_5_2_1_3_rent_facet, table_5_2_1_3_rent_five_year, 
   map_5_2_1_3_rent_annual, plot_5_2_1_3_construction_facet, 
-  uef, map_6_1_12, plot_6_1_12_boxplot, plot_6_1_12_year_property, 
-  plot_6_1_12_year_unit, 
+  uef, map_5_2_1_4, plot_5_2_1_4_boxplot, plot_5_2_1_4_year_property, 
+  plot_5_2_1_4_year_unit, 
   file = "data/section_5_2_1.qsm")

@@ -168,44 +168,56 @@ From 2012 through 2017 (CMHC does not have earlier data), there was very little 
 plot_5_2_1_3_rent_facet
 ```
 
-```{r table_5_2_1_7_rent_five_year}
-table_5_2_1_7_rent_five_year
+```{r table_5_2_1_3_rent_five_year}
+table_5_2_1_3_rent_five_year
 ```
 
-```{r plot_5_2_1_7_construction_facet}
-plot_5_2_1_7_construction_facet
+```{r plot_5_2_1_3_construction_facet}
+plot_5_2_1_3_construction_facet
 ```
 
 High vacancy rates among newly constructed and high-rent apartment buildings are particularly noticeable in the Chomedey/Sainte-Dorothée zone, where there are not only an over-representation of this type of renetal unit, but where the vacancy rate within this submarket is higher than elsewhere in the city. This suggests that a spatial equilibrium in rental supply and demand has not been reached with newly constructed rental units. New rental units are coming on to the market disproportionately in Chomedey/Sainte-Dorothée (as we discuss in section 6.1), at high rents, and are remaining vacant at much higher than expected rates. Meanwhile, elsewhere in the city the vacancy rate for older and more modestly priced rental units is historically low. If this pattern continues into the future, a softening in rents in newer buildings in Chomedey/Sainte-Dorothée should be expected, alongside continued high rates of rent growth in other buildings.
 
-```{r map_5_2_1_7_rent_annual}
-map_5_2_1_7_rent_annual
+```{r map_5_2_1_3_rent_annual}
+map_5_2_1_3_rent_annual
 ```
 
+# 5.2.1.4 Valeur foncière (secteur lucratif, secteur non lucratif)
 
-# 5.2.1.8 Valeur foncière (secteur lucratif, secteur non lucratif)
+```{r s_5_2_1_4, include = FALSE}
+
+# 80-20 ratios
+uef_values <- 
+  uef |> 
+  mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
+  summarize(per_property = mean(value),
+            per_unit = sum(value) / sum(units),
+            .by = type) |> 
+  mutate(across(-type, scales::dollar))
+
+```
 
 _Data source: Unité d'evaluation foncière_
 
 In 2019, the average assessed value of a residential property in Laval was `r scales::dollar(mean(uef$value))`. In both per-property and per-unit terms, detached homes had the highest average assessed value (`r uef_values$per_property[1]` per property, and `r uef_values$per_unit[1]` per unit), followed by "jumelé" (`r uef_values$per_property[2]` per property, and `r uef_values$per_unit[2]` per unit), then "en rangée" (`r uef_values$per_property[4]` per property, and `r uef_values$per_unit[4]` per unit), and finally "intégré" (`r uef_values$per_property[3]` per property, and `r uef_values$per_unit[3]` per unit).
 
-```{r plot_6_1_12_boxplot}
-plot_6_1_12_boxplot
+```{r plot_5_2_1_4_boxplot}
+plot_5_2_1_4_boxplot
 ```
 
 All property types display a clear positive relationship between construction date and assessed value; newer properties have higher assessed values on average, although the relationship is stronger in per-property terms than in per-unit terms.
 
-```{r plot_6_1_12_year_property}
-plot_6_1_12_year_property
+```{r plot_5_2_1_4_year_property}
+plot_5_2_1_4_year_property
 ```
 
-```{r plot_6_1_12_year_unit}
-plot_6_1_12_year_unit
+```{r plot_5_2_1_4_year_unit}
+plot_5_2_1_4_year_unit
 ```
 
 In general, assessed property values are higher in the south-western part of the city and lower in the north east. However, in per-square-foot terms, it is actually the central part of the city (H9B postal codes) where assessed values are highest.
 
-```{r map_6_1_12}
-map_6_1_12
+```{r map_5_2_1_4}
+map_5_2_1_4
 ```
 
