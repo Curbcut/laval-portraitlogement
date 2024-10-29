@@ -124,7 +124,7 @@ old_low_2023 <- scales::dollar(rent_years[2])
 old_high_2023 <- scales::dollar(rent_years[1])
 ```
 
-Rents have risen particularly quickly in new buildings. While the average rent in 2023 reached `r new_2023` in buildings constructed in the year 2000 or later, the equivalent figure was between `r old_low_2023` and `r old_high_2023` in buildings constructed before 2000. This gap has been present since the beginning of the time series (1990), but it has widened substantially since 2020, when the rents in new construction skyrocketed relative to other construction dates.
+Rents have risen particularly quickly in new buildings. While the average rent in 2023 reached `r new_2023` in buildings constructed in the year 2000 or later, the equivalent figure was between `r old_low_2023` and `r old_high_2023` in buildings constructed before 2000. This gap has been present since the beginning of the time series (1990), but it has widened substantially since 2020, when the rents in new (i.e. 2000 or later) construction skyrocketed relative to other construction dates.
 
 ```{r plot_5_2_1_2_construction_facet}
 plot_5_2_1_2_construction_facet
@@ -148,24 +148,24 @@ The evolution of the vacancy rate in purpose-built rental buildings since 1990 i
 
 Vacancy rates have consistently been higher for smaller bedroom types—bachelor and one-bedroom apartments—and lower for family-sized units with two or more bedrooms. In fact, the vacancy rate for three-and-more-bedroom apartments in the last five years (2019-2023) was only `r three_br_vacancy`.
 
-```{r plot_5_2_1_7_facet}
-plot_5_2_1_7_facet
+```{r plot_5_2_1_3_facet}
+plot_5_2_1_3_facet
 ```
 
-```{r table_5_2_1_7_five_year}
-table_5_2_1_7_five_year
+```{r table_5_2_1_3_five_year}
+table_5_2_1_3_five_year
 ```
 
 Over the last five years, the vacancy rate has been particularly low in the central part of the city: the Laval-des-Rapides and Vimont/Auteuil zones. The somewhat higher vacancy rate in the Chomedey/Sainte-Dorothée zone is likely a compositional effect of higher-rent units in that zone, as we explore momentarily.
 
-```{r map_5_2_1_7_annual}
-map_5_2_1_7_annual
+```{r map_5_2_1_3_annual}
+map_5_2_1_3_annual
 ```
 
 From 2012 through 2017 (CMHC does not have earlier data), there was very little difference in the vacancy when broken down among different rent levels. For example, from 2012-2015, all four quartiles of rent had vacancy rates between 2.2% and 2.7%. From 2018 onwards, however, high rent buildings have diverged from the others. The vacancy rate among top-quartile buildings has increased substantially—to an average of 5.5% in 2020-2023—at the same time as the vacancy rate among the other three quartiles has remained steady or even decreased. This pattern suggests that demand for higher-end rentals has slackened, and further analysis suggests it is specifically newly-constructed rental buildings which have seen vacancy rates climb.
 
-```{r plot_5_2_1_7_rent_facet}
-plot_5_2_1_7_rent_facet
+```{r plot_5_2_1_3_rent_facet}
+plot_5_2_1_3_rent_facet
 ```
 
 ```{r table_5_2_1_7_rent_five_year}

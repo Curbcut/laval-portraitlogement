@@ -451,7 +451,7 @@ vacancy_by_bedroom <-
   vacancy_by_bedroom |> 
   bind_rows(vacancy_by_bedroom_z)
 
-plot_5_2_1_7_facet <-
+plot_5_2_1_3_facet <-
   vacancy_by_bedroom |> 
   filter(is.na(zone), !is.na(value)) |>
   ggplot(aes(year, value / 100, group = bedroom)) +
@@ -461,12 +461,10 @@ plot_5_2_1_7_facet <-
   scale_x_continuous("Year") +
   facet_wrap(~bedroom) +
   ggtitle("Vacancy rate for purpose-built rentals, by bedroom type") +
-  theme_minimal() +
-  theme(legend.position = "bottom") +
   graph_theme
 
 # Table with 5-year aggregations
-table_5_2_1_7_five_year <- 
+table_5_2_1_3_five_year <- 
   vacancy_by_bedroom |> 
   filter(is.na(zone)) |>
   mutate("Date Range" = case_when(
@@ -487,7 +485,7 @@ table_5_2_1_7_five_year <-
   gt::tab_header("Vacancy rate for purpose-built rentals by bedroom type")
 
 # Map of vacancy rate by five-year chunk
-map_5_2_1_7_annual <-
+map_5_2_1_3_annual <-
   vacancy_by_bedroom |> 
   filter(!is.na(zone)) |>
   mutate(date = case_when(
@@ -499,13 +497,11 @@ map_5_2_1_7_annual <-
   inner_join(cmhc_zones) |> 
   st_as_sf() |> 
   ggplot(aes(fill = avg)) +
-  geom_sf(colour = "white", lwd = 0.5) +
+  gg_cc_tiles +
+  geom_sf(colour = "transparent", lwd = 0) +
   facet_grid(rows = vars(bedroom), cols = vars(date)) +
-  scale_fill_viridis_b("Vacancy rate", labels = scales::percent, 
-                       n.breaks = 6) +
-  theme_void() +
-  theme(legend.position = "bottom",
-        legend.key.width = unit(60, "points"))
+  scale_fill_stepsn("Vacancy rate", colours = curbcut_colors$left_5$fill[2:6]) +
+  gg_cc_theme
 
 vacancy_by_rent <- 
   map(1990:2023, \(x) {
@@ -542,7 +538,7 @@ vacancy_by_rent <-
   mutate(quartile = str_remove(quartile, "Vacancy Rate \\("),
          quartile = str_remove(quartile, "\\)"))
 
-plot_5_2_1_7_rent_facet <-
+plot_5_2_1_3_rent_facet <-
   vacancy_by_rent |> 
   filter(is.na(zone), !is.na(value)) |>
   ggplot(aes(year, value / 100, group = quartile)) +
@@ -552,12 +548,10 @@ plot_5_2_1_7_rent_facet <-
   scale_x_continuous("Year") +
   facet_wrap(~quartile) +
   ggtitle("Vacancy rate for purpose-built rentals, by rent quartile") +
-  theme_minimal() +
-  theme(legend.position = "bottom") +
   graph_theme
 
 # Table with 5-year aggregations
-table_5_2_1_7_rent_five_year <-
+table_5_2_1_3_rent_five_year <-
   vacancy_by_rent |> 
   filter(is.na(zone)) |>
   mutate("Date Range" = case_when(
@@ -573,7 +567,7 @@ table_5_2_1_7_rent_five_year <-
   gt::tab_header("Vacancy rate for purpose-built rentals by bedroom type")
 
 # Map of vacancy rate by five-year chunk
-map_5_2_1_7_rent_annual <-
+map_5_2_1_3_rent_annual <-
   vacancy_by_rent |> 
   filter(!is.na(zone)) |>
   mutate(date = case_when(
@@ -585,13 +579,11 @@ map_5_2_1_7_rent_annual <-
   inner_join(cmhc_zones) |> 
   st_as_sf() |> 
   ggplot(aes(fill = avg)) +
-  geom_sf(colour = "white", lwd = 0.5) +
+  gg_cc_tiles + 
+  geom_sf(colour = "transparent", lwd = 0) +
   facet_grid(rows = vars(quartile), cols = vars(date)) +
-  scale_fill_viridis_b("Vacancy rate", labels = scales::percent, 
-                       n.breaks = 6) +
-  theme_void() +
-  theme(legend.position = "bottom",
-        legend.key.width = unit(60, "points"))
+  scale_fill_stepsn("Vacancy rate", colours = curbcut_colors$left_5$fill[2:6]) +
+  gg_cc_theme
 
 vacancy_by_construction <- 
   map(1990:2023, \(x) {
@@ -625,9 +617,11 @@ vacancy_by_construction <-
   vacancy_by_construction |> 
   bind_rows(vacancy_by_construction_z)
 
-plot_5_2_1_7_construction_facet <-
+plot_5_2_1_3_construction_facet <-
   vacancy_by_construction |> 
   filter(is.na(zone), !is.na(value)) |>
+  mutate(construction = factor(construction, levels = c(
+    "Before 1960", "1960 - 1979", "1980 - 1999", "2000 or Later", "Total"))) |>
   ggplot(aes(year, value / 100, group = construction)) +
   geom_line() +
   gghighlight::gghighlight(use_direct_label = FALSE) +
@@ -635,8 +629,6 @@ plot_5_2_1_7_construction_facet <-
   scale_x_continuous("Year") +
   facet_wrap(~construction) +
   ggtitle("Vacancy rate for purpose-built rentals, by year of construction") +
-  theme_minimal() +
-  theme(legend.position = "bottom") +
   graph_theme
 
 
@@ -748,9 +740,9 @@ qs::qsavem(#prix_sur_marche_table,
   table_5_2_1_2_five_year, map_5_2_1_2_annual, rent_by_construction,
   plot_5_2_1_2_construction_facet, table_5_2_1_2_construction_five_year, 
   vacancy_by_bedroom, vacancy_by_rent, 
-  plot_5_2_1_7_facet, table_5_2_1_7_five_year, map_5_2_1_7_annual, 
-  plot_5_2_1_7_rent_facet, table_5_2_1_7_rent_five_year, 
-  map_5_2_1_7_rent_annual, plot_5_2_1_7_construction_facet, 
+  plot_5_2_1_3_facet, table_5_2_1_3_five_year, map_5_2_1_3_annual, 
+  plot_5_2_1_3_rent_facet, table_5_2_1_3_rent_five_year, 
+  map_5_2_1_3_rent_annual, plot_5_2_1_3_construction_facet, 
   uef, map_6_1_12, plot_6_1_12_boxplot, plot_6_1_12_year_property, 
   plot_6_1_12_year_unit, 
   file = "data/section_5_2_1.qsm")
