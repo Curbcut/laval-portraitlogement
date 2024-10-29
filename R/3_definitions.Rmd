@@ -13,9 +13,12 @@ Logement social : Le logement social est sans but lucratif; il permet d’échap
 Logement inabordable : Le logement inabordable se définit par le fait pour un ménage de consacrer 30 %
 ou plus de son revenu avant impôt aux frais de logement (qui comprend le loyer, les paiements hypothécaires, les services publics, les taxes foncières, etc.). (Stats Can)
 
-Logement lucratif : 
+Logement lucratif : Le logement lucratif est un logement détenu en propriété privée, par des particuliers, des propriétaires fonciers ou des entreprises. Les exemples de ce type de logement incluent les maisons unifamiliales, les appartements locatifs et les condos. Ce type de logement fonctionne dans le cadre du marché privé, où un profit financier peut être généré par la vente de la propriété ou par les revenus locatifs.
 
-Logement non lucratif : 
+Logement non lucratif : Dans ce document, le logement non lucratif se réfère aux logements coopératifs, aux logements gérés par des organismes sans but lucratif et aux logements offerts par l’Office municipal d’habitation de Laval (OMHL).
+-Les coopératives sont gérées par leurs membres. Les membres d’une coopérative d’habitation sont individuellement locataires de leurs logements. C’est la coopérative dont ils sont membres qui est propriétaire de leurs logements. (FRAPRU)
+-Les logements sans but lucratif appartiennent à un organisme sans but lucratif (OSBL) d’habitation. Le conseil d’administration de l’OSBL est généralement composé de locataires, d’intervenantes et d’intervenants du milieu. Les locataires à plus faible revenu reçoivent des subventions qui leur permettent généralement de consacrer 25 % du revenu au loyer. Les autres ont un loyer inférieur à celui du marché. (FRAPRU)
+-Les logements offerts par l'OMHL sont des habitations à loyer modique (HLM), ils sont des logements à propriété publique ; ils sont gérés par les offices municipaux d’habitation (OMH). Ils sont essentiellement destinés aux ménages à faible revenu. On en trouve pour les personnes âgées et pour les familles (incluant les personnes seules et les couples). Tous les loyers sont à 25 % du revenu. (FRAPRU)
 
 Ménage à faible revenu : Les ménages à faible revenu sont définis à l’aide de la mesure du panier de consommation (MPC), qui calcule le coût d’un panier spécifique de biens et de services nécessaires à un niveau de vie modeste et de base. Les ménages dont le revenu disponible est inférieur au seuil de
 la MPC correspondant à leur taille et à leur zone géographique sont considérés comme des ménages à faible revenu. (Stats Can)
