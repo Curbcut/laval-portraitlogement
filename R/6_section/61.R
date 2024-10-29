@@ -300,7 +300,6 @@ plot_6_1_2_type <-
                       values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
   ggtitle("Annual housing starts by dwelling type") +
   graph_theme
-  theme(legend.position = "bottom")
 
 # Variation with between-type difference emphasized
 plot_6_1_2_type_facet <-
@@ -319,8 +318,7 @@ plot_6_1_2_type_facet <-
   facet_wrap(~type) +
   ggtitle(
     "Annual housing starts by dwelling type (five-year moving average)") +
-  theme_minimal() +
-  theme(legend.position = "none")
+  graph_theme
 
 # Pct of annual starts which are apartment
 plot_6_1_2_type_apart <- 
@@ -334,7 +332,7 @@ plot_6_1_2_type_apart <-
   scale_x_continuous("Year") +
   ggtitle(
     "Percentage of annual housing starts which are apartments") +
-  theme_minimal()
+  graph_theme
 
 # Map of housing starts by five-year chunk
 map_6_1_2_annual_1 <- 
@@ -354,11 +352,11 @@ map_6_1_2_annual_1 <-
   st_as_sf() |> 
   select(zone, date, avg, geometry) |> 
   ggplot(aes(fill = avg)) +
-  geom_sf(colour = "white", lwd = 0.5) +
+  gg_cc_tiles +
+  geom_sf(colour = "transparent", lwd = 0) +
   facet_wrap(vars(date), nrow = 3) +
-  scale_fill_viridis_b("Annual starts") +
-  theme_void() +
-  theme(legend.position = "bottom")
+  scale_fill_stepsn("Annual starts", colours = curbcut_colors$left_5$fill[2:6]) +
+  gg_cc_theme
 
 map_6_1_2_annual_2 <- 
   starts_by_type |> 
@@ -378,11 +376,12 @@ map_6_1_2_annual_2 <-
   mutate(density = avg / dwellings * 1000) |> 
   select(zone, date, density, geometry) |> 
   ggplot(aes(fill = density)) +
-  geom_sf(colour = "white", lwd = 0.5) +
+  gg_cc_tiles +
+  geom_sf(colour = "transparent", lwd = 0) +
   facet_wrap(vars(date), nrow = 3) +
-  scale_fill_viridis_b("Annual starts per 1000 dwellings") +
-  theme_void() +
-  theme(legend.position = "bottom")
+  scale_fill_stepsn("Annual starts per 1000 dwellings", 
+                    colours = curbcut_colors$left_5$fill[2:6]) +
+  gg_cc_theme
 
 map_6_1_2_annual <- 
   patchwork::wrap_plots(map_6_1_2_annual_1, map_6_1_2_annual_2)
@@ -418,6 +417,7 @@ table_6_1_3_five_year <-
   summarize(avg = mean(value), .by = c(`Date Range`, market)) |> 
   pivot_wider(names_from = market, values_from = avg) |> 
   select(`Date Range`, Total = All, Homeowner:`Co-Op`) |> 
+  mutate(across(Total:`Co-Op`, \(x) scales::comma(x, 1))) |> 
   gt::gt() |> 
   gt::tab_header("Average annual housing starts by intended market")
 
@@ -447,12 +447,12 @@ plot_6_1_3_market_facet <-
   gghighlight::gghighlight(use_direct_label = FALSE) +
   scale_y_continuous("Starts") +
   scale_x_continuous("Year") +
-  scale_colour_discrete("Intended market") +
+  scale_colour_manual("Intended market", 
+                      values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
   facet_wrap(~market) +
   ggtitle(
     "Annual housing starts by intended market (five-year moving average)") +
-  theme_minimal() +
-  theme(legend.position = "none")
+  graph_theme
 
 # Pct of annual starts which are rental
 plot_6_1_3_market_rental <-
@@ -466,7 +466,7 @@ plot_6_1_3_market_rental <-
   scale_x_continuous("Year") +
   ggtitle(
     "Percentage of annual housing starts which are intended for the rental market") +
-  theme_minimal()
+  graph_theme
 
 
 # 6.1.5 Prix des logements neufs ------------------------------------------
