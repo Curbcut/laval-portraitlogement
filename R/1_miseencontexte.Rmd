@@ -1,0 +1,33 @@
+---
+title: "Mise en contexte"
+author: "Curbcut"
+output: html_document
+---
+
+Le paysage du logement dans la ville de Laval a connu des transformations au cours des dernières années, et il incombe au gouvernement municipal de s'attaquer aux enjeux actuels, notamment l'accès à des logements abordables et adéquats.
+
+De 2001 à 2021, la ville de Laval a vu son nombre de ménages augmenter de 28,1 %, passant de 132 500 à 169 700. Bien que le nombre de ménages propriétaires ait augmenté en termes absolus, leur proportion est restée relativement stable au cours des deux décennies, variant entre 66,4 % et 69,4 %. Cependant, cette apparente stabilité cache un changement important entre 2016 et 2021, période durant laquelle la proportion de ménages propriétaires a reculé de 69,4 % à 66,7 %. De manière opposée, la proportion de ménages locataires, qui oscillait entre 30,7 % et 33,5 % durant ces 20 ans, a enregistré une hausse significative de 2,9 % entre 2016 et 2021, passant de 30,6 % à 33,5 %.
+
+Ces tendances révèlent un changement structurel dans la dynamique du marché résidentiel à Laval. Entre 2006 et 2011, l’essentiel de la croissance des ménages a été tiré par les propriétaires, reflétant probablement un contexte économique favorable à l’accès à la propriété, avec une augmentation nette de la proportion de ménages propriétaires. En revanche, la période 2016 à 2021 marque un renversement de tendance. Durant ces années, bien que le nombre total de ménages ait continué de croître, cette croissance semble avoir été largement absorbée par les locataires, indiquant un changement dans les conditions économiques ou les préférences résidentielles.
+
+Les coûts de logement sont en hausse tant pour les locataires que pour les propriétaires. Entre 2016 et 2021, les dépenses mensuelles médianes de logement ont augmenté de 11,8 % pour les propriétaires et de 20 % pour les locataires. Les secteurs les plus coûteux, quel que soit le statut d’occupation, sont Laval-Ouest, Sainte-Dorothée et Laval-sur-le-Lac.
+				
+Une grande majorité de locataires à faible revenu (71,2 %) dépense plus de 30 % de leur revenu pour se loger, et un tiers (30,9 %) dépasse même le seuil critique de 50 %, indiquant une vulnérabilité financière marquée. À noter que TKTK % des propriétaires à faible revenu consacrent plus de 50% de leur revenu au logement. En revanche, la majorité des propriétaires dépensent moins de 30 % de leur revenu pour le logement. Cette disparité entre locataires et propriétaires souligne que les locataires, surtout ceux à faible revenu, sont particulièrement exposés aux pressions économiques liées aux coûts de logement.	
+
+Le faible taux d'inoccupation exerce une pression sur le marché du logement et sur les coûts de logement pour les locataires. Au cours des 20 dernières années, le taux d’inoccupation n'a jamais atteint le seuil d'équilibre de 3 %, ce qui révèle un marché locatif tendu et crée un rapport de force favorable aux propriétaires. Ces derniers peuvent ainsi exiger des loyers plus élevés en raison de la forte demande et de l'insuffisance de l'offre de logements disponibles. Les taux d'inoccupation demeurent systématiquement plus élevés pour les petits logements, comme les studios et les appartements d'une chambre, et plus bas pour les unités familiales de deux chambres ou plus. 
+
+Ce portrait offre un aperçu global d’un large éventail de sujets et d’enjeux liés à l’habitation et au logement à la Ville de Laval. Il constitue une ressource visant à aider et orienter les divers acteurs à identifier et prioriser les politiques et actions à mettre en œuvre dans le paysage du logement de la ville. Les informations issues de ce portrait serviront spécifiquement à éclairer les politiques et cibles en matière d’habitation, notamment dans le cadre des schémas d'aménagement et de développement révisé (SADR) ainsi que l’orientation gouvernementale en aménagement du territoire (OGAT). 
+
+Les solutions Curbcut, une filiale de l’Université McGill, ont été mandatées par la Ville de Laval pour réaliser une analyse approfondie et une interprétation de divers sujets et sources de données. Cette analyse vise trois principaux objectifs : 
+
+Mettre à jour et bonifier le diagnostic en matière d’habitation sur le territoire lavallois, en décrivant les enjeux et les besoins en la matière ; 
+Intégrer l’indicateur stratégique suivant : la variation du nombre et des parts de logements par type de construction résidentielle ;
+Définir les cibles pour cet indicateur aux horizons quatre, huit et douze ans.
+
+Ce projet à été réalisé en étroite collaboration entre Les solutions Curbcut et le service de l’urbanisme de la Ville de Laval. 
+
+-	Contexte mouvant de l’écosystème en habitation social et abordable depuis quelques années.
+-	Crise en habitation (quelques chiffres clés à Laval : taux d’inoccupation, loyers et prix des propriétés médians, démographie)
+-	Contexte économique (coûts de construction, main d’œuvre et matériaux, taux d’intérêt, etc.)
+-	OGAT Habitation ?
+-	Positionnement de la Ville de Laval pour contribuer à résoudre la crise en habitation (plan d’action 2020-2022, Sommet de l’habitation, etc.)
