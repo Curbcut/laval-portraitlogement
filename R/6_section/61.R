@@ -518,6 +518,7 @@ ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market_rental.pdf"),
                 plot = plot_6_1_3_market_rental, width = 7.5, height = 4)
 
 
+<<<<<<< HEAD
 # 6.1.5 Prix des logements neufs ------------------------------------------
 
 # Prices taken from CMHC HMIP
@@ -588,6 +589,8 @@ plot_6_1_5_units <-
   ggtitle(
     "Annual absorbed homeowner and condominimum units") +
   theme_minimal()
+=======
+>>>>>>> 6ef878b20119b0bee10c88bb9a802368e5bfbef4
 
 ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_5_units.pdf"),
                 plot = plot_6_1_5_units, width = 6.5, height = 4)
@@ -602,6 +605,5 @@ qs::qsavem(cmhc_zones, completions_by_type, completions_by_market,
            table_6_1_2_five_year, plot_6_1_2_type, plot_6_1_2_type_facet, 
            plot_6_1_2_type_apart, map_6_1_2_annual, starts_by_market,
            table_6_1_3_five_year, plot_6_1_3_market, plot_6_1_3_market_facet,
-           plot_6_1_3_market_rental, new_prices, plot_6_1_5_percentiles,
-           plot_6_1_5_units,
+           plot_6_1_3_market_rental, 
            file = "data/section_6_1.qsm")

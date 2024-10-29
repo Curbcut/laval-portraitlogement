@@ -21,6 +21,43 @@ Les prix médians des propriétés à Laval varient significativement en fonctio
 # prix_sur_marche_table
 ```
 
+
+
+
+
+
+
+# 6.1.5 Prix des logements neufs
+
+```{r s_6_1_5, include = FALSE}
+
+# 80-20 ratios
+ratios <- 
+  new_prices |> 
+  filter(year %in% c(1998, 2020)) |> 
+  mutate(ratio_80_20 = ratio_80_20 - 1) |> 
+  pull(ratio_80_20) |> 
+  scales::percent()
+
+```
+
+_Data source: CMHC Market Absorption Survey_
+
+CMHC collects data on the selling prices of newly absorbed homeowner and condominium units. According to this data, Laval has seen remarkably consistent annual increases in new housing prices since the 1990s. In 1998, the average selling price of a newly absorbed unit was `r scales::dollar(new_prices$average[1])`, while in 2023 it was `r scales::dollar(new_prices$average[26])`--an increase of `r scales::percent(new_prices$average[26] / new_prices$average[1] - 1)`. Over time, the high-end of the market has seen faster proportionate price increases than the low end of the market. In 1998, the 80th-percentile newly absorbed unit sold for `r ratios[1]` more than the 20th-percentile unit, while in 2020 it was `r ratios[2]`. (The subsequent three years have seen this ratio decline again, but the volatility of the trend makes it too soon to know if that reflects a substantive shift in market conditions.)
+
+```{r plot_6_1_5_percentiles}
+plot_6_1_5_percentiles
+```
+
+At the same time, the number of absorbed units being counted towards these prices has declined sharply since the early 2000s. Since the CMHC only collects data on homeowner and condominium units, and an increasingly large percentage of new housing in Laval is renter housing, the price of newly absorbed units is an increasingly imprecise metric for measuring housing costs.
+
+```{r plot_6_1_5_units}
+plot_6_1_5_units
+```
+
+
+
+
 # 5.2.1.2 Prix médian des propriétés selon le type et le nombre de chambres à coucher
 
 # 5.2.1.3 Prix médian des logements selon l'occupation des logements (vacants ou occupés) ou des logements nouvellement construits
@@ -170,19 +207,6 @@ map_5_2_1_7_rent_annual
 
 
 # 5.2.1.8 Valeur foncière (secteur lucratif, secteur non lucratif)
-
-```{r s_6_1_5, include = FALSE}
-
-# 80-20 ratios
-uef_values <- 
-  uef |> 
-  mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
-  summarize(per_property = mean(value),
-            per_unit = sum(value) / sum(units),
-            .by = type) |> 
-  mutate(across(-type, scales::dollar))
-
-```
 
 _Data source: Unité d'evaluation foncière_
 
