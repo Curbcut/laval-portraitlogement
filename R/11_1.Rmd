@@ -26,7 +26,7 @@ This suggests the possibility of a mismatch between new rental supply (higher-en
 
 La Ville a récemment observé un déplacement vers le logement locatif, et cette tendance est appelée à se poursuivre, étant donné que très peu de nouveaux logements sont construits ayant comme marché visé les propriétaires-occupants.
 
-Les indicateurs de marché agrégés suggèrent que la demande pour le logement locatif dépasse largement l'offre. Après une période de stagnation relative dans les années 1990, on observe une forte augmentation des loyers et une baisse importante du taux d’inoccupation au cours des 20 dernières années, avec des changements particulièrement rapides dans ces deux indicateurs depuis 2010. Lorsque le taux d’inoccupation est inférieur à 3 %, il est prévisible que les loyers augmentent en raison d'une concurrence accrue entre locataires pour les logements disponibles; or, ce taux a été en moyenne de 1,9 % au cours des quatre dernières années. Cela indique que la Ville aura besoin d'une construction locative robuste dans les années à venir pour éviter d'importantes hausses de loyers supplémentaires.
+Les indicateurs de marché agrégés suggèrent que la demande pour le logement locatif dépasse largement l'offre. Après une période de stagnation relative dans les années 1990, on observe une forte augmentation des loyers et une baisse importante du taux d’inoccupation au cours des 20 dernières années, avec des changements particulièrement rapides dans ces deux indicateurs depuis 2010. Lorsque le taux d’inoccupation est inférieur à 3 %, il est prévisible que les loyers augmentent en raison d'une concurrence accrue entre locataires pour les logements disponibles; or, ce taux a été en moyenne de 1,9 % au cours des dernières années. Cela indique que la Ville aura besoin d'une construction locative soutenue dans les années à venir pour contribuer à contenir d'importantes hausses de loyers supplémentaires.
 
 Il semble aussi que l'offre et la demande se soient désynchronisées dans différents sous-marchés du secteur locatif. Le taux d'inoccupation a chuté de façon spectaculaire pour les plus grands logements; pour les unités de trois chambres ou plus, le taux d'inoccupation moyen entre 2019 et 2023 était de seulement 1,0 %. Ce taux a également diminué rapidement pour les logements à loyer plus bas. En revanche, on observe une augmentation significative du taux d'inoccupation parmi les unités coûteuses récemment construites. Ces unités ne sont pas absorbées au fur et à mesure de leur arrivée sur le marché. Dans une certaine mesure, ce phénomène est naturel (les nouvelles unités ont souvent des taux d'inoccupation plus élevés que les unités plus anciennes), mais l'ampleur du phénomène est plus marquée qu’à tout autre moment des 35 dernières années.
 
@@ -36,13 +36,15 @@ Cela suggère la possibilité d’un décalage entre l'offre locative nouvelle (
 
 ### ANGLAIS
 
+#---- TO UPDATE TKTKTK
+
 Although there has been a small shift away from homeownership and towards rental housing in the last five years, it remains the case that two thirds of Laval households are homeowners. However, there has been significant decline in new homeownership construction; there were only an average of 14.6 homeownership starts and 13.2 condominimum starts per year from 2019-2023, compared to 85.8 rental starts per year in the same time period.
 
 In addition to the general need for more housing starts and the specific need for more rental housing starts, therefore, additional homeownership units are going to be required, and given the scarcity of new greenfield opportunities the most plausible way to continue building for the ownership market will be through condominiums.
 
 ### FRANÇAIS
 
-Bien qu’il y ait eu un léger déplacement de la propriété vers la location au cours des cinq dernières années, les deux tiers des ménages lavallois demeurent propriétaires. Cependant, on observe une diminution significative de la construction de nouvelles unités destinées à la propriété : en moyenne, il y a eu seulement 14,6 mises en chantier de logements en propriété et 13,2 mises en chantier de copropriétés par an entre 2019 et 2023, comparativement à 85,8 mises en chantier de logements locatifs par an durant la même période.
+Bien qu’il y ait eu un déplacement de la propriété vers la location au cours des cinq dernières années, les deux tiers des ménages lavallois demeurent propriétaires. Cependant, on observe une diminution significative de la construction de nouvelles unités destinées à la propriété : en moyenne, il y a eu seulement 14,6 mises en chantier de logements en propriété et 13,2 mises en chantier de copropriétés par an entre 2019 et 2023, comparativement à 85,8 mises en chantier de logements locatifs par an durant la même période.
 
 En plus du besoin général d'augmenter le nombre de mises en chantier, et du besoin spécifique de logements locatifs, il sera donc également nécessaire de construire davantage d'unités en propriété. Compte tenu de la rareté des nouvelles opportunités de développement sur des terrains vierges, la voie la plus plausible pour soutenir le marché de la propriété à Laval sera le développement de nouvelles copropriétés.
 
@@ -65,13 +67,18 @@ Cependant, le taux d’inoccupation locatif des unités de trois chambres et plu
 
 ### ANGLAIS
 
-Two major trends have been observed in housing construction in Laval: First, a progressive shift from single-family home construction (in the 1990s and 2000s) to condominium construction (in the late 2000s and early 2010s) to purpose-built rental (since the 2010s). Second, a general slowing of new housing starts, from a recent peak of 351 units per year in 2009-2013 to a 20-year low of 114 units per year in 2019-2023. The combination of these trends suggests both a continuation of the recently observed trend towards proportionately more renter households, and an overall decline in new household formation in the absence of policy supports to encourage new residential investment.
+Two major trends have been observed in housing construction in Laval: First, a progressive shift from single-family home construction (in the 1990s and 2000s) to condominium construction (in the late 2000s and early 2010s) to purpose-built rental (since the 2010s). 
+
+#----TO UPDATE    TKTKTK
+Second, a general slowing of new housing starts, from a recent peak of 351 units per year in 2009-2013 to a 20-year low of 114 units per year in 2019-2023. The combination of these trends suggests both a continuation of the recently observed trend towards proportionately more renter households, and an overall decline in new household formation in the absence of policy supports to encourage new residential investment.
 
 ### FRANÇAIS
 
 Deux grandes tendances ont été observées dans la construction de logements à Laval : premièrement, un passage progressif de la construction de maisons unifamiliales (dans les années 1990 et 2000) à la construction de condominiums (à la fin des années 2000 et au début des années 2010), puis à celle de logements locatifs dédiés (depuis les années 2010). Deuxièmement, un ralentissement général des nouvelles mises en chantier, passant d’un sommet récent de 351 unités par an entre 2009 et 2013 à un creux de 20 ans de seulement 114 unités par an entre 2019 et 2023. La combinaison de ces tendances suggère à la fois une poursuite de l’augmentation proportionnelle du nombre de ménages locataires et une diminution générale de la formation de nouveaux ménages propriétaires, à moins que des politiques de soutien ne soient mises en place pour encourager l’investissement résidentiel.
 
 # 11.1.4 Besoins en fonction des projections démographiques et autres
+
+#----- SECTION TO UPDATE TKTKTK
 
 ### ANGLAIS
 
@@ -84,6 +91,8 @@ We have observed an increase in single-person households in Laval over the last 
 L'ISQ projette un ralentissement du taux de croissance des ménages à Laval au cours des 20 prochaines années, avec une augmentation de 14,4 % pour atteindre 194 188 ménages d'ici 2041, soit une croissance annuelle de 0,68 %, comparativement à 0,95 % par an entre 2011 et 2021. Toutefois, ce taux de croissance ne pourra être atteint sans une augmentation du rythme actuel de construction de logements. Les mises en chantier diminuent depuis 15 ans, avec une baisse plus marquée depuis la pandémie et la hausse subséquente des taux d'intérêt, ce qui se traduira par une diminution des achèvements de logements dans un avenir proche.
 
 De plus, Laval a connu une augmentation des ménages composés d’une seule personne au cours des 25 dernières années. Cette tendance semble refléter la transformation de Laval dans la région du Grand Montréal, passant de ville-dortoir à une ville centrale. En l'absence de nouveaux investissements dans des logements de taille familiale, cette tendance vers des ménages unipersonnels devrait se poursuivre.
+
+#----ADDITION OF A PARAGRAPHE ABOUT AÎNÉES DE 75+ TKTK
 
 # 11.1.5 Besoins spécifiques en logement social et abordable
 
