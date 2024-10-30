@@ -98,7 +98,7 @@ plot_4_2_1 <-
         legend.spacing.x = unit(0.5, "in"),
         axis.title.y = element_text(size = 11))
 
-ggsave(plot = plot_4_2_1, "outputs/4/plot_4_2_1.pdf", width = 7.5, height = 4)
+ggsave(plot = plot_4_2_1, "outputs/4/plot_4_2_1.pdf", width = 6.5, height = 4)
 
 rev_fun_421 <- function(mode_occupation, composition) {
   z <- occ_rev_comp$median_revenue[occ_rev_comp$mode_occupation == mode_occupation &
@@ -501,7 +501,7 @@ plot_4_2_4 <-
         legend.spacing.x = unit(0.5, "in"),
         axis.title.y = element_text(size = 11))
 
-ggsave(plot = plot_4_2_4, "outputs/4/plot_4_2_4.pdf", width = 7.5, height = 4)
+ggsave(plot = plot_4_2_4, "outputs/4/plot_4_2_4.pdf", width = 6.5, height = 4)
 
 loyer_fun_421 <- function(mode_occupation, income) {
   z <- income_housingcost$housingcost[income_housingcost$occupation == mode_occupation &
@@ -561,7 +561,7 @@ plot_4_2_5 <-
   graph_theme +
   scale_y_continuous(labels = convert_number)
 
-ggsave(plot = plot_4_2_5, "outputs/4/plot_4_2_5.pdf", width = 5, height = 7.5)
+ggsave(plot = plot_4_2_5, "outputs/4/plot_4_2_5.pdf", width = 6.5, height = 7.5)
 
 
 # denom <- sum(occ_stress_lowinc$count[occ_stress_lowinc$lowinc == "total" &
@@ -735,7 +735,7 @@ housing_loyermed_plot <-
   theme(legend.title = element_blank())
 
 ggplot2::ggsave(filename = here::here("outputs/4/plot_4_2_10_loyer.pdf"),
-                plot = housing_loyermed_plot, width = 3, height = 3)
+                plot = housing_loyermed_plot, width = 6.5, height = 3)
 
 housing_loyer_2023 <- avg_rent_annual$Value[
   avg_rent_annual$Year == 2023 & avg_rent_annual$Geography == "Laval"]
@@ -844,7 +844,7 @@ att |>
     table.width = px(3 * 96)
   )
 
-gtsave(att_programme_table, "outputs/4/4_2_13_attprogrammetable.png", zoom = 1)
+gtsave(att_programme_table, "outputs/4/4_2_13_attprogrammetable.png", zoom = 2)
 
 
 # R Markdown --------------------------------------------------------------

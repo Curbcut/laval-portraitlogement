@@ -28,7 +28,7 @@ tryCatch({
 }, error = function(e) cat("Fonts didn't load"))
 showtext_auto()
 
-font_local_name <- "KMR Apparat Regular"
+font_local_name <- "KMR-Apparat-Regular"
 
 # Checking vectors for Canada ---------------------------------------------
 
