@@ -1,7 +1,9 @@
 ---
 title: "Portrait des ménages et de leur logement"
 author: "Curbcut"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup 4_1_markdown, include=FALSE}
