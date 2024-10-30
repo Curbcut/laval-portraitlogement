@@ -253,7 +253,7 @@ table_4_1_1_1 <- table_4_1_1_1_data |>
   )
 
 #Saving the files as photos
-ggsave(plot = plot_4_1_1_1, "outputs/4/plot_4_1_1_1.pdf", width = 7.5, height = 6)
+ggsave(plot = plot_4_1_1_1, "outputs/4/plot_4_1_1_1.pdf", width = 6.5, height = 5)
 ggsave(plot = map_total_hh, "outputs/4/map_total_hh.pdf", width = 7.5, height = 6)
 ggsave(plot = map_owner_hh, "outputs/4/map_owner_hh.pdf", width = 7.5, height = 6)
 ggsave(plot = map_tenant_hh, "outputs/4/map_tenant_hh.pdf", width = 7.5, height = 6)
@@ -608,7 +608,7 @@ table_4_1_1_2_owner <- data_4_1_1_2_table_owner |>
 #   guides(fill = guide_legend(title.position = "top", title.hjust = 0.5))
 
 #Saving the visuals as images
-ggsave(plot = plot_4_1_1_2, "outputs/4/plot_4_1_1_2.pdf", width = 7.5, height = 6)
+ggsave(plot = plot_4_1_1_2, "outputs/4/plot_4_1_1_2.pdf", width = 6.5, height = 5)
 # gtsave(table_4_1_1_2_2, "outputs/4/table_4_1_1_2_2.png", vwidth = 2400)
 gtsave(table_4_1_1_2_owner, "outputs/4/table_4_1_1_2_owner.png", vwidth = 2400)
 
@@ -996,8 +996,8 @@ plot_4_1_1_3_owner <- ggplot(table_data_4_1_1_3_comp_ed_owner) +
   theme(legend.key.width = unit(3, "cm"),
         legend.title.position = "top")
 
-ggsave(plot = plot_4_1_1_3_tenant, "outputs/4/plot_4_1_1_3_tenant.pdf", width = 7.5, height = 6)
-ggsave(plot = plot_4_1_1_3_owner, "outputs/4/plot_4_1_1_3_owner.pdf", width = 7.5, height = 6)
+ggsave(plot = plot_4_1_1_3_tenant, "outputs/4/plot_4_1_1_3_tenant.pdf", width = 6.5, height = 5)
+ggsave(plot = plot_4_1_1_3_owner, "outputs/4/plot_4_1_1_3_owner.pdf", width = 6.5, height = 5)
 
 
 
@@ -1028,7 +1028,7 @@ ggsave(plot = plot_4_1_1_3_owner, "outputs/4/plot_4_1_1_3_owner.pdf", width = 7.
 #     table.width = px(6 * 252)
 #   )
 
-ggsave(plot = plot_4_1_1_3_comp, "outputs/4/plot_4_1_1_3_comp.pdf", width = 7.5, height = 6)
+ggsave(plot = plot_4_1_1_3_comp, "outputs/4/plot_4_1_1_3_comp.pdf", width = 6.5, height = 5)
 # gtsave(table_4_1_1_3_comp, "outputs/4/table_4_1_1_3_comp.png", vwidth = 1600)
 # gtsave(table_4_1_1_3_comp_ed, "outputs/4/table_4_1_1_3_comp_ed.png", vwidth = 1600)
 
@@ -1248,7 +1248,7 @@ plot_4_1_1_4 <-
   graph_theme +
   theme(axis.text.x = element_text(angle = 0, hjust = 0.5))  # Ajuster le texte de l'axe des x
 
-ggsave(plot = plot_4_1_1_4, "outputs/4/plot_4_1_1_4.pdf", width = 7.5, height = 6)
+ggsave(plot = plot_4_1_1_4, "outputs/4/plot_4_1_1_4.pdf", width = 6.5, height = 5)
 
 # 4.1.1.5 Âge du principal soutien du ménage selon mote d'occupation------------
 #https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=9810023201&pickMembers%5B0%5D=1.1730&pickMembers%5B1%5D=2.1&pickMembers%5B2%5D=3.1&pickMembers%5B3%5D=4.1
@@ -1300,7 +1300,7 @@ plot_4_1_1_5 <- ggplot(data_4_1_1_5, aes(x = Age, y = Value, fill = Type)) +
        y = "Nombre de ménages") +
   graph_theme
 
-ggsave(plot = plot_4_1_1_5, "outputs/4/plot_4_1_1_5.pdf", width = 7.5, height = 3)
+ggsave(plot = plot_4_1_1_5, "outputs/4/plot_4_1_1_5.pdf", width = 6.5, height = 4)
 
 # 4.1.1.6 Typologie (unifamilial, multi logement, etc.) selon mode d'occupation----
 #https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=9810024001
@@ -1412,7 +1412,7 @@ plot_4_1_1_6 <- ggplot(data_4_1_1_6, aes(x = Build, y = Value, fill = Type)) +
 # apt_laval <- data_4_1_1_6_table |> filter("Type de ménage" == "Total") |> pull(`Appartement dans un immeuble de moins de cinq étages (%)`)
 # sfh_owner <- data_4_1_1_6_table |> filter("Type de ménage" == "Propriétaire") |> pull(`Maison individuelle non attenante (%)`)
 
-ggsave(plot = plot_4_1_1_6, "outputs/4/plot_4_1_1_6.pdf", width = 7.5, height = 4)
+ggsave(plot = plot_4_1_1_6, "outputs/4/plot_4_1_1_6.pdf", width = 6.5, height = 4)
 # gtsave(table_4_1_1_6, "outputs/4/table_4_1_1_6.png", vwidth = 2400)
 
 # 4.1.2.1 Projection des ménages X-2046 (PRÉCISER JALONS, C17) -----------------
@@ -1498,7 +1498,7 @@ plot_4_1_2_1 <-
                                               color_theme("redhousing"), "black"))
   )
 
-ggsave(plot = plot_4_1_2_1, "outputs/4/plot_4_1_2_1.pdf", width = 7.5, height = 6)
+ggsave(plot = plot_4_1_2_1, "outputs/4/plot_4_1_2_1.pdf", width = 6.5, height = 5)
 
 
 
@@ -1528,7 +1528,7 @@ plot_4_1_2_1_hou_age <-
   scale_fill_manual(values = c("2021" = color_theme("yellowclimate"), "2051" = color_theme("pinkhealth")))+
   graph_theme
 
-ggsave(plot = plot_4_1_2_1_hou_age, "outputs/4/plot_4_1_2_1_hou_age.pdf", width = 7.5, height = 6)
+ggsave(plot = plot_4_1_2_1_hou_age, "outputs/4/plot_4_1_2_1_hou_age.pdf", width = 8, height = 5)
 
 
 
@@ -1561,7 +1561,7 @@ plot_4_1_2_3_1 <-
   scale_fill_manual(values = c("2021" = color_theme("yellowclimate"), "2051" = color_theme("pinkhealth")))+
   graph_theme
 
-ggsave(plot = plot_4_1_2_3_1, "outputs/4/plot_4_1_2_3_1.pdf", width = 7.5, height = 4)
+ggsave(plot = plot_4_1_2_3_1, "outputs/4/plot_4_1_2_3_1.pdf", width = 9, height = 4.5)
 
 
 growth_total <- 
@@ -1733,7 +1733,7 @@ plot_4_1_2_3_2 <- ggplot(data_4_1_2_3_2_plot, aes(x = `Année`, y = Value, fill 
   theme(axis.text.x = element_text(angle = 315, hjust = 1)) +
   guides(fill = guide_legend(nrow = 2))
 
-ggsave(plot = plot_4_1_2_3_2, "outputs/4/plot_4_1_2_3_2.pdf", width = 7.5, height = 6)
+ggsave(plot = plot_4_1_2_3_2, "outputs/4/plot_4_1_2_3_2.pdf", width = 6.5, height = 5)
 # gtsave(table_4_1_2_3_2, "outputs/4/table_4_1_2_3_2.png", vwidth = 3200)
 
 # R Markdown --------------------------------------------------------------
