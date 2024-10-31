@@ -114,7 +114,7 @@ nonluc_types_all <-
 
 
 ggplot2::ggsave(filename = here::here("outputs/6/6_2_2_nonluctypesall.pdf"),
-                plot = nonluc_types_all, width = 4.5, height = 4)
+                plot = nonluc_types_all, width = 6.5, height = 4)
 
 # 6.2.5 -------------------------------------------------------------------
 

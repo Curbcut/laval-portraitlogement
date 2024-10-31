@@ -190,7 +190,7 @@ mixite_sociale_facet <-
         legend.spacing.y = unit(1, 'cm'))
 
 ggplot2::ggsave(filename = here::here("outputs/5/5_4_1_mixitefacet.pdf"), 
-                plot = mixite_sociale_facet, width = 9, height = 7)
+                plot = mixite_sociale_facet, width = 6.5, height = 5)
 
 # 5.4.2 -------------------------------------------------------------------
 
@@ -277,7 +277,7 @@ densite_res_evol_plot <-
   gg_cc_theme
 
 ggplot2::ggsave(filename = here::here("outputs/5/5_4_2_densiteresevol.pdf"), 
-                plot = densite_res_evol_plot, width = 9, height = 7)
+                plot = densite_res_evol_plot, width = 6.5, height = 5)
 
 # 5.4.3 -------------------------------------------------------------------
 
