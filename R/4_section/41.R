@@ -1412,7 +1412,7 @@ plot_4_1_1_6 <- ggplot(data_4_1_1_6, aes(x = Build, y = Value, fill = Type)) +
 # apt_laval <- data_4_1_1_6_table |> filter("Type de ménage" == "Total") |> pull(`Appartement dans un immeuble de moins de cinq étages (%)`)
 # sfh_owner <- data_4_1_1_6_table |> filter("Type de ménage" == "Propriétaire") |> pull(`Maison individuelle non attenante (%)`)
 
-ggsave(plot = plot_4_1_1_6, "outputs/4/plot_4_1_1_6.pdf", width = 6.5, height = 4)
+ggsave(plot = plot_4_1_1_6, "outputs/4/plot_4_1_1_6.pdf", width = 7, height = 4)
 # gtsave(table_4_1_1_6, "outputs/4/table_4_1_1_6.png", vwidth = 2400)
 
 # 4.1.2.1 Projection des ménages X-2046 (PRÉCISER JALONS, C17) -----------------
