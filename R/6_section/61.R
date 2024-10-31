@@ -283,7 +283,6 @@ plot_6_1_2_overall <-
     "Actual" = 0.4, "Five-year moving average" = 1)) +
   scale_alpha_manual(name = NULL, values = c(
     "Actual" = 0.2, "Five-year moving average" = 1)) +
-  ggtitle("Annual housing starts") +
   graph_theme
 
 ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_overall.pdf"),
@@ -307,9 +306,9 @@ table_6_1_2_five_year <-
   mutate(Total = Single + `Semi-Detached` + Row + Apartment, 
          .before = Single) |> 
   mutate(across(Total:Apartment, \(x) scales::comma(x, 1))) |> 
-  gt::gt() |> 
-  gt::tab_header("Average annual housing starts by dwelling type")
-gtsave(table_6_1_2_five_year, "outputs/6/table_6_1_2_five_year.png", zoom = 1)
+  gt::gt()
+
+gtsave(table_6_1_2_five_year, "outputs/6/table_6_1_2_five_year.png", zoom = 1.5)
 
 # Comparison of long-term residential start trends by building type
 plot_6_1_2_type <-
@@ -344,8 +343,6 @@ plot_6_1_2_type_facet <-
   scale_colour_manual("Dwelling type", 
                       values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
   facet_wrap(~type) +
-  ggtitle(
-    "Annual housing starts by dwelling type (five-year moving average)") +
   graph_theme
 
 ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_type_facet.pdf"),
@@ -362,8 +359,6 @@ plot_6_1_2_type_apart <-
   geom_line() +
   scale_y_continuous("Starts", limits = c(0, 1), labels = scales::percent) +
   scale_x_continuous("Year") +
-  ggtitle(
-    "Percentage of annual housing starts which are apartments") +
   graph_theme
 
 ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_type_apart.pdf"),
@@ -422,7 +417,7 @@ map_6_1_2_annual <-
   patchwork::wrap_plots(map_6_1_2_annual_1, map_6_1_2_annual_2)
 
 ggplot2::ggsave(filename = here::here("outputs/6/map_6_1_2_annual.pdf"),
-                plot = map_6_1_2_annual, width = 7.5, height = 4)
+                plot = map_6_1_2_annual, width = 6.5, height = 4)
 
 
 # 6.1.3 Mises en chantier par mode d'occupation ---------------------------
@@ -456,10 +451,9 @@ table_6_1_3_five_year <-
   pivot_wider(names_from = market, values_from = avg) |> 
   select(`Date Range`, Total = All, Homeowner:`Co-Op`) |> 
   mutate(across(Total:`Co-Op`, \(x) scales::comma(x, 1))) |> 
-  gt::gt() |> 
-  gt::tab_header("Average annual housing starts by intended market")
+  gt::gt() 
 
-gtsave(table_6_1_3_five_year, "outputs/6/table_6_1_3_five_year.png", zoom = 1)
+gtsave(table_6_1_3_five_year, "outputs/6/table_6_1_3_five_year.png", zoom = 1.5)
 
 # Comparison of long-term residential start trends by intended market
 plot_6_1_3_market <- 
@@ -493,8 +487,6 @@ plot_6_1_3_market_facet <-
   scale_colour_manual("Intended market", 
                       values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
   facet_wrap(~market) +
-  ggtitle(
-    "Annual housing starts by intended market (five-year moving average)") +
   graph_theme
 
 ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market_facet.pdf"),
@@ -510,12 +502,10 @@ plot_6_1_3_market_rental <-
   geom_line() +
   scale_y_continuous("Starts", limits = c(0, 1), labels = scales::percent) +
   scale_x_continuous("Year") +
-  ggtitle(
-    "Percentage of annual housing starts which are intended for the rental market") +
   graph_theme
 
 ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market_rental.pdf"),
-                plot = plot_6_1_3_market_rental, width = 7.5, height = 4)
+                plot = plot_6_1_3_market_rental, width = 6.5, height = 4)
 
 
 <<<<<<< HEAD
