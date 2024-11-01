@@ -708,7 +708,7 @@ map_5_2_1_4 <-
   st_as_sf() |> 
   st_filter(laval_sectors) |> 
   ggplot(aes(fill = value)) +
-  # gg_cc_tiles +
+  gg_cc_tiles +
   geom_sf() +
   scale_fill_stepsn("Average assessed value", colours = curbcut_colors$left_5$fill[2:6]) +
   facet_wrap(~name) +
