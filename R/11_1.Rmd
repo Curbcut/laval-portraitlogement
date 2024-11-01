@@ -14,9 +14,11 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 
 ### ANGLAIS
 
-The City has seen a recent shift to rental housing, and this trend is going to continue, given the fact that very little new ownership housing is being produced.
+From 2016 to 2021, the City saw a substantial shift to rental housing. Tenant-occupied households were 30.5% of all private households in 2016, but 33.5% in 2021: a 9.8% increase in just five years, and a larger shift in this proportion than at any other point since 2001. This trend is highly likely to continue, given the fact that very little new ownership housing is being produced, while rental construction has been robust. From 2019-2023, 77% (1,598 units) of the 2,074 average annual housing starts were intended for the rental market. In fact, far more rental housing is being initiated in Laval now than at any point since 1990.
 
-Aggregated market signals suggest that demand for rental housing is running substantially above supply. After a period of relative stagnation in the 1990s, there has been a large increase in rents and a large decline in the vacancy rate in the last 20 years, with particularly rapid changes in both these indicators since 2010. When vacancy rates are below 3%, rents should be expected to increase due to high levels of tenant competition for units; the vacancy rate has averaged 1.9% over the last four years. The implication is that the City will require robust rental housing construction in the years to prevent further large rent increases.
+Despite the strong pace of rental construction, however, aggregated market signals suggest that demand for rental housing is running substantially above supply. First, new renter household formation has run substantially ahead of new rental construction. From 2016 to 2021, the number of tenant-occupied private households increased by 7,760, while only 3,290 rental unit housing starts were recorded in the corresponding (2014-2018) five-year period. This implies that some rental housing demand was fulfilled through conversions of ownership housing to rental housing, and that some demand was fulfilled through new secondary rental market housing (specifically, condominiums).
+
+Second, after a period of relative stagnation in the 1990s, there has been a large increase in rents and a large decline in the vacancy rate in the last 20 years, with particularly rapid changes in both these indicators since 2010. When vacancy rates are below 3%, rents should be expected to increase due to high levels of tenant competition for units; the vacancy rate has averaged 1.9% over the last four years. The implication is that the City will require robust rental housing construction in the years to prevent further large rent increases.
 
 However, there is also an indication that supply and demand have become disconnected in different submarkets of the rental sector. The vacancy rate has fallen dramatically for the largest units; for 3+ bedroom units the average 2019-2023 vacancy rate was only 1.0%. It has also fallen quickly among lower-priced units. However, there has been a substantial *increase* in vacancy rate among expensive, newly built units. These units are not being absorbed as they come on the market. To some extent this is a natural pattern (new units often have higher vacancy rates than older units), but the pattern is stronger than at any point in the last 35 years.
 
@@ -36,17 +38,18 @@ Cela suggère la possibilité d’un décalage entre l'offre locative nouvelle (
 
 ### ANGLAIS
 
-#---- TO UPDATE TKTKTK
+Although there has been a noticeable shift away from homeownership and towards rental housing in the last five years, it remains the case that two thirds of Laval households are homeowners. However, there has been significant decline in new homeownership construction; there were only an average of 224 homeownership starts and 251 condominimum starts per year from 2019-2023, compared to 1,598 rental starts per year in the same time period, and compared to 735 homeownership starts and 1,035 condominium starts per year in the 2009-2013 time period.
 
-Although there has been a small shift away from homeownership and towards rental housing in the last five years, it remains the case that two thirds of Laval households are homeowners. However, there has been significant decline in new homeownership construction; there were only an average of 14.6 homeownership starts and 13.2 condominimum starts per year from 2019-2023, compared to 85.8 rental starts per year in the same time period.
+From 2016 to 2021, the total number of owner-occupied private dwelling units increased by 1,720. During the five-year 2014-2018 period, there were 1,505 homeowner housing starts and 4,025 condominium starts.
 
-In addition to the general need for more housing starts and the specific need for more rental housing starts, therefore, additional homeownership units are going to be required, and given the scarcity of new greenfield opportunities the most plausible way to continue building for the ownership market will be through condominiums.
+In addition to the general need for more housing starts and the specific need for more rental housing starts, therefore, additional homeownership units are going to be required, and given the relative scarcity of new greenfield opportunities the most plausible way to continue building for the ownership market will be through condominiums.
 
 ### FRANÇAIS
 
 Bien qu’il y ait eu un déplacement de la propriété vers la location au cours des cinq dernières années, les deux tiers des ménages lavallois demeurent propriétaires. Cependant, on observe une diminution significative de la construction de nouvelles unités destinées à la propriété : en moyenne, il y a eu seulement 14,6 mises en chantier de logements en propriété et 13,2 mises en chantier de copropriétés par an entre 2019 et 2023, comparativement à 85,8 mises en chantier de logements locatifs par an durant la même période.
 
 En plus du besoin général d'augmenter le nombre de mises en chantier, et du besoin spécifique de logements locatifs, il sera donc également nécessaire de construire davantage d'unités en propriété. Compte tenu de la rareté des nouvelles opportunités de développement sur des terrains vierges, la voie la plus plausible pour soutenir le marché de la propriété à Laval sera le développement de nouvelles copropriétés.
+
 
 # 11.1.2 Écart entre les besoins actuels de logement et services des ménages et l’offre
 
