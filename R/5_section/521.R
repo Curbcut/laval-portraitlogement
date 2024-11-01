@@ -707,6 +707,7 @@ map_5_2_1_4 <-
   inner_join(fst) |> 
   st_as_sf() |> 
   st_filter(laval_sectors) |> 
+  sf::st_transform(crs = 32618) |> 
   ggplot(aes(fill = value)) +
   gg_cc_tiles +
   geom_sf() +
