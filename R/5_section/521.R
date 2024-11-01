@@ -785,13 +785,17 @@ map_5_2_1_4 <-
   ggplot(aes(fill = value)) +
   gg_cc_tiles +
   geom_sf() +
-  scale_fill_stepsn("Average assessed value", colours = curbcut_colors$left_5$fill[2:6]) +
-  facet_wrap(~name) +
-  ggtitle("Average assessed property value by forward sortation area (2019)") +
-  gg_cc_theme
+  scale_fill_stepsn("Valeur foncière moyenne", colours = curbcut_colors$left_5$fill[2:6]) +
+  facet_wrap(~name, labeller = as_labeller(c(
+    `Per property` = "Par propriété",
+    `Per unit` = "Par unité",
+    `Per sqft` = "Par pied carré"
+  ))) +
+  gg_cc_theme +
+  theme(legend.text.align = 0.5)
 
-# ggplot2::ggsave(filename = here::here("outputs/6/map_5_2_1_4.pdf"),
-#                 plot = map_5_2_1_4, width = 7.5, height = 6)
+ ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_4.pdf"),
+                 plot = map_5_2_1_4, width = 7.5, height = 6)
 
 plot_5_2_1_4_boxplot <- 
   uef |> 
@@ -801,13 +805,16 @@ plot_5_2_1_4_boxplot <-
   pivot_longer(c(`Per property`, `Per unit`)) |> 
   ggplot(aes(type, value)) +
   geom_boxplot(outliers = FALSE) +
-  facet_wrap(~name) +
-  scale_y_continuous("Assessed value", labels = scales::dollar) +
-  scale_x_discrete("Property type") +
+  facet_wrap(~name, labeller = as_labeller(c(
+    `Per property` = "Par propriété",
+    `Per unit` = "Par unité"
+  ))) +
+  scale_y_continuous("Valeur foncière", labels = scales::dollar) +
+  scale_x_discrete("Type de propriété") +
   graph_theme
 
-# ggplot2::ggsave(filename = here::here("outputs/6/plot_5_2_1_4_boxplot.pdf"),
-#                 plot = plot_5_2_1_4_boxplot, width = 7.5, height = 6)
+ ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_4_boxplot.pdf"),
+                plot = plot_5_2_1_4_boxplot, width = 6.5, height = 5)
 
 plot_5_2_1_4_year_property <-
   uef |> 
@@ -819,15 +826,14 @@ plot_5_2_1_4_year_property <-
   geom_point() +
   gghighlight::gghighlight() +
   facet_wrap(~type) +
-  scale_y_continuous("Assessed value", labels = scales::dollar) +
-  scale_x_continuous("Year of construction") +
-  scale_size_area("Number of properties") +
+  scale_y_continuous("Valeur foncière", labels = scales::dollar) +
+  scale_x_continuous("Année de construction") +
+  scale_size_area("Nombre de propriétés") +
   scale_fill_manual(values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
-  ggtitle("Average annual per-property assessed value by property type") +
   graph_theme
 
-# ggplot2::ggsave(filename = here::here("outputs/6/plot_5_2_1_4_year_property.pdf"),
-#                 plot = plot_5_2_1_4_year_property, width = 7.5, height = 6)
+ ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_4_year_property.pdf"),
+               plot = plot_5_2_1_4_year_property, width = 6.5, height = 5)
 
 plot_5_2_1_4_year_unit <- 
   uef |> 
@@ -840,15 +846,14 @@ plot_5_2_1_4_year_unit <-
   geom_point() +
   gghighlight::gghighlight() +
   facet_wrap(~type) +
-  scale_y_continuous("Assessed value", labels = scales::dollar) +
-  scale_x_continuous("Year of construction") +
-  scale_size_area("Number of properties") +
+  scale_y_continuous("Valeur foncière", labels = scales::dollar) +
+  scale_x_continuous("Année de construction") +
+  scale_size_area("Nombre de propriétés") +
   scale_fill_manual(values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
-  ggtitle("Average annual per-unit assessed value by property type") +
   graph_theme
 
-# ggplot2::ggsave(filename = here::here("outputs/6/plot_5_2_1_4_year_unit.pdf"),
-#                 plot = plot_5_2_1_4_year_unit, width = 7.5, height = 6)
+ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_4_year_unit.pdf"),
+                plot = plot_5_2_1_4_year_unit, width = 6.5, height = 5)
 
 
 # Save --------------------------------------------------------------------
