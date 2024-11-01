@@ -217,34 +217,35 @@ plot_5_2_1_1_percentiles <-
   new_prices |> 
   pivot_longer(c(p20, p40, median, p60, p80)) |> 
   mutate(name = case_when(
-    name == "p20" ~ "20th percentile",
-    name == "p40" ~ "40th percentile",
-    name == "median" ~ "Median",
-    name == "p60" ~ "60th percentile",
-    name == "p80" ~ "80th percentile")) |> 
-  mutate(name = factor(name, levels = c("20th percentile", "40th percentile", 
-                                        "Median", "60th percentile", 
-                                        "80th percentile"))) |> 
+    name == "p20" ~ "20e percentile",
+    name == "p40" ~ "40e percentile",
+    name == "median" ~ "Médian",
+    name == "p60" ~ "60e percentile",
+    name == "p80" ~ "80e percentile")) |> 
+  mutate(name = factor(name, levels = c("20e percentile", "40e percentile", 
+                                        "Médian", "60e percentile", 
+                                        "80e percentile"))) |> 
   filter(year != 2019) |> 
   ggplot(aes(year, value, colour = name)) +
   geom_line() +
-  scale_y_continuous("Price", labels = scales::dollar) +
-  scale_x_continuous("Year") +
+  scale_y_continuous("Prix", labels = scales::dollar) +
+  scale_x_continuous("Année") +
   scale_colour_manual(values = curbcut_colors$left_5$fill[2:6]) +
-  ggtitle(
-    "Average annual price for absorbed homeowner and condominimum units") +
   graph_theme
+
+ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_1_percentiles.pdf"), 
+                plot = plot_5_2_1_1_percentiles, width = 7.5, height = 5)
 
 plot_5_2_1_1_units <-
   new_prices |> 
   ggplot(aes(year, units)) +
   geom_line() +
-  scale_y_continuous("Units", labels = scales::comma) +
-  scale_x_continuous("Year") +
-  ggtitle(
-    "Annual absorbed homeowner and condominimum units") +
+  scale_y_continuous("Unités", labels = scales::comma) +
+  scale_x_continuous("Année") +
     graph_theme
 
+ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_1_units.pdf"), 
+                plot = plot_5_2_1_1_units, width = 6.5, height = 5)
 
 # 5.2.1.2 Loyer moyen des logements locatifs selon le nombre de ch --------
 
@@ -282,18 +283,27 @@ rent_by_bedroom <-
 
 plot_5_2_1_2_facet <-
   rent_by_bedroom |> 
+  mutate(bedroom = case_when(
+    bedroom == "Bachelor" ~ "Studio",
+    bedroom == "1 Bedroom" ~ "1 chambre",
+    bedroom == "2 Bedroom" ~ "2 chambres",
+    bedroom == "3 Bedroom +" ~ "3+ chambres",
+    bedroom == "Total" ~ "Total",
+    TRUE ~ bedroom
+  ),
+  bedroom = factor(bedroom, levels = c("Studio", "1 chambre", "2 chambres", "3+ chambres", "Total"))
+  ) |> 
   filter(is.na(zone)) |>
   ggplot(aes(year, value, group = bedroom)) +
   geom_line() +
   gghighlight::gghighlight(use_direct_label = FALSE) +
-  scale_y_continuous("Average monthly rent", labels = scales::dollar) +
-  scale_x_continuous("Year") +
+  scale_y_continuous("Loyer mensuel moyen", labels = scales::dollar) +
+  scale_x_continuous("Année") +
   facet_wrap(~bedroom) +
-  ggtitle("Average monthly rent for purpose-built rentals, by bedroom type") +
   graph_theme
 
-# ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_2_facet.pdf"),
-#                 plot = plot_5_2_1_2_facet, width = 7.5, height = 6)
+ ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_2_facet.pdf"),
+      plot = plot_5_2_1_2_facet, width = 6.5, height = 5)
 
 plot_5_2_1_2_change_facet <-
   rent_by_bedroom |> 
@@ -301,20 +311,28 @@ plot_5_2_1_2_change_facet <-
   mutate(value = slider::slide_dbl(value, \(x) x[2] - x[1], .before = 1, 
                                    .complete = TRUE),
          .by = zone, bedroom) |> 
+  mutate(bedroom = case_when(
+    bedroom == "Bachelor" ~ "Studio",
+    bedroom == "1 Bedroom" ~ "1 chambre",
+    bedroom == "2 Bedroom" ~ "2 chambres",
+    bedroom == "3 Bedroom +" ~ "3+ chambres",
+    bedroom == "Total" ~ "Total",
+    TRUE ~ bedroom
+  ),
+  bedroom = factor(bedroom, levels = c("Studio", "1 chambre", "2 chambres", "3+ chambres", "Total"))
+  ) |> 
   filter(is.na(zone)) |>
   filter(year >= 1991) |> 
   ggplot(aes(year, value, group = bedroom)) +
   geom_line() +
   gghighlight::gghighlight(use_direct_label = FALSE) +
-  scale_y_continuous("Average monthly rent", labels = scales::dollar) +
-  scale_x_continuous("Year") +
+  scale_y_continuous("Loyer moyen mensuel", labels = scales::dollar) +
+  scale_x_continuous("Année") +
   facet_wrap(~bedroom) +
-  ggtitle(
-      "Year-over-year change in average monthly rent for purpose-built rentals, by bedroom type") +
   graph_theme
 
-# ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_2_change_facet.pdf"),
-#                 plot = plot_5_2_1_2_change_facet, width = 7.5, height = 6)
+ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_2_change_facet.pdf"),
+                 plot = plot_5_2_1_2_change_facet, width = 6.5, height = 5)
 
 # Table with 5-year aggregations
 table_5_2_1_2_five_year <- 
@@ -333,10 +351,18 @@ table_5_2_1_2_five_year <-
   relocate(Total, .before = Bachelor) |> 
   mutate(across(-`Date Range`, round)) |> 
   mutate(across(-`Date Range`, scales::dollar)) |> 
-  gt::gt() |> 
-  gt::tab_header("Average monthly rent for purpose-built rentals by bedroom type")
+  gt::gt() |>
+  gt::cols_label(
+  `Date Range` = "Période",
+  Total = "Total",
+  Bachelor = "Studio",
+  `1 Bedroom` = "1 chambre",
+  `2 Bedroom` = "2 chambres",
+  `3 Bedroom +` = "3+ chambres"
+)
 
 # gtsave(table_5_2_1_2_five_year, "outputs/5/table_5_2_1_2_five_year.png", zoom = 1)
+gt_save_word(gt_table = table_5_2_1_2_five_year, file_path = "outputs/5/table_5_2_1_2_five_year.docx")
 
 # Map of average rents by five-year chunk
 map_5_2_1_2_annual <-
