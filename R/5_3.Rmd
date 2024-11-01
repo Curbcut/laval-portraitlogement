@@ -10,6 +10,7 @@ qs::qload(here::here("data", "section_5_3.qsm"))
 ```
 
 # 5.3.2 Pandémie et télétravail
+TKTK S'ASSURER QUE LES SOURCES SONT ÉCRITES DE FAÇON CONSTANTE
 
 _Source: Statistique Canada, Recensement de la population de 2021._
 
@@ -47,6 +48,8 @@ Le loyer médian à Laval pour les étudiants est de 950 $, soit 18,8 % plus él
 La plupart des étudiants locataires lavallois (40,7 %) vivent dans des logements de deux chambres à coucher, ce qui est supérieur à la moyenne provinciale de 34,5 %. Cependant, 16 % des étudiants lavallois déclare que leur logement nécessite des réparations majeures, un chiffre au-dessus de la moyenne provinciale de 10 %.
 
 # 5.3.5 Offre actuelle de logements subventionnés (TKTK logements sociaux et communautaires)
+
+TKTK À VOIR SI ON MERGE
 
 _Source: Observatoire Grand Montréal. (2024). Communauté métropolitaine de Montréal. Récupéré au https://observatoire.cmm.qc.ca/grand-montreal-en-statistiques/_
 
