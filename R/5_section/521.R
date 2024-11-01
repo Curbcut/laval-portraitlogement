@@ -748,6 +748,7 @@ plot_5_2_1_4_year_property <-
   scale_y_continuous("Assessed value", labels = scales::dollar) +
   scale_x_continuous("Year of construction") +
   scale_size_area("Number of properties") +
+  scale_fill_manual(values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
   ggtitle("Average annual per-property assessed value by property type") +
   graph_theme
 
@@ -768,6 +769,7 @@ plot_5_2_1_4_year_unit <-
   scale_y_continuous("Assessed value", labels = scales::dollar) +
   scale_x_continuous("Year of construction") +
   scale_size_area("Number of properties") +
+  scale_fill_manual(values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
   ggtitle("Average annual per-unit assessed value by property type") +
   graph_theme
 
