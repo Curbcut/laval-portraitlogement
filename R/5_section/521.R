@@ -367,6 +367,16 @@ gt_save_word(gt_table = table_5_2_1_2_five_year, file_path = "outputs/5/table_5_
 # Map of average rents by five-year chunk
 map_5_2_1_2_annual <-
   rent_by_bedroom |> 
+  mutate(bedroom = case_when(
+    bedroom == "Bachelor" ~ "Studio",
+    bedroom == "1 Bedroom" ~ "1 chambre",
+    bedroom == "2 Bedroom" ~ "2 chambres",
+    bedroom == "3 Bedroom +" ~ "3+ chambres",
+    bedroom == "Total" ~ "Total",
+    TRUE ~ bedroom
+  ),
+  bedroom = factor(bedroom, levels = c("Studio", "1 chambre", "2 chambres", "3+ chambres", "Total"))
+  ) |> 
   filter(!is.na(zone)) |>
   mutate(date = case_when(
     year >= 2019 ~ "2019-2023",
@@ -380,12 +390,12 @@ map_5_2_1_2_annual <-
   geom_sf(colour = "transparent", lwd = 0) +
   facet_grid(rows = vars(bedroom), cols = vars(date)) +
 
-  scale_fill_stepsn("Average monthly rent", labels = scales::dollar, 
+  scale_fill_stepsn("Loyen mensuel moyen", labels = scales::dollar, 
                     colours = curbcut_colors$left_5$fill[2:6]) +
   gg_cc_theme
 
-# ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_2_annual.pdf"),
-#                 plot = map_5_2_1_2_annual, width = 7.5, height = 6)
+ ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_2_annual.pdf"),
+                plot = map_5_2_1_2_annual, width = 7.5, height = 6)
 
 rent_by_construction <- 
   map(1990:2023, \(x) {
@@ -425,15 +435,13 @@ plot_5_2_1_2_construction_facet <-
   ggplot(aes(year, value, group = construction)) +
   geom_line() +
   gghighlight::gghighlight(use_direct_label = FALSE) +
-  scale_y_continuous("Average monthly rent", labels = scales::dollar) +
-  scale_x_continuous("Year") +
+  scale_y_continuous("Loyer mensuel moyen", labels = scales::dollar) +
+  scale_x_continuous("Année") +
   facet_wrap(~construction) +
-  ggtitle(
-    "Average monthly rent for purpose-built rentals, by year of construction") +
   graph_theme
 
-# ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_2_construction_facet.pdf"),
-#                 plot = plot_5_2_1_2_construction_facet, width = 7.5, height = 6)
+ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_2_construction_facet.pdf"),
+                 plot = plot_5_2_1_2_construction_facet, width = 6.5, height = 5)
 
 # Table with 5-year aggregations
 table_5_2_1_2_construction_five_year <- 
@@ -453,9 +461,14 @@ table_5_2_1_2_construction_five_year <-
   mutate(across(-`Date Range`, round)) |> 
   mutate(across(-`Date Range`, scales::dollar)) |> 
   gt::gt() |> 
-  gt::tab_header(
-    "Average monthly rent for purpose-built rentals by year of construction")
+  gt::cols_label(
+    `Date Range` = "Période",
+    `Total` = "Total",
+    `Before 1960` = "Avant 1960",
+    `2000 or Later` = "2000 et plus",
+  )
 
+gt_save_word(gt_table = table_5_2_1_2_construction_five_year, file_path = "outputs/5/table_5_2_1_2_construction_five_year.docx")
 
 # 5.2.1.3 Taux d'inoccupation ---------------------------------------------
 
@@ -493,6 +506,16 @@ vacancy_by_bedroom <-
 
 plot_5_2_1_3_facet <-
   vacancy_by_bedroom |> 
+  mutate(bedroom = case_when(
+    bedroom == "Bachelor" ~ "Studio",
+    bedroom == "1 Bedroom" ~ "1 chambre",
+    bedroom == "2 Bedroom" ~ "2 chambres",
+    bedroom == "3 Bedroom +" ~ "3+ chambres",
+    bedroom == "Total" ~ "Total",
+    TRUE ~ bedroom
+  ),
+  bedroom = factor(bedroom, levels = c("Studio", "1 chambre", "2 chambres", "3+ chambres", "Total"))
+  ) |> 
   filter(is.na(zone), !is.na(value)) |>
   ggplot(aes(year, value / 100, group = bedroom)) +
   geom_line() +
@@ -500,11 +523,10 @@ plot_5_2_1_3_facet <-
   scale_y_continuous("Average vacancy rate", labels = scales::percent) +
   scale_x_continuous("Year") +
   facet_wrap(~bedroom) +
-  ggtitle("Vacancy rate for purpose-built rentals, by bedroom type") +
   graph_theme
 
-# ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_3_facet.pdf"),
-#                 plot = plot_5_2_1_3_facet, width = 7.5, height = 6)
+ ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_3_facet.pdf"),
+                 plot = plot_5_2_1_3_facet, width = 6.5, height = 5)
 
 # Table with 5-year aggregations
 table_5_2_1_3_five_year <- 
@@ -525,13 +547,32 @@ table_5_2_1_3_five_year <-
   mutate(across(-`Date Range`, round, 3)) |>
   mutate(across(-`Date Range`, scales::percent)) |> 
   gt::gt() |> 
-  gt::tab_header("Vacancy rate for purpose-built rentals by bedroom type")
+  gt::cols_label(
+    `Date Range` = "Période",
+    Total = "Total",
+    Bachelor = "Studio",
+    `1 Bedroom` = "1 chambre",
+    `2 Bedroom` = "2 chambres",
+    `3 Bedroom +` = "3+ chambres"
+  )
 
 # gtsave(table_5_2_1_3_five_year, "outputs/5/table_5_2_1_3_five_year.png", zoom = 1)
+gt_save_word(gt_table = table_5_2_1_3_five_year, 
+      file_path = "outputs/5/table_5_2_1_3_five_year.docx")
 
 # Map of vacancy rate by five-year chunk
 map_5_2_1_3_annual <-
   vacancy_by_bedroom |> 
+  mutate(bedroom = case_when(
+    bedroom == "Bachelor" ~ "Studio",
+    bedroom == "1 Bedroom" ~ "1 chambre",
+    bedroom == "2 Bedroom" ~ "2 chambres",
+    bedroom == "3 Bedroom +" ~ "3+ chambres",
+    bedroom == "Total" ~ "Total",
+    TRUE ~ bedroom
+  ),
+  bedroom = factor(bedroom, levels = c("Studio", "1 chambre", "2 chambres", "3+ chambres", "Total"))
+  ) |> 
   filter(!is.na(zone)) |>
   mutate(date = case_when(
     year >= 2019 ~ "2019-2023",
@@ -545,11 +586,11 @@ map_5_2_1_3_annual <-
   gg_cc_tiles +
   geom_sf(colour = "transparent", lwd = 0) +
   facet_grid(rows = vars(bedroom), cols = vars(date)) +
-  scale_fill_stepsn("Vacancy rate", colours = curbcut_colors$left_5$fill[2:6]) +
+  scale_fill_stepsn("Taux d'innocupation", colours = curbcut_colors$left_5$fill[2:6]) +
   gg_cc_theme
 
-# ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_3_annual.pdf"),
-#                 plot = map_5_2_1_3_annual, width = 7.5, height = 6)
+ ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_3_annual.pdf"),
+               plot = map_5_2_1_3_annual, width = 6.5, height = 5)
 
 vacancy_by_rent <- 
   map(1990:2023, \(x) {
@@ -592,14 +633,13 @@ plot_5_2_1_3_rent_facet <-
   ggplot(aes(year, value / 100, group = quartile)) +
   geom_line() +
   gghighlight::gghighlight(use_direct_label = FALSE) +
-  scale_y_continuous("Average vacancy rate", labels = scales::percent) +
-  scale_x_continuous("Year") +
+  scale_y_continuous("Taux d'innocupation moyen", labels = scales::percent) +
+  scale_x_continuous("Année") +
   facet_wrap(~quartile) +
-  ggtitle("Vacancy rate for purpose-built rentals, by rent quartile") +
   graph_theme
 
-# ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_3_rent_facet.pdf"),
-#                 plot = plot_5_2_1_3_rent_facet, width = 7.5, height = 6)
+ ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_3_rent_facet.pdf"),
+                plot = plot_5_2_1_3_rent_facet, width = 6.5, height = 5)
 
 # Table with 5-year aggregations
 table_5_2_1_3_rent_five_year <-
@@ -615,9 +655,13 @@ table_5_2_1_3_rent_five_year <-
   mutate(across(-`Date Range`, round, 3)) |>
   mutate(across(-`Date Range`, scales::percent)) |> 
   gt::gt() |> 
-  gt::tab_header("Vacancy rate for purpose-built rentals by bedroom type")
+  gt::cols_label(
+    `Date Range` = "Période")
 
 # gtsave(table_5_2_1_3_rent_five_year, "outputs/5/table_5_2_1_3_rent_five_year.png", zoom = 1)
+gt_save_word(gt_table = table_5_2_1_3_rent_five_year, 
+             file_path = "outputs/5/table_5_2_1_3_rent_five_year.docx")
+
 
 # Map of vacancy rate by five-year chunk
 map_5_2_1_3_rent_annual <-
@@ -635,11 +679,11 @@ map_5_2_1_3_rent_annual <-
   gg_cc_tiles + 
   geom_sf(colour = "transparent", lwd = 0) +
   facet_grid(rows = vars(quartile), cols = vars(date)) +
-  scale_fill_stepsn("Vacancy rate", colours = curbcut_colors$left_5$fill[2:6]) +
+  scale_fill_stepsn("Taux d'innocupation", colours = curbcut_colors$left_5$fill[2:6]) +
   gg_cc_theme
 
-# ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_3_rent_annual.pdf"),
-#                 plot = map_5_2_1_3_rent_annual, width = 7.5, height = 6)
+ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_3_rent_annual.pdf"),
+              plot = map_5_2_1_3_rent_annual, width = 6.5, height = 5)
 
 vacancy_by_construction <- 
   map(1990:2023, \(x) {
@@ -675,20 +719,24 @@ vacancy_by_construction <-
 
 plot_5_2_1_3_construction_facet <-
   vacancy_by_construction |> 
+  mutate(construction = case_when(
+    construction == "Before 1960" ~ "Avant 1960",
+    construction == "2000 or Later" ~ "2000 et plus",
+    TRUE ~ construction  
+  )) |>  
   filter(is.na(zone), !is.na(value)) |>
   mutate(construction = factor(construction, levels = c(
-    "Before 1960", "1960 - 1979", "1980 - 1999", "2000 or Later", "Total"))) |>
+    "Avant 1960", "1960 - 1979", "1980 - 1999", "2000 et plus", "Total"))) |>
   ggplot(aes(year, value / 100, group = construction)) +
   geom_line() +
   gghighlight::gghighlight(use_direct_label = FALSE) +
-  scale_y_continuous("Average vacancy rate", labels = scales::percent) +
-  scale_x_continuous("Year") +
+  scale_y_continuous("Taux d'inoccupation moyen", labels = scales::percent) +
+  scale_x_continuous("Année") +
   facet_wrap(~construction) +
-  ggtitle("Vacancy rate for purpose-built rentals, by year of construction") +
   graph_theme
 
-# ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_3_construction_facet.pdf"),
-#                 plot = plot_5_2_1_3_construction_facet, width = 7.5, height = 6)
+ ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_3_construction_facet.pdf"),
+                plot = plot_5_2_1_3_construction_facet, width = 6.5, height = 5)
 
 
 # 5.2.1.4 Valeur foncière (secteur lucratif, secteur non lucratif) --------
