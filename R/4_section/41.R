@@ -257,7 +257,8 @@ ggsave(plot = plot_4_1_1_1, "outputs/4/plot_4_1_1_1.pdf", width = 6.5, height = 
 ggsave(plot = map_total_hh, "outputs/4/map_total_hh.pdf", width = 7.5, height = 6)
 ggsave(plot = map_owner_hh, "outputs/4/map_owner_hh.pdf", width = 7.5, height = 6)
 ggsave(plot = map_tenant_hh, "outputs/4/map_tenant_hh.pdf", width = 7.5, height = 6)
-gtsave(table_4_1_1_1, "outputs/4/table_4_1_1_1.png", zoom = 1)
+
+gt_save_word(gt_table = table_4_1_1_1, file_path = "outputs/4/table_4_1_1_1.docx")
 
 # Correlation between owner and typology?
 single_semi_row <- get_census(dataset = "CA21",
