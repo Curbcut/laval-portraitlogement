@@ -292,14 +292,10 @@ plot_5_2_1_2_facet <-
   ggtitle("Average monthly rent for purpose-built rentals, by bedroom type") +
   graph_theme
 
-<<<<<<< HEAD
-ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_6_facet.pdf"),
-                plot = plot_5_2_1_6_facet, width = 7.5, height = 6)
+# ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_2_facet.pdf"),
+#                 plot = plot_5_2_1_2_facet, width = 7.5, height = 6)
 
-plot_5_2_1_6_change_facet <-
-=======
 plot_5_2_1_2_change_facet <-
->>>>>>> 72d0e28de73d0ffb759108ae83f2a37a0a030f37
   rent_by_bedroom |> 
     arrange(zone, bedroom, year) |> 
   mutate(value = slider::slide_dbl(value, \(x) x[2] - x[1], .before = 1, 
@@ -317,12 +313,9 @@ plot_5_2_1_2_change_facet <-
       "Year-over-year change in average monthly rent for purpose-built rentals, by bedroom type") +
   graph_theme
 
-<<<<<<< HEAD
-ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_6_change_facet.pdf"),
-                plot = plot_5_2_1_6_change_facet, width = 7.5, height = 6)
+# ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_2_change_facet.pdf"),
+#                 plot = plot_5_2_1_2_change_facet, width = 7.5, height = 6)
 
-=======
->>>>>>> 72d0e28de73d0ffb759108ae83f2a37a0a030f37
 # Table with 5-year aggregations
 table_5_2_1_2_five_year <- 
   rent_by_bedroom |> 
@@ -343,7 +336,7 @@ table_5_2_1_2_five_year <-
   gt::gt() |> 
   gt::tab_header("Average monthly rent for purpose-built rentals by bedroom type")
 
-gtsave(table_5_2_1_6_five_year, "outputs/5/table_5_2_1_6_five_year.png", zoom = 1)
+# gtsave(table_5_2_1_2_five_year, "outputs/5/table_5_2_1_2_five_year.png", zoom = 1)
 
 # Map of average rents by five-year chunk
 map_5_2_1_2_annual <-
@@ -365,8 +358,8 @@ map_5_2_1_2_annual <-
                     colours = curbcut_colors$left_5$fill[2:6]) +
   gg_cc_theme
 
-ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_6_annual.pdf"),
-                plot = map_5_2_1_6_annual, width = 7.5, height = 6)
+# ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_2_annual.pdf"),
+#                 plot = map_5_2_1_2_annual, width = 7.5, height = 6)
 
 rent_by_construction <- 
   map(1990:2023, \(x) {
@@ -413,8 +406,8 @@ plot_5_2_1_2_construction_facet <-
     "Average monthly rent for purpose-built rentals, by year of construction") +
   graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_6_construction_facet.pdf"),
-                plot = plot_5_2_1_6_construction_facet, width = 7.5, height = 6)
+# ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_2_construction_facet.pdf"),
+#                 plot = plot_5_2_1_2_construction_facet, width = 7.5, height = 6)
 
 # Table with 5-year aggregations
 table_5_2_1_2_construction_five_year <- 
@@ -437,34 +430,6 @@ table_5_2_1_2_construction_five_year <-
   gt::tab_header(
     "Average monthly rent for purpose-built rentals by year of construction")
 
-<<<<<<< HEAD
-gtsave(table_5_2_1_6_construction_five_year, "outputs/5/table_5_2_1_6_construction_five_year.png", zoom = 1)
-
-# Map of average rents by five-year chunk
-map_5_2_1_6_construction_annual <-
-  rent_by_construction |> 
-  filter(!is.na(zone)) |>
-  mutate(date = case_when(
-    year >= 2019 ~ "2019-2023",
-    year >= 2014 ~ "2014-2018",
-    year >= 2010 ~ "2009-2013")) |> 
-  summarize(avg = mean(value, na.rm = TRUE), 
-            .by = c(date, zone, construction)) |> 
-  inner_join(cmhc_zones) |> 
-  st_as_sf() |> 
-  ggplot(aes(fill = avg)) +
-  geom_sf(colour = "white", lwd = 0.5) +
-  facet_grid(rows = vars(construction), cols = vars(date)) +
-  scale_fill_viridis_b("Average monthly rent", labels = scales::dollar, 
-                       n.breaks = 6) +
-  theme_void() +
-  theme(legend.position = "bottom",
-        legend.key.width = unit(60, "points"))
-
-ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_6_construction_annual.pdf"),
-                plot = map_5_2_1_6_construction_annual, width = 7.5, height = 6)
-=======
->>>>>>> 72d0e28de73d0ffb759108ae83f2a37a0a030f37
 
 # 5.2.1.3 Taux d'inoccupation ---------------------------------------------
 
@@ -512,8 +477,8 @@ plot_5_2_1_3_facet <-
   ggtitle("Vacancy rate for purpose-built rentals, by bedroom type") +
   graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_7_facet.pdf"),
-                plot = plot_5_2_1_7_facet, width = 7.5, height = 6)
+# ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_3_facet.pdf"),
+#                 plot = plot_5_2_1_3_facet, width = 7.5, height = 6)
 
 # Table with 5-year aggregations
 table_5_2_1_3_five_year <- 
@@ -536,7 +501,7 @@ table_5_2_1_3_five_year <-
   gt::gt() |> 
   gt::tab_header("Vacancy rate for purpose-built rentals by bedroom type")
 
-gtsave(table_5_2_1_7_five_year, "outputs/5/table_5_2_1_7_five_year.png", zoom = 1)
+# gtsave(table_5_2_1_3_five_year, "outputs/5/table_5_2_1_3_five_year.png", zoom = 1)
 
 # Map of vacancy rate by five-year chunk
 map_5_2_1_3_annual <-
@@ -557,8 +522,8 @@ map_5_2_1_3_annual <-
   scale_fill_stepsn("Vacancy rate", colours = curbcut_colors$left_5$fill[2:6]) +
   gg_cc_theme
 
-ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_7_annual.pdf"),
-                plot = map_5_2_1_7_annual, width = 7.5, height = 6)
+# ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_3_annual.pdf"),
+#                 plot = map_5_2_1_3_annual, width = 7.5, height = 6)
 
 vacancy_by_rent <- 
   map(1990:2023, \(x) {
@@ -607,8 +572,8 @@ plot_5_2_1_3_rent_facet <-
   ggtitle("Vacancy rate for purpose-built rentals, by rent quartile") +
   graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_7_rent_facet.pdf"),
-                plot = plot_5_2_1_7_rent_facet, width = 7.5, height = 6)
+# ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_3_rent_facet.pdf"),
+#                 plot = plot_5_2_1_3_rent_facet, width = 7.5, height = 6)
 
 # Table with 5-year aggregations
 table_5_2_1_3_rent_five_year <-
@@ -626,7 +591,7 @@ table_5_2_1_3_rent_five_year <-
   gt::gt() |> 
   gt::tab_header("Vacancy rate for purpose-built rentals by bedroom type")
 
-gtsave(table_5_2_1_7_rent_five_year, "outputs/5/table_5_2_1_7_rent_five_year.png", zoom = 1)
+# gtsave(table_5_2_1_3_rent_five_year, "outputs/5/table_5_2_1_3_rent_five_year.png", zoom = 1)
 
 # Map of vacancy rate by five-year chunk
 map_5_2_1_3_rent_annual <-
@@ -647,8 +612,8 @@ map_5_2_1_3_rent_annual <-
   scale_fill_stepsn("Vacancy rate", colours = curbcut_colors$left_5$fill[2:6]) +
   gg_cc_theme
 
-ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_7_rent_annual.pdf"),
-                plot = map_5_2_1_7_rent_annual, width = 7.5, height = 6)
+# ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_3_rent_annual.pdf"),
+#                 plot = map_5_2_1_3_rent_annual, width = 7.5, height = 6)
 
 vacancy_by_construction <- 
   map(1990:2023, \(x) {
@@ -696,8 +661,9 @@ plot_5_2_1_3_construction_facet <-
   ggtitle("Vacancy rate for purpose-built rentals, by year of construction") +
   graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_7_construction_facet.pdf"),
-                plot = plot_5_2_1_7_construction_facet, width = 7.5, height = 6)
+# ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_3_construction_facet.pdf"),
+#                 plot = plot_5_2_1_3_construction_facet, width = 7.5, height = 6)
+
 
 # 5.2.1.4 Valeur foncière (secteur lucratif, secteur non lucratif) --------
 
@@ -749,14 +715,10 @@ map_5_2_1_4 <-
   ggtitle("Average assessed property value by forward sortation area (2019)") +
   gg_cc_theme
 
-<<<<<<< HEAD
-ggplot2::ggsave(filename = here::here("outputs/6/map_6_1_12.pdf"),
-                plot = map_6_1_12, width = 7.5, height = 6)
+# ggplot2::ggsave(filename = here::here("outputs/6/map_5_2_1_4.pdf"),
+#                 plot = map_5_2_1_4, width = 7.5, height = 6)
 
-plot_6_1_12_boxplot <- 
-=======
 plot_5_2_1_4_boxplot <- 
->>>>>>> 72d0e28de73d0ffb759108ae83f2a37a0a030f37
   uef |> 
   mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
   mutate(`Per unit` = value / units) |> 
@@ -769,14 +731,10 @@ plot_5_2_1_4_boxplot <-
   scale_x_discrete("Property type") +
   graph_theme
 
-<<<<<<< HEAD
-ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_12_boxplot.pdf"),
-                plot = plot_6_1_12_boxplot, width = 7.5, height = 6)
+# ggplot2::ggsave(filename = here::here("outputs/6/plot_5_2_1_4_boxplot.pdf"),
+#                 plot = plot_5_2_1_4_boxplot, width = 7.5, height = 6)
 
-plot_6_1_12_year_property <-
-=======
 plot_5_2_1_4_year_property <-
->>>>>>> 72d0e28de73d0ffb759108ae83f2a37a0a030f37
   uef |> 
   mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
   summarize(n = n(), value = mean(value), .by = c(year_built, type)) |> 
@@ -792,14 +750,10 @@ plot_5_2_1_4_year_property <-
   ggtitle("Average annual per-property assessed value by property type") +
   graph_theme
 
-<<<<<<< HEAD
-ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_12_year_property.pdf"),
-                plot = plot_6_1_12_year_property, width = 7.5, height = 6)
+# ggplot2::ggsave(filename = here::here("outputs/6/plot_5_2_1_4_year_property.pdf"),
+#                 plot = plot_5_2_1_4_year_property, width = 7.5, height = 6)
 
-plot_6_1_12_year_unit <- 
-=======
 plot_5_2_1_4_year_unit <- 
->>>>>>> 72d0e28de73d0ffb759108ae83f2a37a0a030f37
   uef |> 
   mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
   summarize(n = sum(units), value = sum(value) / sum(units), 
@@ -816,8 +770,9 @@ plot_5_2_1_4_year_unit <-
   ggtitle("Average annual per-unit assessed value by property type") +
   graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_12_year_unit.pdf"),
-                plot = plot_6_1_12_year_unit, width = 7.5, height = 6)
+# ggplot2::ggsave(filename = here::here("outputs/6/plot_5_2_1_4_year_unit.pdf"),
+#                 plot = plot_5_2_1_4_year_unit, width = 7.5, height = 6)
+
 
 # Save --------------------------------------------------------------------
 
