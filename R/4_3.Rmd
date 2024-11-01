@@ -17,6 +17,8 @@ Selon l'Institut national de santé publique du Québec (INSPQ), la défavorisat
 
 La carte du graphique \@ref(fig:defavPlot) illustre les variations régionales de la défavorisation matérielle et sociale dans la région de Laval. Il y a des pochettes de défavorisation matérielle et sociale dans plusieurs secteurs de la ville, et les plus grandes pochettes se trouvent autour de Marigot et de Souvenir-Labelle.
 
+TKTK pour une exploration plus précise de la défavorisation matérielle et sociale, une page sur la plateforme Curbcut est prévue à cet effet: curbcut.ca/laval/defav .
+
 ```{r defavPlot, include=TRUE, fig.cap="Défavorisation matérielle et sociale à Laval (Variations régionales).", fig.align = 'center'}
 defav_plot
 ```

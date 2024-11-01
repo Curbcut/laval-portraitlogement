@@ -27,7 +27,7 @@ Ces tendances révèlent un changement structurel dans la dynamique du marché r
 plot_4_1_1_1
 ```
 
-Ce sont `nb_majority_owner_districts` des `nb_districts` districts électoraux de 2021 de Laval qui comptent davantage de ménages propriétaires que de locataires. C'est particulièrement notable dans des districts comme Auteuil et Saint-François, où (Figure \@ref(fig:map_owner_hh)) les ménages propriétaires représentent plus de 85 % des ménages. Les districts avec une forte proportion de ménages propriétaires se trouvent généralement en périphérie du centre-sud de la ville À l'inverse, les zones plus proches du centre-sud, telles que Souvenir-Labelle et Concorde-Bois-de-Boulogne, présentent une proportion plus élevée de ménages locataires.
+Ce sont `nb_majority_owner_districts` des `nb_districts` districts électoraux de 2021 de Laval qui comptent davantage de ménages propriétaires que locataires. C'est particulièrement notable dans des districts comme Auteuil et Saint-François, où (Figure \@ref(fig:map_owner_hh)) les ménages propriétaires représentent plus de 85 % des ménages. Les districts avec une forte proportion de ménages propriétaires se trouvent généralement en périphérie du centre-sud de la ville À l'inverse, les zones plus proches du centre-sud, telles que Souvenir-Labelle et Concorde-Bois-de-Boulogne, présentent une proportion plus élevée de ménages locataires.
 
 ENCADRÉ: La corrélation linéaire est positive et très forte (`r owner_house_cor`) entre le pourcentage de ménages propriétaires et la proportion de maisons unifamiliales, jumelées ou en rangée, indiquant une relation étroite entre la typologie des habitations et la propriété dans les districts lavallois. Dans les districts où il y a un pourcentage plus élevé de maisons unifamiliales, jumelées ou en rangée, on observe également un pourcentage plus élevé de ménages propriétaires.
 
@@ -96,6 +96,8 @@ _Source: Statistique Canada, Recensement de la population de 2016, analyse et tr
 
 Le graphique \@ref(fig:plot_4_1_1_4) illustre la répartition du statut d’occupation des ménages à Laval selon différents groupes d’immigration, en comparant les proportions de locataires (en logements subventionnés et non subventionnés) et de propriétaires (en copropriété ou en pleine propriété). Les immigrants arrivés avant 2006 présentent le taux le plus élevé de propriétaires (80 %, dont 71 % en pleine propriété), ce qui suggère une forte intégration dans le marché immobilier à long terme et potentiellement des conditions plus favorables à l'accession à la propriété avant 2006. À l’inverse, les immigrants arrivés entre 2006 et 2016, les autochtones et les résidents non permanents affichent une majorité de ménages locataires, respectivement 54 %, 57 % et 73 %.
 
+TKTK pour des données à jour du plus récent recensement canadien, une demande de crosstab (statut d'occupation des ménages et statut d'immigration) devra-t-être commandée à Statistique Canada. 
+
 ```{r plot_4_1_1_4, include=TRUE, fig.cap="Proportion des statuts d'occupation des ménages selon le statut d'immigration", fig.align = 'center'}
 plot_4_1_1_4
 ```
@@ -103,6 +105,8 @@ plot_4_1_1_4
 # 4.1.1.5 Âge du principal soutien du ménage selon le mode d'occupation
 
 _Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
+
+TKTKTKTK REVIEW LES CHIFFRES
 
 À Laval, la grande majorité des ménages dont le principal soutien est âgé de 15 à 24 ans est locataire, représentant 83,8 % des ménages de cette tranche d’âge. Cette tendance se poursuit pour le groupe des 25 à 34 ans, où les ménages locataires restent majoritaires, mais l’écart avec les propriétaires se réduit considérablement, avec 53,4 % de locataires.
 
@@ -115,6 +119,8 @@ plot_4_1_1_5
 # 4.1.1.6 Typologie selon le mode d'occupation
 
 _Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
+
+TKTKTK REVIEW LES CHIFFRES
 
 Le graphique suivant confirme des tendances bien établies en matière de logement : un tiers des propriétaires lavallois réside dans des maisons individuelles non attenantes (32,0 %), et ils sont également plus nombreux, en proportion, à habiter dans des maisons en rangée (1,9 %) ou jumelées (6,4 %) comparativement aux locataires, dont seulement 0,6 % vivent dans des maisons en rangée et 0,8 % dans des maisons jumelées. Un tiers des locataires vit dans des appartements dans des immeubles de moins de cinq étages (33,2 %), et globalement, la quasi-totalité des locataires habitent dans un appartement (de plain-pied dans un duplex à immeubles de cinq étages ou plus).
 

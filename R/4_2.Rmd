@@ -28,6 +28,8 @@ plot_4_2_1
 
 # 4.2.2 Proportion de ménages en situation de faible revenu selon le mode d'occupation
 
+TKTKTK EST-CE QUE ÇA A ÉTÉ IMPLANTÉ DANS D'AURTES SECTIONS? 
+
 _Source: Crosstab_
 
 <!-- While Statistics Canada does not have an official definition of poverty, the agency provides several indicators to help measure the prevalence of low income in Canada, which includes, but is not limited to, low income cut-offs, market basket measure, and low income measure. For the purpose of this report, the low income measure used is the Low-income measure, after-tax (LIM-AT), defined as households that fall under 50 % of the median adjusted after‑tax income of private households.
@@ -68,7 +70,7 @@ _Source: Statistique Canada, Recensement de la population de 2021, analyse et tr
 
 Le graphique \@ref(fig:plot_4_2_4) présente les frais médian de logement pour les locataires et les propriétaires à Laval, répartis selon différentes tranches de revenu. L'intensité de l'opacité des barres indique la proportion de ménages dans chaque catégorie, mettant ainsi en évidence les situations les plus courantes pour chaque statut d'occupation. Les barres plus opaques représentent des tranches de revenus où il y a une concentration plus élevée de ménages selon le mode d'occupation (> 125 000 \$ chez les propriétaires, 20 - 39 999 \$ chez les locataires). 
 
-Pour les tranches de revenus inférieures à 60 000 \$, les frais médian de logement  des locataires sont systématiquement plus élevés que ceux des propriétaires. Dans la tranche de revenu de 20 - 39 999 $, celle la plus fréquente chez les locataires, les loyers mensuels médians sont de `r loyer_fun_421("Locataire", "20 - 39 999 $")` (pour 15 010 ménages locataires) tandis qu'ils sont de `r loyer_fun_421("Propriétaire", "20 - 39 999 $")` pour les 9 230 ménages propriétaires. 
+Pour les tranches de revenus inférieures à 60 000 \$, les frais médian de logement  des locataires sont systématiquement plus élevés que ceux des propriétaires. Dans la tranche de revenu de 20 - 39 999 \$, celle la plus fréquente chez les locataires, les loyers mensuels médians sont de `r loyer_fun_421("Locataire", "20 - 39 999 \$")` (pour 15 010 ménages locataires) tandis qu'ils sont de `r loyer_fun_421("Propriétaire", "20 - 39 999 $")` pour les 9 230 ménages propriétaires. 
 
 À partir de la tranche de revenu de 60 000 \$ à 79 999 \$, cette tendance s’inverse. Les propriétaires ont alors des frais de logement médians qui dépassent ceux des locataires, et l'écart continue de croître dans les tranches de revenus supérieures. Pour les revenus de 100 000 \$ et plus, les propriétaires paient des frais médian de logement `r prop_pay_more_100k` plus élevés que les locataires, ce qui peut s’expliquer par l’accession à des logements de plus grande valeur et les frais associés.
 
@@ -80,6 +82,8 @@ plot_4_2_4
 
 # 4.2.5 4.2.5	Proportion de ménages, notamment locataires sous le seuil de faible revenu, consacrant plus de 30% et plus de 50% de leur revenu à se loger
 
+_Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
+
 Le graphique suivant montre la répartition des ménages lavallois selon le statut d'occupation, le pourcentage de revenu consacré aux frais de logement, et le statut de faible revenu. Il permet de visualiser les différences entre les ménages à faible revenu et l'ensemble des ménages pour chacune des trois tranches de taux d'effort pré-identifiées (moins de 30 %, 30 % ou plus, 50 % ou plus). Prendre en compte le statut de faible revenu est crucial pour évaluer le pourcentage de revenu consacré au logement, car cela met en évidence l'impact économique réel sur les ménages vulnérables. Une analyse par taux d'effort unique tout type de revenu confondu, comme le 30% communément admis, biaise la lecture. En effet, dépenser plus de 30 % du revenu en logement peut être supportable pour un ménage à revenu élevé, mais c'est une pression significative pour un ménage locataire à faible revenu, limitant leur capacité à couvrir d'autres besoins essentiels. 
 
 Une grande majorité de locataires à faible revenu (`r tenant_lowinc_30plus_pct`) dépense plus de 30 % de leur revenu pour se loger, et près d'un tiers (`r tenant_lowinc_50plus_pct`) dépasse même le seuil critique de 50 %, indiquant une vulnérabilité financière marquée. À noter que `r owner_lowinc_50plus_pct` des propriétaires à faible revenu consacrent plus de 50% de leur revenu pour se loger. La majorité des propriétaires dépensent moins de 30 % de leur revenu pour le logement. Cette disparité entre locataires et propriétaires souligne que les locataires, surtout ceux à faible revenu, sont particulièrement exposés aux pressions économiques liées aux coûts de logement.
@@ -89,6 +93,8 @@ plot_4_2_5
 ```
 
 # 4.2.7 Ménages en situation de surpeuplement (axe "taille" de l'abordabilité)
+
+_Source: Statistique Canada, Recensement de la population de 2021, analyse et traitement des données par Curbcut_
 
 Les données montrent une stabilité relative dans la proportion de ménages lavallois en situation de surpeuplement au cours des dix dernières années, avec des chiffres oscillant légèrement au dessus de 5 %. En 2011, `r ns_2011` des ménages vivaient dans des logements jugés trop petits pour leur taille, un chiffre qui a diminué à `r ns_2016` en 2016, avant de remonter légèrement à `r ns_2021` en 2021. Ces variations sont modestes et n’indiquent pas une amélioration marquée ni une détérioration significative des conditions de surpeuplement. Cependant, considérant l'évolution démographique, le nombre de ménages en situation de surpeuplement a augmenté de X ménages.
 
@@ -106,6 +112,8 @@ En 2018, le ratio entre le salaire hebdomadaire médian et le paiement hypothéc
 
 # 4.2.10 Frais de logement
 
+TKTK REVOIR SOURCE
+
 _Source: SCHL_
 
 Les coûts des loyers à Laval ont considérablement augmenté au cours de la dernière décennie. De 2010 à 2023, les loyers médians à Laval ont augmenté de `r housing_loyer_var` en dollars courants. En 2023, le loyer médian à Laval était de `r housing_loyer_2023` \$. Le loyer médian  cache par ailleurs la grande disparité de prix entre les logements locatifs occupés et inoccupés, les logements neufs et anciens et le prix selon le nombre de chambres à coucher.
@@ -116,9 +124,11 @@ housing_loyermed_plot
 
 Tout comme les coûts des loyers, les frais de logement des ménages propriétaires de Laval ont augmenté de façon importante. Selon le recensement de 2021, les frais de logement mensuels médians des propriétaires de Laval s’élevaient à 1 330 \$, soit une augmentation de 11,8 % par rapport au 1 190 \$ de 2016.
 
-// TKTK Sépération par districts électoraux à venir
+// TKTK Sépération par districts électoraux à venir (DEMANDÉ PAR LAVAL?)
 
 # 4.2.11 Aide au logement (aide à la pierre)
+
+TKTKTKTK Y ALLER SEULEMENT AVEC LES DONNÉES DE LA CMM, MAIS INSISTER SUR LE FAIT QUE LAVAL A SES PROPRES CHIFFRES MIS À JOUR.
 
 _Source: Observatoire Grand Montréal. (2024). Communauté métropolitaine de Montréal. Récupéré au https://observatoire.cmm.qc.ca/grand-montreal-en-statistiques/_
 
@@ -157,6 +167,8 @@ housing_loyermed_plot
 Répartition des logements sociaux et communautaires à Laval par programme
 
 # 4.2.12 Aide au paiement du loyer (aide à la personne)
+
+TKTKTK MÊME COMMENTAIRE QUE SECTION PRÉCÉDENTE
 
 _Source: Observatoire Grand Montréal. (2024). Communauté métropolitaine de Montréal. Récupéré au https://observatoire.cmm.qc.ca/grand-montreal-en-statistiques/_
 
