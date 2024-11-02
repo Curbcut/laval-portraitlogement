@@ -109,7 +109,7 @@ table_6_1_1_five_year <-
   summarize(avg = mean(value), .by = c(`Date Range`, type)) |> 
   pivot_wider(names_from = type, values_from = avg) |> 
   mutate(Total = Single + `Semi-Detached` + Row + Apartment, .before = Single) |> 
-  mutate(across(Total:Apartment, \(x) scales::comma(x, 1))) |> 
+  mutate(across(Total:Apartment, \(x) convert_number(x, 1))) |> 
   gt::gt() |> 
   gt::tab_header("Average annual housing completions by dwelling type")
 
@@ -286,6 +286,7 @@ table_6_1_2_five_year <-
   pivot_wider(names_from = type, values_from = Moyenne) |> 
   mutate(Total = Single + `Semi-Detached` + Row + Apartment, 
          .before = Single) |> 
+<<<<<<< HEAD
   rename("Unifamilial" = Single, 
          "Semi-détaché" = `Semi-Detached`, 
          "En rangée" = Row, 
@@ -300,6 +301,10 @@ table_6_1_2_five_year <-
     `En rangée` = "En rangée",
     Appartement = "Appartement"
   )
+=======
+  mutate(across(Total:Apartment, \(x) convert_number(x, 1))) |> 
+  gt::gt()
+>>>>>>> 7cf3a3d1bee0ebb36193c637cdfa0a4ad50aa4dd
 
 gt_save_word(gt_table = table_6_1_2_five_year, file_path = "outputs/6/table_6_1_2_five_year.docx")
 
@@ -354,8 +359,13 @@ plot_6_1_2_type_apart <-
   summarize(apart_pct = value[type == "Apartment"] / sum(value), .by = year) |>
   ggplot(aes(year, apart_pct)) +
   geom_line() +
+<<<<<<< HEAD
   scale_y_continuous("Mises en chantier", limits = c(0, 1), labels = scales::percent) +
   scale_x_continuous("Année") +
+=======
+  scale_y_continuous("Starts", limits = c(0, 1), labels = convert_pct) +
+  scale_x_continuous("Year") +
+>>>>>>> 7cf3a3d1bee0ebb36193c637cdfa0a4ad50aa4dd
   graph_theme
 
 ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_type_apart.pdf"), 
@@ -443,11 +453,19 @@ table_6_1_3_five_year <-
     year >= 1999 ~ "1999-2003",
     year >= 1994 ~ "1994-1998",
     year >= 1990 ~ "1990-1993")) |> 
+<<<<<<< HEAD
   summarize(Moyenne = mean(value), .by = c(`Période`, market)) |> 
   pivot_wider(names_from = market, values_from = Moyenne) |> 
   select(`Période`, Total = All, Propriétaire = Homeowner, Locatif = Rental, `Coopérative` = `Co-Op`) |> 
   mutate(across(Total:Coopérative, \(x) scales::comma(x, 1))) |> 
   gt::gt()
+=======
+  summarize(avg = mean(value), .by = c(`Date Range`, market)) |> 
+  pivot_wider(names_from = market, values_from = avg) |> 
+  select(`Date Range`, Total = All, Homeowner:`Co-Op`) |> 
+  mutate(across(Total:`Co-Op`, \(x) convert_number(x, 1))) |> 
+  gt::gt() 
+>>>>>>> 7cf3a3d1bee0ebb36193c637cdfa0a4ad50aa4dd
 
 gt_save_word(gt_table = table_6_1_3_five_year, file_path = "outputs/6/table_6_1_3_five_year.docx")
 
@@ -506,8 +524,13 @@ plot_6_1_3_market_rental <-
   summarize(rental_pct = value[market == "Rental"] / sum(value), .by = year) |>
   ggplot(aes(year, rental_pct)) +
   geom_line() +
+<<<<<<< HEAD
   scale_y_continuous("Mises en chantier", limits = c(0, 1), labels = scales::percent) +
   scale_x_continuous("Année") +
+=======
+  scale_y_continuous("Starts", limits = c(0, 1), labels = convert_pct) +
+  scale_x_continuous("Year") +
+>>>>>>> 7cf3a3d1bee0ebb36193c637cdfa0a4ad50aa4dd
   graph_theme
 
 ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market_rental.pdf"), 
@@ -562,7 +585,7 @@ plot_6_1_5_percentiles <-
   filter(year != 2019) |> 
   ggplot(aes(year, value, colour = name)) +
   geom_line() +
-  scale_y_continuous("Price", labels = scales::dollar) +
+  scale_y_continuous("Price", labels = convert_dollar) +
   scale_x_continuous("Year") +
   scale_colour_discrete(NULL) +
   ggtitle(
@@ -575,7 +598,7 @@ plot_6_1_5_units <-
   filter(year != 2019) |> 
   ggplot(aes(year, units)) +
   geom_line() +
-  scale_y_continuous("Units", labels = scales::comma) +
+  scale_y_continuous("Units", labels = convert_number) +
   scale_x_continuous("Year") +
   ggtitle(
     "Annual absorbed homeowner and condominimum units") +

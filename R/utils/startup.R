@@ -162,6 +162,15 @@ gg_cc_theme <- c(list(
   list(theme(legend.box.margin = margin(t = 0)))
 )
 
+gg_cc_theme_nodistricts <- c(list(
+  coord_sf(xlim = xlim_zoomed_out, 
+           ylim = ylim_zoomed_out,
+           expand = FALSE)),
+  list(theme_void()),
+  list(default_theme),
+  list(theme(legend.box.margin = margin(t = 0)))
+)
+
 table_font_size <- 9.5
 
 # Number functions --------------------------------------------------------
@@ -170,7 +179,7 @@ convert_hundreds <- function(x) {
   curbcut:::round_big_marks(
     x = x,
     min_dig = 5,
-    scale_fun = scales::comma
+    scale_fun = convert_number
   )
 }
 
@@ -182,7 +191,7 @@ convert_number <- function(x) {
 convert_number_tens <- \(x) convert_number(round(x / 10) * 10)
 
 convert_number_noround <- function(x) {
-  scales::comma(x, 1, accuracy = 1, big.mark = " ")
+  convert_number(x, 1, accuracy = 1, big.mark = " ")
 }
 
 convert_pct <- function(x) {
@@ -194,3 +203,5 @@ convert_pct <- function(x) {
   }
   out
 }
+
+convert_dollar <- \(x) paste(convert_number(x), "$")

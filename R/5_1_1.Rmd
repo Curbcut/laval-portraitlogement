@@ -22,7 +22,7 @@ single_shares <-
             single = sum(type_single, na.rm = TRUE),.by = year) |> 
   mutate(pct = single / total) |> 
   pull(pct) |> 
-  scales::percent(0.1)
+  convert_pct(0.1)
 
 ```
 
@@ -55,7 +55,7 @@ owner_shares <-
             owner = sum(tenure_owner, na.rm = TRUE),.by = year) |> 
   mutate(pct = owner / total) |> 
   pull(pct) |> 
-  scales::percent(0.1)
+  convert_pct(0.1)
 
 ```
 
@@ -109,7 +109,7 @@ ages <-
   select(-age_1990, -age_2005, -age_2010, -age_2015) |> 
   summarize(across(age_total:age_2021, sum)) |> 
   mutate(across(age_1960:age_2021, \(x) x / age_total)) |> 
-  mutate(across(age_1960:age_2021, scales::percent, 0.1))
+  mutate(across(age_1960:age_2021, convert_pct, 0.1))
 ```
 
 _Data source: Canadian Census_
@@ -140,11 +140,11 @@ subsid_data <-
   sf::st_drop_geometry() |> 
   filter(year >= 2011) |> 
   summarize(across(subsid_total:subsid, sum), .by = year) |> 
-  mutate(pct = scales::percent(subsid / subsid_total, 0.1)) |> 
-  mutate(subsid = scales::comma(subsid, 10))
+  mutate(pct = convert_pct(subsid / subsid_total, 0.1)) |> 
+  mutate(subsid = convert_number(subsid, 10))
 
-can_subsid_pct <- scales::percent(can_subsid$subsid / 100, 0.1)
-qc_subsid_pct <- scales::percent(qc_subsid$subsid / 100, 0.1)
+can_subsid_pct <- convert_pct(can_subsid$subsid / 100, 0.1)
+qc_subsid_pct <- convert_pct(qc_subsid$subsid / 100, 0.1)
 ```
 
 There is only limited systematic information available about households living in non-market housing. In particular, for the last ten years the Canadian Census has identified tenant households who live in subsidized housing. According to this indicator, the share of the overall tenant population in Laval living in subsidized housing has been flat, from `r subsid_data$subsid[1]` (`r subsid_data$pct[1]`) in 2011 to `r subsid_data$subsid[3]` (`r subsid_data$pct[3]`) in 2021. This rate is quite a bit lower than both the Canadian (`r can_subsid_pct`) and Quebec (`r qc_subsid_pct`) rates.

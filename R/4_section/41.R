@@ -188,7 +188,7 @@ map_owner_hh <- ggplot(data = owner_hh_map) +
   scale_fill_manual(values = curbcut_scale,
                     labels = owner_hh_breaks_lab,
                     drop = FALSE,
-                    name = "Pourcentage de ménages propriétaires (n)") +
+                    name = "Pourcentage de ménages propriétaires") +
   geom_sf(data = laval_sectors, fill = "transparent", color = "black") +
   gg_cc_theme +
   guides(fill = guide_legend(title.position = "top",

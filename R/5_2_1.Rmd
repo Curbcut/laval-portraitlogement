@@ -9,6 +9,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 library(tidyverse)
 library(gt)
 qs::qload(here::here("data", "section_5_2_1.qsm"))
+qs::qload(here::here("R", "utils/startup.R"))
 ```
 
 # 5.2.1.1 Sur le marché de la propriété (Prix médian par typologie et secteur Lavallois)
@@ -30,12 +31,12 @@ ratios <-
   filter(year %in% c(1998, 2020)) |> 
   mutate(ratio_80_20 = ratio_80_20 - 1) |> 
   pull(ratio_80_20) |> 
-  scales::percent()
+  convert_pct()
 
 ```
 
 
-La SCHL recueille des données sur les prix de vente des logements neufs en propriété et en copropriété. Selon ces données, Laval a connu des augmentations annuelles remarquablement constantes des prix des logements neufs depuis les années 1990. En 1998, le prix de vente moyen d’un logement nouvellement absorbé était de `r scales::dollar(new_prices$average[1])`, tandis qu'en 2023, il atteignait `r scales::dollar(new_prices$average[26])`, soit une augmentation de `r scales::percent(new_prices$average[26] / new_prices$average[1] - 1)`. Au fil du temps, le segment haut de gamme du marché a enregistré des hausses de prix proportionnellement plus rapides que le segment bas de gamme. En 1998, le prix de vente de l’unité nouvellement absorbée du 80e centile était `r ratios[1]` plus élevé que celui de l’unité du 20e centile, alors qu’en 2020, cet écart était passé à `r ratios[2]`. (Les trois années suivantes ont vu ce ratio diminuer, mais la volatilité de la tendance rend difficile de déterminer si cela reflète un changement durable des conditions du marché.)
+La SCHL recueille des données sur les prix de vente des logements neufs en propriété et en copropriété. Selon ces données, Laval a connu des augmentations annuelles remarquablement constantes des prix des logements neufs depuis les années 1990. En 1998, le prix de vente moyen d’un logement nouvellement absorbé était de `r convert_dollar(new_prices$average[1])`, tandis qu'en 2023, il atteignait `r convert_dollar(new_prices$average[26])`, soit une augmentation de `r convert_pct(new_prices$average[26] / new_prices$average[1] - 1)`. Au fil du temps, le segment haut de gamme du marché a enregistré des hausses de prix proportionnellement plus rapides que le segment bas de gamme. En 1998, le prix de vente de l’unité nouvellement absorbée du 80e centile était `r ratios[1]` plus élevé que celui de l’unité du 20e centile, alors qu’en 2020, cet écart était passé à `r ratios[2]`. (Les trois années suivantes ont vu ce ratio diminuer, mais la volatilité de la tendance rend difficile de déterminer si cela reflète un changement durable des conditions du marché.)
 
 ```{r plot_5_2_1_1_percentiles}
 plot_5_2_1_1_percentiles
@@ -54,7 +55,7 @@ rent_90s <-
   rent_by_bedroom |> 
   filter(is.na(zone), bedroom == "Total", year %in% c(1990, 1999)) |> 
   pull(value) |> 
-  scales::dollar()
+  convert_dollar()
 
 rent_years <- 
   rent_by_bedroom |> 
@@ -71,23 +72,23 @@ rent_years <-
   pivot_wider(names_from = bedroom, values_from = avg) |> 
   relocate(Total, .before = Bachelor)
 
-bach_abs <- scales::dollar(rent_years$Bachelor[7] - rent_years$Bachelor[6])
-bach_pct <- scales::percent((rent_years$Bachelor[7] - rent_years$Bachelor[6]) /
+bach_abs <- convert_dollar(rent_years$Bachelor[7] - rent_years$Bachelor[6])
+bach_pct <- convert_pct((rent_years$Bachelor[7] - rent_years$Bachelor[6]) /
                              rent_years$Bachelor[6])
-bach_2014 <- scales::dollar(rent_years$Bachelor[6])
-bach_2019 <- scales::dollar(rent_years$Bachelor[7])
+bach_2014 <- convert_dollar(rent_years$Bachelor[6])
+bach_2019 <- convert_dollar(rent_years$Bachelor[7])
 
-one_abs <- scales::dollar(rent_years$`1 Bedroom`[7] - rent_years$`1 Bedroom`[6])
-one_pct <- scales::percent((rent_years$`1 Bedroom`[7] - rent_years$`1 Bedroom`[6]) /
+one_abs <- convert_dollar(rent_years$`1 Bedroom`[7] - rent_years$`1 Bedroom`[6])
+one_pct <- convert_pct((rent_years$`1 Bedroom`[7] - rent_years$`1 Bedroom`[6]) /
                              rent_years$`1 Bedroom`[6])
-one_2014 <- scales::dollar(rent_years$`1 Bedroom`[6])
-one_2019 <- scales::dollar(rent_years$`1 Bedroom`[7])
+one_2014 <- convert_dollar(rent_years$`1 Bedroom`[6])
+one_2019 <- convert_dollar(rent_years$`1 Bedroom`[7])
 
-three_abs <- scales::dollar(rent_years$`3 Bedroom +`[7] - rent_years$`3 Bedroom +`[6])
-three_pct <- scales::percent((rent_years$`3 Bedroom +`[7] - rent_years$`3 Bedroom +`[6]) /
+three_abs <- convert_dollar(rent_years$`3 Bedroom +`[7] - rent_years$`3 Bedroom +`[6])
+three_pct <- convert_pct((rent_years$`3 Bedroom +`[7] - rent_years$`3 Bedroom +`[6]) /
                              rent_years$`3 Bedroom +`[6])
-three_2014 <- scales::dollar(rent_years$`3 Bedroom +`[6])
-three_2019 <- scales::dollar(rent_years$`3 Bedroom +`[7])
+three_2014 <- convert_dollar(rent_years$`3 Bedroom +`[6])
+three_2019 <- convert_dollar(rent_years$`3 Bedroom +`[7])
 
 ```
 
@@ -119,9 +120,9 @@ rent_years <-
   filter(is.na(zone), year == 2023) |> 
   pull(value)
 
-new_2023 <- scales::dollar(rent_years[4])
-old_low_2023 <- scales::dollar(rent_years[2])
-old_high_2023 <- scales::dollar(rent_years[1])
+new_2023 <- convert_dollar(rent_years[4])
+old_low_2023 <- convert_dollar(rent_years[2])
+old_high_2023 <- convert_dollar(rent_years[1])
 ```
 
 Rents have risen particularly quickly in new buildings. While the average rent in 2023 reached `r new_2023` in buildings constructed in the year 2000 or later, the equivalent figure was between `r old_low_2023` and `r old_high_2023` in buildings constructed before 2000. This gap has been present since the beginning of the time series (1990), but it has widened substantially since 2020, when the rents in new (i.e. 2000 or later) construction skyrocketed relative to other construction dates.
@@ -142,7 +143,7 @@ three_br_vacancy <-
   filter(is.na(zone), bedroom == "3 Bedroom +", year >= 2019) |> 
   pull(value) |> 
   mean(na.rm = TRUE) |> 
-  scales::percent(accuracy = 0.1, scale = 1)
+  convert_pct(accuracy = 0.1, scale = 1)
 ```
 The evolution of the vacancy rate in purpose-built rental buildings since 1990 is the inverse of the change in average rents documented in the last section. Vacancy rates were high in the 1990s, indicating a loose rental market where the supply of available rental housing was plentiful in comparison to the number of prospective tenants looking for apartments. A common rule of thumb for a neutral vacancy rate is 3%; when the rate is lower than 3%, rents tend to increase, and when the rate is higher than 3%, rents tend to be flat or decreasing. The city-wide vacancy rate exceeded 3% for most of the 1990s, corresponding to the decade of stagnating rents. In the late 1990s, the vacancy rate began a steep decline, and dipped below 1% in the early 2000s. For the last 20 years, the vacancy rate has never reached the 3% neutral point. This indicates a tight rental market where landlords are able to charge higher rents because there are many prospective tenants in relation to the supply of available rental units.
 
@@ -193,13 +194,13 @@ uef_values <-
   summarize(per_property = mean(value),
             per_unit = sum(value) / sum(units),
             .by = type) |> 
-  mutate(across(-type, scales::dollar))
+  mutate(across(-type, convert_dollar))
 
 ```
 
 _Data source: Unité d'evaluation foncière_
 
-In 2019, the average assessed value of a residential property in Laval was `r scales::dollar(mean(uef$value))`. In both per-property and per-unit terms, detached homes had the highest average assessed value (`r uef_values$per_property[1]` per property, and `r uef_values$per_unit[1]` per unit), followed by "jumelé" (`r uef_values$per_property[2]` per property, and `r uef_values$per_unit[2]` per unit), then "en rangée" (`r uef_values$per_property[4]` per property, and `r uef_values$per_unit[4]` per unit), and finally "intégré" (`r uef_values$per_property[3]` per property, and `r uef_values$per_unit[3]` per unit).
+In 2019, the average assessed value of a residential property in Laval was `r convert_dollar(mean(uef$value))`. In both per-property and per-unit terms, detached homes had the highest average assessed value (`r uef_values$per_property[1]` per property, and `r uef_values$per_unit[1]` per unit), followed by "jumelé" (`r uef_values$per_property[2]` per property, and `r uef_values$per_unit[2]` per unit), then "en rangée" (`r uef_values$per_property[4]` per property, and `r uef_values$per_unit[4]` per unit), and finally "intégré" (`r uef_values$per_property[3]` per property, and `r uef_values$per_unit[3]` per unit).
 
 ```{r plot_5_2_1_4_boxplot}
 plot_5_2_1_4_boxplot
