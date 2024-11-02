@@ -611,9 +611,11 @@ table_4_1_1_2_owner <- data_4_1_1_2_table_owner |>
 #Saving the visuals as images
 ggsave(plot = plot_4_1_1_2, "outputs/4/plot_4_1_1_2.pdf", width = 6.5, height = 5)
 # gtsave(table_4_1_1_2_2, "outputs/4/table_4_1_1_2_2.png", vwidth = 2400)
-gtsave(table_4_1_1_2_owner, "outputs/4/table_4_1_1_2_owner.png", vwidth = 2400)
-
-gtsave(table_4_1_1_2_tenant, "outputs/4/table_4_1_1_2_tenant.png", vwidth = 2400)
+# gtsave(table_4_1_1_2_owner, "outputs/4/table_4_1_1_2_owner.png", vwidth = 2400)
+# 
+# gtsave(table_4_1_1_2_tenant, "outputs/4/table_4_1_1_2_tenant.png", vwidth = 2400)
+gt_save_word(table_4_1_1_2_owner, "outputs/4/table_4_1_1_2_owner.docx")
+gt_save_word(table_4_1_1_2_tenant, "outputs/4/table_4_1_1_2_tenant.docx")
 #Data frame for the plot
 # data_4_1_2 <- read_excel("data/4/mode_occupation_revenu_SR.xlsx") |> #Edited version of the spreadsheet
 #   select(-GeoUID) |> 
@@ -787,8 +789,8 @@ data_4_1_1_3_comp <- crosstab_get(mode_occupation = mode_occupation, composition
   mutate(comp = case_when(
     str_detect(type, "wo_kids") ~ "Couple sans enfants",
     str_detect(type, "w_kids") ~ "Couple avec enfants",
-    str_detect(type, "mono") ~ "Famille monoparentale",
-    str_detect(type, "multi") ~ "Ménage multigénérationnel",
+    str_detect(type, "mono") ~ "Famille mono-parentale",
+    str_detect(type, "multi") ~ "Ménage multi-générationnel",
     str_detect(type, "solo") ~ "Personne seule",
     str_detect(type, "other") ~ "Deux personnes ou plus",
     TRUE ~ NA_character_),
@@ -803,8 +805,8 @@ data_4_1_1_3_comp <- crosstab_get(mode_occupation = mode_occupation, composition
     comp = factor(comp, levels = c(
       "Couple sans enfants",
       "Couple avec enfants",
-      "Famille monoparentale",
-      "Ménage multigénérationnel",
+      "Famille mono-parentale",
+      "Ménage multi-générationnel",
       "Personne seule",
       "Deux personnes ou plus"))) |> 
   group_by(type) |> 
@@ -817,7 +819,7 @@ plot_4_1_1_3_comp <- ggplot(data_4_1_1_3_comp, aes(x = comp, y = count, fill = t
   geom_text(data = data_4_1_1_3_comp[c(4, 6, 10, 12), ], aes(label = pct), position = position_dodge(width = 0.9),
             vjust = -1.5, size = 2.5, color = "black") +
   scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
-  scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 18)) +
+  scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 8, whitespace_only = FALSE)) +
   scale_y_continuous(labels = function(x) convert_number(x)) +
   graph_theme +
   xlab(NULL) +
@@ -1546,8 +1548,8 @@ projection_4_1_2_3_1 <- read_excel("data/4/PopGrAS_RA_base_2024.xlsx", skip = 5)
 
 
 # Reshape the data from wide to long format
-projection_long <- pivot_longer(projection_4_1_2_3_1, cols = `0-4`:`100+`, names_to = "Groupe d'âge")
-projection_long <- projection_long[projection_long$Année %in% c(2021, 2051), ]
+projection_long_raw <- pivot_longer(projection_4_1_2_3_1, cols = `0-4`:`100+`, names_to = "Groupe d'âge")
+projection_long <- projection_long[projection_long_raw$Année %in% c(2021, 2051), ]
 projection_long$`Groupe d'âge` <- factor(projection_long$`Groupe d'âge`,
                                          levels = unique(projection_long$`Groupe d'âge`))
 
@@ -1566,14 +1568,14 @@ ggsave(plot = plot_4_1_2_3_1, "outputs/4/plot_4_1_2_3_1.pdf", width = 9, height 
 
 
 growth_total <- 
-  sum(projection_long$value[projection_long$Année == 2041]) - sum(projection_long$value[projection_long$Année == 2021])
+  sum(projection_long_raw$value[projection_long_raw$Année == 2041]) - sum(projection_long_raw$value[projection_long_raw$Année == 2021])
 sum_2021 <- 
-  sum(projection_long$value[projection_long$Année == 2021 & 
-                              projection_long$`Groupe d'âge` %in% c("65-69", "70-74", "75-79", "80-84", "85+")])
+  sum(projection_long_raw$value[projection_long_raw$Année == 2021 & 
+                              projection_long_raw$`Groupe d'âge` %in% c("65-69", "70-74", "75-79", "80-84", "85+")])
 
 sum_2041 <- 
-  sum(projection_long$value[projection_long$Année == 2041 & 
-                              projection_long$`Groupe d'âge` %in% c("65-69", "70-74", "75-79", "80-84", "85+")])
+  sum(projection_long_raw$value[projection_long_raw$Année == 2041 & 
+                              projection_long_raw$`Groupe d'âge` %in% c("65-69", "70-74", "75-79", "80-84", "85+")])
 growth_65p <- sum_2041 - sum_2021
 
 growth_attributed_to_65p <- convert_pct(growth_65p / growth_total)
@@ -1608,7 +1610,7 @@ growth_attributed_to_65p <- convert_pct(growth_65p / growth_total)
 #     table.font.size = 13,
 #     table.width = px(6 * 224))
 
-pop_growth <- (sum(projection_long$value[projection_long$Année == 2041]) - sum(projection_long$value[projection_long$Année == 2021])) / sum(projection_long$value[projection_long$Année == 2021])
+pop_growth <- (sum(projection_long_raw$value[projection_long_raw$Année == 2041]) - sum(projection_long_raw$value[projection_long_raw$Année == 2021])) / sum(projection_long_raw$value[projection_long_raw$Année == 2021])
 pop_growth <- convert_pct(pop_growth)
 
 # change_85 <- projection_4_1_2_3_1 |> filter(`Groupe d'âge` == "85+") |> pull(`Changement`) |> convert_pct()
