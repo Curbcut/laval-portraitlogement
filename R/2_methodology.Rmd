@@ -4,15 +4,18 @@ author: "Curbcut"
 output: html_document
 ---
 
-note sur aggrégation census: https://www12.statcan.gc.ca/census-recensement/2011/dp-pd/prof/help-aide/N2.cfm?Lang=F
+#### Échelles territoriales
+L'analyse s’appuie principalement sur les districts électoraux définis lors des élections municipales de 2021, accessibles sur le site Données Québec (https://www.donneesquebec.ca/recherche/dataset/limites-des-districts-electoraux-des-dernieres-elections-municipales). Lorsque des analyses plus granulaires sont nécessaires, les aires de diffusion du recensement canadien, qui regroupent généralement entre 400 et 700 habitants, sont utilisées.
 
-expliquer les échelles territoriales (districts électoraux 2021 ?)
+#### Utilisation des données du recensement canadien
+Afin de garantir la confidentialité des informations du recensement canadien, les données sont soumises à un arrondi aléatoire (vers le haut ou vers le bas) en multiples de 5 ou 10. Cela signifie que chaque valeur est légèrement ajustée, ce qui peut entraîner des divergences lorsque les valeurs sont agrégées. Par exemple, les totaux ou sous-totaux peuvent ne pas correspondre exactement à la somme des valeurs individuelles en raison de cet arrondi indépendant. De même, les pourcentages calculés à partir des données arrondies peuvent ne pas totaliser précisément 100 %.
 
-interpolation: Là où les données du recensement ont été présentés à l'échelle des districts électoraux, interpolation spatiale directement à partir des secteurs de recensement. Le recensement fait un random rounding to base 5, ce qui signifie que cela peut inclure un certain niveau d'erreur pour des petits valeurs (sommation de l'erreur des approximations). L'interpolation spatiale veut dire qu'un secteur de recensement qui est coupé en deux par des districts aura une proportion de 'valeur' égale à sa proportion de territoire. Ex. un secteur de recensement de 900 locataires se retrouve coupé entre 2  districts: 1/3 de son territoire sur le dsitrict A, 2/3 sur le district B. 900 locataires * 1/3 du territoire du secteur de recensement = 300 locataires seront comptés dans le district A, et 600 dans le district B. Pour une précision plus précise, les données peuvent être commandé à Statistique Canada avec le coupage territorial customized.
-UTILISER LA FONCTION POUR AJOUTER DU CONTEXTE SUR LA FAÇON DONT C'EST FAIT.
+Lorsque les données du recensement canadien sont présentées à l’échelle des districts électoraux, une interpolation spatiale a été appliquée à partir des secteurs de recensement. L'approche consiste à attribuer aux districts une proportion de la valeur d'un secteur en fonction de la superficie du secteur se trouvant dans chaque district. Par exemple, si un secteur comptant 900 locataires est divisé entre deux districts, avec 1/3 de son territoire dans le district A et 2/3 dans le district B, alors 300 locataires seront attribués au district A et 600 au district B.
 
-Les graphs (haute qualité) et le code est disponible au github public: https://github.com/Curbcut/laval-housing (RENOMMER). Les données, parfois potentiellement privées, n'y sont pas disponibles publiquement. 
+L’arrondi aléatoire des valeurs en multiples de 5 introduit une marge d’erreur qui peut s’amplifier lors des calculs par interpolation, particulièrement pour les petites valeurs. L’addition de ces erreurs d’arrondi peut ainsi affecter la précision des valeurs finales attribuées aux districts. Pour des données plus précises, il est possible de commander une découpe territoriale personnalisée auprès de Statistique Canada.
 
-RERUN TOUS LES SCRIPTS POUR S'ASSURER QU'IL N'Y A PAS OLD STUFF DANS OUTPUT TKTK
+#### Code source ouvert et graphiques en haute définition
+Les graphiques de haute qualité et le code source de l’analyse sont accessibles via le dépôt public GitHub : https://github.com/Curbcut/laval-housing. Notez que les données potentiellement privées ne sont pas publiquement disponibles dans ce dépôt.
 
-Un grand nombre de données ici présentes sont aussi disponibles sur la plateforme Curbcut: curbcut.ca/laval 
+#### Plateforme publique
+Une partie des données présentées dans ce rapport est également disponible sur la plateforme Curbcut à l'adresse : curbcut.ca/laval.
