@@ -228,7 +228,7 @@ plot_5_2_1_1_percentiles <-
   filter(year != 2019) |> 
   ggplot(aes(year, value, colour = name)) +
   geom_line() +
-  scale_y_continuous("Prix", labels = scales::dollar) +
+  scale_y_continuous("Prix", labels = convert_dollar) +
   scale_x_continuous("Année") +
   scale_colour_manual(values = curbcut_colors$left_5$fill[2:6]) +
   graph_theme
@@ -297,7 +297,7 @@ plot_5_2_1_2_facet <-
   ggplot(aes(year, value, group = bedroom)) +
   geom_line() +
   gghighlight::gghighlight(use_direct_label = FALSE) +
-  scale_y_continuous("Loyer mensuel moyen", labels = scales::dollar) +
+  scale_y_continuous("Loyer mensuel moyen", labels = convert_dollar) +
   scale_x_continuous("Année") +
   facet_wrap(~bedroom) +
   graph_theme
@@ -326,7 +326,7 @@ plot_5_2_1_2_change_facet <-
   ggplot(aes(year, value, group = bedroom)) +
   geom_line() +
   gghighlight::gghighlight(use_direct_label = FALSE) +
-  scale_y_continuous("Loyer moyen mensuel", labels = scales::dollar) +
+  scale_y_continuous("Loyer moyen mensuel", labels = convert_dollar) +
   scale_x_continuous("Année") +
   facet_wrap(~bedroom) +
   graph_theme
@@ -350,7 +350,7 @@ table_5_2_1_2_five_year <-
   pivot_wider(names_from = bedroom, values_from = avg) |> 
   relocate(Total, .before = Bachelor) |> 
   mutate(across(-`Date Range`, round)) |> 
-  mutate(across(-`Date Range`, scales::dollar)) |> 
+  mutate(across(-`Date Range`, convert_dollar)) |> 
   gt::gt() |>
   gt::cols_label(
   `Date Range` = "Période",
@@ -386,13 +386,16 @@ map_5_2_1_2_annual <-
   inner_join(cmhc_zones) |> 
   st_as_sf() |> 
   ggplot(aes(fill = avg)) +
-  gg_cc_tiles +
-  geom_sf(colour = "transparent", lwd = 0) +
+  # gg_cc_tiles +
+  geom_sf(colour = "black") +
   facet_grid(rows = vars(bedroom), cols = vars(date)) +
 
-  scale_fill_stepsn("Loyen mensuel moyen", labels = scales::dollar, 
+  scale_fill_stepsn("Loyen mensuel moyen", 
+                    labels = \(x) paste(convert_number(x), "$"),
                     colours = curbcut_colors$left_5$fill[2:6]) +
-  gg_cc_theme
+  gg_cc_theme_nodistricts +
+  theme(legend.key.width = unit(2, "cm"),
+        legend.title.position = "top")
 
  ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_2_annual.pdf"),
                 plot = map_5_2_1_2_annual, width = 7.5, height = 6)
@@ -435,7 +438,7 @@ plot_5_2_1_2_construction_facet <-
   ggplot(aes(year, value, group = construction)) +
   geom_line() +
   gghighlight::gghighlight(use_direct_label = FALSE) +
-  scale_y_continuous("Loyer mensuel moyen", labels = scales::dollar) +
+  scale_y_continuous("Loyer mensuel moyen", labels = convert_dollar) +
   scale_x_continuous("Année") +
   facet_wrap(~construction) +
   graph_theme
@@ -459,7 +462,7 @@ table_5_2_1_2_construction_five_year <-
   pivot_wider(names_from = construction, values_from = avg) |> 
   relocate(Total, .after = `Date Range`) |> 
   mutate(across(-`Date Range`, round)) |> 
-  mutate(across(-`Date Range`, scales::dollar)) |> 
+  mutate(across(-`Date Range`, convert_dollar)) |> 
   gt::gt() |> 
   gt::cols_label(
     `Date Range` = "Période",
@@ -583,11 +586,15 @@ map_5_2_1_3_annual <-
   inner_join(cmhc_zones) |> 
   st_as_sf() |> 
   ggplot(aes(fill = avg)) +
-  gg_cc_tiles +
-  geom_sf(colour = "transparent", lwd = 0) +
+  # gg_cc_tiles +
+  geom_sf(colour = "black") +
   facet_grid(rows = vars(bedroom), cols = vars(date)) +
-  scale_fill_stepsn("Taux d'innocupation", colours = curbcut_colors$left_5$fill[2:6]) +
-  gg_cc_theme
+  scale_fill_stepsn("Taux d'innocupation", 
+                    colours = curbcut_colors$left_5$fill[2:6], 
+                    label = convert_pct) +
+  gg_cc_theme_nodistricts +
+  theme(legend.key.width = unit(2, "cm"),
+        legend.title.position = "top")
 
  ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_3_annual.pdf"),
                plot = map_5_2_1_3_annual, width = 6.5, height = 5)
@@ -676,11 +683,14 @@ map_5_2_1_3_rent_annual <-
   inner_join(cmhc_zones) |> 
   st_as_sf() |> 
   ggplot(aes(fill = avg)) +
-  gg_cc_tiles + 
-  geom_sf(colour = "transparent", lwd = 0) +
+  # gg_cc_tiles + 
+  geom_sf(colour = "black") +
   facet_grid(rows = vars(quartile), cols = vars(date)) +
-  scale_fill_stepsn("Taux d'innocupation", colours = curbcut_colors$left_5$fill[2:6]) +
-  gg_cc_theme
+  scale_fill_stepsn("Taux d'innocupation", colours = curbcut_colors$left_5$fill[2:6],
+                    label = convert_pct) +
+  gg_cc_theme_nodistricts +
+  theme(legend.key.width = unit(2, "cm"),
+        legend.title.position = "top")
 
 ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_3_rent_annual.pdf"),
               plot = map_5_2_1_3_rent_annual, width = 6.5, height = 5)
@@ -809,7 +819,7 @@ plot_5_2_1_4_boxplot <-
     `Per property` = "Par propriété",
     `Per unit` = "Par unité"
   ))) +
-  scale_y_continuous("Valeur foncière", labels = scales::dollar) +
+  scale_y_continuous("Valeur foncière", labels = convert_dollar) +
   scale_x_discrete("Type de propriété") +
   graph_theme
 
@@ -826,7 +836,7 @@ plot_5_2_1_4_year_property <-
   geom_point() +
   gghighlight::gghighlight() +
   facet_wrap(~type) +
-  scale_y_continuous("Valeur foncière", labels = scales::dollar) +
+  scale_y_continuous("Valeur foncière", labels = convert_dollar) +
   scale_x_continuous("Année de construction") +
   scale_size_area("Nombre de propriétés") +
   scale_fill_manual(values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
@@ -846,7 +856,7 @@ plot_5_2_1_4_year_unit <-
   geom_point() +
   gghighlight::gghighlight() +
   facet_wrap(~type) +
-  scale_y_continuous("Valeur foncière", labels = scales::dollar) +
+  scale_y_continuous("Valeur foncière", labels = convert_dollar) +
   scale_x_continuous("Année de construction") +
   scale_size_area("Nombre de propriétés") +
   scale_fill_manual(values = curbcut_colors$brandbook$color[c(2:4, 9)]) +

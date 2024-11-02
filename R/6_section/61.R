@@ -558,7 +558,7 @@ plot_6_1_5_percentiles <-
   filter(year != 2019) |> 
   ggplot(aes(year, value, colour = name)) +
   geom_line() +
-  scale_y_continuous("Price", labels = scales::dollar) +
+  scale_y_continuous("Price", labels = convert_dollar) +
   scale_x_continuous("Year") +
   scale_colour_discrete(NULL) +
   ggtitle(
