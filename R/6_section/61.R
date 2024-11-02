@@ -112,7 +112,7 @@ table_6_1_1_five_year <-
   summarize(avg = mean(value), .by = c(`Date Range`, type)) |> 
   pivot_wider(names_from = type, values_from = avg) |> 
   mutate(Total = Single + `Semi-Detached` + Row + Apartment, .before = Single) |> 
-  mutate(across(Total:Apartment, \(x) scales::comma(x, 1))) |> 
+  mutate(across(Total:Apartment, \(x) convert_number(x, 1))) |> 
   gt::gt() |> 
   gt::tab_header("Average annual housing completions by dwelling type")
 
@@ -305,7 +305,7 @@ table_6_1_2_five_year <-
   pivot_wider(names_from = type, values_from = avg) |> 
   mutate(Total = Single + `Semi-Detached` + Row + Apartment, 
          .before = Single) |> 
-  mutate(across(Total:Apartment, \(x) scales::comma(x, 1))) |> 
+  mutate(across(Total:Apartment, \(x) convert_number(x, 1))) |> 
   gt::gt()
 
 gtsave(table_6_1_2_five_year, "outputs/6/table_6_1_2_five_year.png", zoom = 1.5)
@@ -357,7 +357,7 @@ plot_6_1_2_type_apart <-
   summarize(apart_pct = value[type == "Apartment"] / sum(value), .by = year) |>
   ggplot(aes(year, apart_pct)) +
   geom_line() +
-  scale_y_continuous("Starts", limits = c(0, 1), labels = scales::percent) +
+  scale_y_continuous("Starts", limits = c(0, 1), labels = convert_pct) +
   scale_x_continuous("Year") +
   graph_theme
 
@@ -450,7 +450,7 @@ table_6_1_3_five_year <-
   summarize(avg = mean(value), .by = c(`Date Range`, market)) |> 
   pivot_wider(names_from = market, values_from = avg) |> 
   select(`Date Range`, Total = All, Homeowner:`Co-Op`) |> 
-  mutate(across(Total:`Co-Op`, \(x) scales::comma(x, 1))) |> 
+  mutate(across(Total:`Co-Op`, \(x) convert_number(x, 1))) |> 
   gt::gt() 
 
 gtsave(table_6_1_3_five_year, "outputs/6/table_6_1_3_five_year.png", zoom = 1.5)
@@ -500,7 +500,7 @@ plot_6_1_3_market_rental <-
   summarize(rental_pct = value[market == "Rental"] / sum(value), .by = year) |>
   ggplot(aes(year, rental_pct)) +
   geom_line() +
-  scale_y_continuous("Starts", limits = c(0, 1), labels = scales::percent) +
+  scale_y_continuous("Starts", limits = c(0, 1), labels = convert_pct) +
   scale_x_continuous("Year") +
   graph_theme
 
@@ -574,7 +574,7 @@ plot_6_1_5_units <-
   filter(year != 2019) |> 
   ggplot(aes(year, units)) +
   geom_line() +
-  scale_y_continuous("Units", labels = scales::comma) +
+  scale_y_continuous("Units", labels = convert_number) +
   scale_x_continuous("Year") +
   ggtitle(
     "Annual absorbed homeowner and condominimum units") +

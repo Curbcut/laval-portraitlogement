@@ -31,12 +31,12 @@ ratios <-
   filter(year %in% c(1998, 2020)) |> 
   mutate(ratio_80_20 = ratio_80_20 - 1) |> 
   pull(ratio_80_20) |> 
-  scales::percent()
+  convert_pct()
 
 ```
 
 
-La SCHL recueille des données sur les prix de vente des logements neufs en propriété et en copropriété. Selon ces données, Laval a connu des augmentations annuelles remarquablement constantes des prix des logements neufs depuis les années 1990. En 1998, le prix de vente moyen d’un logement nouvellement absorbé était de `r convert_dollar(new_prices$average[1])`, tandis qu'en 2023, il atteignait `r convert_dollar(new_prices$average[26])`, soit une augmentation de `r scales::percent(new_prices$average[26] / new_prices$average[1] - 1)`. Au fil du temps, le segment haut de gamme du marché a enregistré des hausses de prix proportionnellement plus rapides que le segment bas de gamme. En 1998, le prix de vente de l’unité nouvellement absorbée du 80e centile était `r ratios[1]` plus élevé que celui de l’unité du 20e centile, alors qu’en 2020, cet écart était passé à `r ratios[2]`. (Les trois années suivantes ont vu ce ratio diminuer, mais la volatilité de la tendance rend difficile de déterminer si cela reflète un changement durable des conditions du marché.)
+La SCHL recueille des données sur les prix de vente des logements neufs en propriété et en copropriété. Selon ces données, Laval a connu des augmentations annuelles remarquablement constantes des prix des logements neufs depuis les années 1990. En 1998, le prix de vente moyen d’un logement nouvellement absorbé était de `r convert_dollar(new_prices$average[1])`, tandis qu'en 2023, il atteignait `r convert_dollar(new_prices$average[26])`, soit une augmentation de `r convert_pct(new_prices$average[26] / new_prices$average[1] - 1)`. Au fil du temps, le segment haut de gamme du marché a enregistré des hausses de prix proportionnellement plus rapides que le segment bas de gamme. En 1998, le prix de vente de l’unité nouvellement absorbée du 80e centile était `r ratios[1]` plus élevé que celui de l’unité du 20e centile, alors qu’en 2020, cet écart était passé à `r ratios[2]`. (Les trois années suivantes ont vu ce ratio diminuer, mais la volatilité de la tendance rend difficile de déterminer si cela reflète un changement durable des conditions du marché.)
 
 ```{r plot_5_2_1_1_percentiles}
 plot_5_2_1_1_percentiles
@@ -73,19 +73,19 @@ rent_years <-
   relocate(Total, .before = Bachelor)
 
 bach_abs <- convert_dollar(rent_years$Bachelor[7] - rent_years$Bachelor[6])
-bach_pct <- scales::percent((rent_years$Bachelor[7] - rent_years$Bachelor[6]) /
+bach_pct <- convert_pct((rent_years$Bachelor[7] - rent_years$Bachelor[6]) /
                              rent_years$Bachelor[6])
 bach_2014 <- convert_dollar(rent_years$Bachelor[6])
 bach_2019 <- convert_dollar(rent_years$Bachelor[7])
 
 one_abs <- convert_dollar(rent_years$`1 Bedroom`[7] - rent_years$`1 Bedroom`[6])
-one_pct <- scales::percent((rent_years$`1 Bedroom`[7] - rent_years$`1 Bedroom`[6]) /
+one_pct <- convert_pct((rent_years$`1 Bedroom`[7] - rent_years$`1 Bedroom`[6]) /
                              rent_years$`1 Bedroom`[6])
 one_2014 <- convert_dollar(rent_years$`1 Bedroom`[6])
 one_2019 <- convert_dollar(rent_years$`1 Bedroom`[7])
 
 three_abs <- convert_dollar(rent_years$`3 Bedroom +`[7] - rent_years$`3 Bedroom +`[6])
-three_pct <- scales::percent((rent_years$`3 Bedroom +`[7] - rent_years$`3 Bedroom +`[6]) /
+three_pct <- convert_pct((rent_years$`3 Bedroom +`[7] - rent_years$`3 Bedroom +`[6]) /
                              rent_years$`3 Bedroom +`[6])
 three_2014 <- convert_dollar(rent_years$`3 Bedroom +`[6])
 three_2019 <- convert_dollar(rent_years$`3 Bedroom +`[7])
@@ -143,7 +143,7 @@ three_br_vacancy <-
   filter(is.na(zone), bedroom == "3 Bedroom +", year >= 2019) |> 
   pull(value) |> 
   mean(na.rm = TRUE) |> 
-  scales::percent(accuracy = 0.1, scale = 1)
+  convert_pct(accuracy = 0.1, scale = 1)
 ```
 The evolution of the vacancy rate in purpose-built rental buildings since 1990 is the inverse of the change in average rents documented in the last section. Vacancy rates were high in the 1990s, indicating a loose rental market where the supply of available rental housing was plentiful in comparison to the number of prospective tenants looking for apartments. A common rule of thumb for a neutral vacancy rate is 3%; when the rate is lower than 3%, rents tend to increase, and when the rate is higher than 3%, rents tend to be flat or decreasing. The city-wide vacancy rate exceeded 3% for most of the 1990s, corresponding to the decade of stagnating rents. In the late 1990s, the vacancy rate began a steep decline, and dipped below 1% in the early 2000s. For the last 20 years, the vacancy rate has never reached the 3% neutral point. This indicates a tight rental market where landlords are able to charge higher rents because there are many prospective tenants in relation to the supply of available rental units.
 

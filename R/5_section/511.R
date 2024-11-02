@@ -223,7 +223,7 @@ can_dwellings <-
   get_census("CA16", regions = list(C = "1")),
   get_census("CA21", regions = list(C = "1"))) |> 
   select(dwellings = Dwellings) |> 
-  mutate(yoy = scales::percent(slider::slide_dbl(
+  mutate(yoy = convert_pct(slider::slide_dbl(
     dwellings, \(x) (x[2] - x[1]) / x[1], .before = 1, .complete = TRUE), 0.1))
   
 can_dwellings$dwellings[5] - can_dwellings$dwellings[1] * 1.0131 ^ 20
@@ -248,7 +248,7 @@ plot_5_1_1_1_facet <-
   geom_line() +
   gghighlight::gghighlight(use_direct_label = FALSE) +
   scale_y_continuous("Share of all private dwelling units",
-                     limits = c(0, 0.5), labels = scales::percent) +
+                     limits = c(0, 0.5), labels = convert_pct) +
   scale_x_continuous("Year") +
   facet_wrap(vars(name)) +
   theme_minimal() +
@@ -262,12 +262,12 @@ table_5_1_1_1 <-
   st_drop_geometry() |> 
   summarize(across(type_total:type_movable, sum, na.rm = TRUE), .by = year) |> 
   mutate(across(type_single:type_movable, \(x) paste0(
-    scales::comma(x, 10), " (", scales::percent(x / type_total, 0.1), ")"))) |> 
+    convert_number(x, 10), " (", convert_pct(x / type_total, 0.1), ")"))) |> 
   select(-type_other_single, -type_movable) |>
-  mutate(yoy = scales::percent(slider::slide_dbl(
+  mutate(yoy = convert_pct(slider::slide_dbl(
     type_total, \(x) (x[2] - x[1]) / x[1], .before = 1, .complete = TRUE), 0.1), 
     .after = type_total) |> 
-  mutate(type_total = scales::comma(type_total, 10)) |> 
+  mutate(type_total = convert_number(type_total, 10)) |> 
   set_names(c("Year", "Total", "Inter-census growth", "Single-detached", 
               "Semi-detached", "Row", "Duplex"), 
             "Apartment (fewer than 5 storeys)", 
@@ -284,7 +284,7 @@ map_5_1_1_1_single <-
     geom_sf(colour = "white", lwd = 0.1) +
     scale_fill_viridis_b(
       "Share of all private dwelling units which are single-detached homes",
-      labels = scales::percent, n.breaks = 6) +
+      labels = convert_pct, n.breaks = 6) +
     facet_wrap(vars(year)) +
     theme_void() +
     theme(legend.position = "bottom", legend.key.width = unit(40, "points"))
@@ -306,7 +306,7 @@ plot_5_1_1_2_facet <-
   geom_point() +
   geom_line() +
   scale_y_continuous("Share of all private dwelling units",
-                     limits = c(0.2, 0.8), labels = scales::percent) +
+                     limits = c(0.2, 0.8), labels = convert_pct) +
   scale_x_continuous("Year") +
   scale_colour_discrete("Tenure") +
   theme_minimal() +
@@ -321,8 +321,8 @@ table_5_1_1_2 <-
   summarize(across(tenure_total:tenure_renter, sum, na.rm = TRUE), 
             .by = year) |> 
   mutate(across(tenure_owner:tenure_renter, \(x) paste0(
-    scales::comma(x, 10), " (", scales::percent(x / tenure_total, 0.1), ")"))) |> 
-  mutate(tenure_total = scales::comma(tenure_total, 10)) |> 
+    convert_number(x, 10), " (", convert_pct(x / tenure_total, 0.1), ")"))) |> 
+  mutate(tenure_total = convert_number(tenure_total, 10)) |> 
   set_names(c("Year", "Total", "Owner-occupied", "Tenant-occupied")) |> 
   gt::gt() |> 
   gt::tab_header("Privately occupied dwelling units by tenure")
@@ -336,7 +336,7 @@ map_5_1_1_2_owner <-
   geom_sf(colour = "white", lwd = 0.1) +
   scale_fill_viridis_b(
     "Share of all private dwelling units which are owner-occupied",
-    labels = scales::percent, n.breaks = 6) +
+    labels = convert_pct, n.breaks = 6) +
   facet_wrap(vars(year)) +
   theme_void() +
   theme(legend.position = "bottom", legend.key.width = unit(40, "points"))
@@ -369,7 +369,7 @@ plot_5_1_1_3_facet <-
   geom_point() +
   geom_line() +
   scale_y_continuous("Share of all private dwelling units",
-                     labels = scales::percent) +
+                     labels = convert_pct) +
   scale_x_continuous("Year") +
   scale_colour_discrete(NULL) +
   theme_minimal() +
@@ -385,9 +385,9 @@ table_5_1_1_3 <-
             .by = year) |> 
   filter(year >= 2011) |> 
   mutate(across(bedroom_zero:bedroom_four, \(x) paste0(
-    scales::comma(x, 10), " (", scales::percent(
+    convert_number(x, 10), " (", convert_pct(
       x / bedroom_total, 0.1), ")"))) |> 
-  mutate(bedroom_total = scales::comma(bedroom_total, 10)) |> 
+  mutate(bedroom_total = convert_number(bedroom_total, 10)) |> 
   mutate(bedroom_zero = c(NA, bedroom_zero[2:3])) |> 
   set_names(c("Year", "Total", "Zero bedrooms", "One bedroom", "Two bedrooms", 
               "Three bedrooms", "Four or more bedrooms")) |> 
@@ -404,7 +404,7 @@ map_5_1_1_3_four <-
   geom_sf(colour = "white", lwd = 0.1) +
   scale_fill_viridis_b(
     "Share of all private dwelling units which have four or more bedrooms",
-    labels = scales::percent, n.breaks = 6) +
+    labels = convert_pct, n.breaks = 6) +
   facet_wrap(vars(year)) +
   theme_void() +
   theme(legend.position = "bottom", legend.key.width = unit(40, "points"))
@@ -436,7 +436,7 @@ plot_5_1_1_4 <-
   geom_point() +
   geom_line() +
   scale_y_continuous("Share of all private dwelling units",
-                     labels = scales::percent) +
+                     labels = convert_pct) +
   scale_x_continuous("Year") +
   scale_colour_discrete(NULL) +
   theme_minimal() +
@@ -451,9 +451,9 @@ table_5_1_1_4 <-
   summarize(across(age_total:age_2021, sum, na.rm = TRUE), 
             .by = year) |> 
   mutate(across(age_1960:age_2021, \(x) paste0(
-    scales::comma(x, 10), " (", scales::percent(
+    convert_number(x, 10), " (", convert_pct(
       x / age_total, 0.1), ")"))) |> 
-  mutate(age_total = scales::comma(age_total, 10)) |> 
+  mutate(age_total = convert_number(age_total, 10)) |> 
   set_names(c("Year", "Total", "1960 or earlier", "1961-1980", "1981-1990", 
               "1991-2000", "2001-2005", "2006-2010", "2011-2015", 
               "2016-2021")) |> 
@@ -483,7 +483,7 @@ map_5_1_1_4 <-
   geom_sf(colour = "white", lwd = 0.1) +
   scale_fill_viridis_b(
     "Share of 2021 private dwelling units by construction year",
-    labels = scales::percent, n.breaks = 10) +
+    labels = convert_pct, n.breaks = 10) +
   facet_wrap(vars(name)) +
   theme_void() +
   theme(legend.position = "bottom", legend.key.width = unit(50, "points"))
@@ -509,7 +509,7 @@ qc_subsid <- get_census("CA21", list(PR = "24"), vectors = c(
 #   ggplot(aes(year, pct)) +
 #   geom_line() +
 #   scale_y_continuous("Share of tenant households in subsidized housing",
-#                      labels = scales::percent, limits = c(0.05, 0.08)) +
+#                      labels = convert_pct, limits = c(0.05, 0.08)) +
 #   scale_x_continuous("Year") +
 #   theme_minimal()
 
@@ -519,9 +519,9 @@ table_5_1_1_5 <-
   filter(year >= 2011) |> 
   select(NOM, year, subsid_total, subsid) |> 
   summarize(across(subsid_total:subsid, sum, na.rm = TRUE), .by = year) |> 
-  mutate(subsid = paste0(scales::comma(subsid, 10), " (", 
-                         scales::percent(subsid / subsid_total, 0.1), ")")) |> 
-  mutate(subsid_total = scales::comma(subsid_total, 10)) |> 
+  mutate(subsid = paste0(convert_number(subsid, 10), " (", 
+                         convert_pct(subsid / subsid_total, 0.1), ")")) |> 
+  mutate(subsid_total = convert_number(subsid_total, 10)) |> 
   set_names(c("Year", "Total tenant households", "In subsidized housing")) |> 
   gt::gt() |> 
   gt::tab_header("Share of tenant households in subsidized housing")
@@ -537,7 +537,7 @@ map_5_1_1_5 <-
   geom_sf(colour = "white", lwd = 0.1) +
   scale_fill_viridis_b(
     "Share of tenant households in subsidized housing",
-    labels = scales::percent, n.breaks = 6) +
+    labels = convert_pct, n.breaks = 6) +
   facet_wrap(vars(year)) +
   theme_void() +
   theme(legend.position = "bottom", legend.key.width = unit(40, "points"))
