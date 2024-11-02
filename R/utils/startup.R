@@ -179,7 +179,7 @@ convert_hundreds <- function(x) {
   curbcut:::round_big_marks(
     x = x,
     min_dig = 5,
-    scale_fun = convert_number
+    scale_fun = scales::comma
   )
 }
 
@@ -188,10 +188,10 @@ convert_number <- function(x) {
   gsub(",", " ", x)
 }
 
-convert_number_tens <- \(x) convert_number(round(x / 10) * 10)
+convert_number_tens <- \(x) scales::comma(round(x / 10) * 10)
 
 convert_number_noround <- function(x) {
-  convert_number(x, 1, accuracy = 1, big.mark = " ")
+  scales::comma(x, 1, accuracy = 1, big.mark = " ")
 }
 
 convert_pct <- function(x) {

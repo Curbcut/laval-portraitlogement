@@ -56,7 +56,13 @@ completions_by_type <-
       year = x,
       frequency = "Annual")}) |> 
   bind_rows() |> 
-  set_names(c("zone", "type", "value", "date", "year", "survey", "series"))
+  set_names(c("zone", "type", "value", "date", "year", "survey", "series")) |> 
+  mutate(type = case_when(type == "Single" ~ "Unifamilial",
+                          type == "Semi-Detached" ~ "Jumelé",
+                          type == "Row" ~ "En rangée",
+                          type == "Apartment" ~ "Appartement",
+                          type == "All" ~ "Total"
+  ))
 
 completions_by_market <- 
   map(1990:2023, \(x) {
@@ -80,25 +86,28 @@ plot_6_1_1_overall <-
   mutate(value_trend = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
          .by = type) |>
   pivot_longer(c(value, value_trend)) |> 
-  mutate(name = if_else(name == "value", "Actual", 
-                        "Five-year moving average")) |> 
+  mutate(name = if_else(name == "value", "Réel", 
+                        "Moyenne mobile sur cinq ans")) |> 
   ggplot(aes(year, value, group = name, linewidth = name, alpha = name)) +
   geom_line() +
-  scale_y_continuous("Completions") +
-  scale_x_continuous("Year") +
+  scale_y_continuous("Logements achevés", labels = convert_number) +
+  scale_x_continuous("Année") +
   scale_linewidth_manual(name = NULL, values = c(
-    "Actual" = 0.4, "Five-year moving average" = 1)) +
+    "Réel" = 0.4, "Moyenne mobile sur cinq ans" = 1)) +
   scale_alpha_manual(name = NULL, values = c(
-    "Actual" = 0.2, "Five-year moving average" = 1)) +
-  ggtitle("Annual housing completions") +
+    "Réel" = 0.2, "Moyenne mobile sur cinq ans" = 1)) +
+  # ggtitle("Annual housing completions") +
   graph_theme
+
+ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_1_overall.pdf"), 
+                plot = plot_6_1_1_overall, width = 6.5, height = 3)
 
 # Table with 5-year aggregations
 table_6_1_1_five_year <- 
   completions_by_type |> 
   filter(is.na(zone)) |>
   filter(type != "All") |> 
-  mutate("Date Range" = case_when(
+  mutate("Années" = case_when(
     year >= 2019 ~ "2019-2023",
     year >= 2014 ~ "2014-2018",
     year >= 2009 ~ "2009-2013",
@@ -106,12 +115,22 @@ table_6_1_1_five_year <-
     year >= 1999 ~ "1999-2003",
     year >= 1994 ~ "1994-1998",
     year >= 1990 ~ "1990-1993")) |> 
-  summarize(avg = mean(value), .by = c(`Date Range`, type)) |> 
+  summarize(avg = mean(value), .by = c(`Années`, type)) |> 
   pivot_wider(names_from = type, values_from = avg) |> 
-  mutate(Total = Single + `Semi-Detached` + Row + Apartment, .before = Single) |> 
-  mutate(across(Total:Apartment, \(x) convert_number(x, 1))) |> 
+  mutate(Total = Unifamilial + `Jumelé` + `En rangée` + Appartement, .before = Unifamilial) |> 
+  # mutate(across(Total:Apartment, convert_number)) |> 
   gt::gt() |> 
-  gt::tab_header("Average annual housing completions by dwelling type")
+  data_color(
+    columns = c(2:6),
+    colors = scales::col_numeric(
+      palette = c("white", color_theme("purpletransport")),
+      domain = NULL
+    )
+  ) |> 
+  fmt(columns = c(2:6), fns = convert_number)
+  # gt::tab_header("Average annual housing completions by dwelling type")
+
+gt_save_word(table_6_1_1_five_year, "outputs/6/table_6_1_1_five_year.docx")
 
 # Comparison of long-term residential completion trends by building type
 plot_6_1_1_type <- 
@@ -120,12 +139,14 @@ plot_6_1_1_type <-
   filter(type != "All") |>
   ggplot(aes(year, value, colour = type)) +
   geom_line() +
-  scale_y_continuous("Completions") +
-  scale_x_continuous("Year") +
-  scale_colour_discrete("Dwelling type") +
-  ggtitle("Annual housing completions by dwelling type") +
+  scale_y_continuous("Achevés") +
+  scale_x_continuous("Année") +
+  scale_colour_discrete("Type de logement") +
+  # ggtitle("Annual housing completions by dwelling type") +
   theme_minimal() +
-  theme(legend.position = "bottom")
+  default_theme +
+  theme(legend.position = "bottom",
+        legend.title.position = "top")
 
 # Variation with between-type difference emphasized
 plot_6_1_1_type_facet <-
@@ -141,7 +162,7 @@ plot_6_1_1_type_facet <-
   scale_x_continuous("Year") +
   facet_wrap(~type) +
   ggtitle(
-    "Annual housing completions by dwelling type (five-year moving average)") +
+    "Annual housing completions by dwelling type (Moyenne mobile sur cinq ans)") +
   theme_minimal() +
   theme(legend.position = "bottom")
 
@@ -173,7 +194,7 @@ plot_6_1_1_market_facet <-
   scale_x_continuous("Year") +
   facet_wrap(~market) +
   ggtitle(
-    "Annual housing completions by intended market (five-year moving average)"
+    "Annual housing completions by intended market (Moyenne mobile sur cinq ans)"
     ) +
   theme_minimal() +
   theme(legend.position = "bottom")
@@ -286,12 +307,11 @@ table_6_1_2_five_year <-
   pivot_wider(names_from = type, values_from = Moyenne) |> 
   mutate(Total = Single + `Semi-Detached` + Row + Apartment, 
          .before = Single) |> 
-<<<<<<< HEAD
   rename("Unifamilial" = Single, 
          "Semi-détaché" = `Semi-Detached`, 
          "En rangée" = Row, 
          "Appartement" = Apartment) |>
-  mutate(across(Total:Appartement, \(x) scales::comma(x, 1))) |> 
+  # mutate(across(Total:Appartement, \(x) scales::comma(x, 1))) |> 
   gt::gt() |> 
   gt::cols_label(
     Période = "Période",
@@ -300,22 +320,32 @@ table_6_1_2_five_year <-
     `Semi-détaché` = "Semi-détaché",
     `En rangée` = "En rangée",
     Appartement = "Appartement"
-  )
-=======
-  mutate(across(Total:Apartment, \(x) convert_number(x, 1))) |> 
-  gt::gt()
->>>>>>> 7cf3a3d1bee0ebb36193c637cdfa0a4ad50aa4dd
+  ) |> 
+  data_color(
+    columns = c(2:6),
+    colors = scales::col_numeric(
+      palette = c("white", color_theme("purpletransport")),
+      domain = NULL
+    )
+  ) |> 
+  fmt(columns = c(2:6), fns = convert_number_noround)
 
 gt_save_word(gt_table = table_6_1_2_five_year, file_path = "outputs/6/table_6_1_2_five_year.docx")
 
 # Comparison of long-term residential start trends by building type
 plot_6_1_2_type <-
   starts_by_type |> 
-  filter(is.na(zone)) |>
-  filter(type != "All") |>
+  filter(is.na(zone)) |> 
+  mutate(type = case_when(type == "Single" ~ "Unifamilial",
+                          type == "Semi-Detached" ~ "Jumelé",
+                          type == "Row" ~ "En rangée",
+                          type == "Apartment" ~ "Appartement",
+                          type == "All" ~ "Total"
+  )) |> 
+  filter(type != "Total") |>
   ggplot(aes(year, value, colour = type)) +
   geom_line() +
-  scale_y_continuous("Mises en chantier") +
+  scale_y_continuous("Mises en chantier", label = convert_number) +
   scale_x_continuous("Année") +
   scale_colour_manual("Type de logement", 
                       values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
@@ -329,7 +359,13 @@ ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_overall.pdf"),
 plot_6_1_2_type_facet <-
   starts_by_type |> 
   filter(is.na(zone)) |>
-  filter(type != "All") |>
+  mutate(type = case_when(type == "Single" ~ "Unifamilial",
+                          type == "Semi-Detached" ~ "Jumelé",
+                          type == "Row" ~ "En rangée",
+                          type == "Apartment" ~ "Appartement",
+                          type == "All" ~ "Total"
+  )) |> 
+  filter(type != "Total") |>
   mutate(value = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
          .by = type) |>
   ggplot(aes(year, value, group = type, colour = type)) +
@@ -339,12 +375,7 @@ plot_6_1_2_type_facet <-
   scale_x_continuous("Année") +
   scale_colour_manual("Type de logement", 
                       values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
-  facet_wrap(~type, labeller = as_labeller(c(
-    "Single" = "Unifamilial",
-    "Semi-Detached" = "Semi-détaché",
-    "Row" = "En rangée",
-    "Apartment" = "Appartement"
-  ))) +
+  facet_wrap(~type) +
   graph_theme
 
 ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_type_facet.pdf"), 
@@ -359,13 +390,8 @@ plot_6_1_2_type_apart <-
   summarize(apart_pct = value[type == "Apartment"] / sum(value), .by = year) |>
   ggplot(aes(year, apart_pct)) +
   geom_line() +
-<<<<<<< HEAD
-  scale_y_continuous("Mises en chantier", limits = c(0, 1), labels = scales::percent) +
-  scale_x_continuous("Année") +
-=======
-  scale_y_continuous("Starts", limits = c(0, 1), labels = convert_pct) +
+  scale_y_continuous("Mises en chantier", limits = c(0, 1), labels = convert_pct) +
   scale_x_continuous("Year") +
->>>>>>> 7cf3a3d1bee0ebb36193c637cdfa0a4ad50aa4dd
   graph_theme
 
 ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_type_apart.pdf"), 
@@ -389,11 +415,13 @@ map_6_1_2_annual_1 <-
   st_as_sf() |> 
   select(zone, date, avg, geometry) |> 
   ggplot(aes(fill = avg)) +
-  gg_cc_tiles +
-  geom_sf(colour = "transparent", lwd = 0) +
+  # gg_cc_tiles +
+  geom_sf(colour = "black") +
   facet_wrap(vars(date), nrow = 3) +
   scale_fill_stepsn("Mises en chantier annuelles", colours = curbcut_colors$left_5$fill[2:6]) +
-  gg_cc_theme
+  gg_cc_theme_nodistricts +
+  theme(legend.key.width = unit(2, "cm"),
+        legend.title.position = "top")
 
 map_6_1_2_annual_2 <- 
   starts_by_type |> 
@@ -413,12 +441,14 @@ map_6_1_2_annual_2 <-
   mutate(density = avg / dwellings * 1000) |> 
   select(zone, date, density, geometry) |> 
   ggplot(aes(fill = density)) +
-  gg_cc_tiles +
-  geom_sf(colour = "transparent", lwd = 0) +
+  # gg_cc_tiles +
+  geom_sf(colour = "black") +
   facet_wrap(vars(date), nrow = 3) +
   scale_fill_stepsn("Mises en chantier pour 1000 logements", 
                     colours = curbcut_colors$left_5$fill[2:6]) +
-  gg_cc_theme
+  gg_cc_theme_nodistricts +
+  theme(legend.key.width = unit(2, "cm"),
+        legend.title.position = "top")
 
 map_6_1_2_annual <- 
   patchwork::wrap_plots(map_6_1_2_annual_1, map_6_1_2_annual_2)
@@ -439,7 +469,20 @@ starts_by_market <-
       year = x,
       frequency = "Annual")}) |> 
   bind_rows() |> 
-  set_names(c("zone", "market", "value", "date", "year", "survey", "series"))
+  set_names(c("zone", "market", "value", "date", "year", "survey", "series")) |> 
+  mutate(market = case_when(market == "Homeowner" ~ "Prop.-occ.",
+                            market == "Rental" ~ "Locatif",
+                            market == "Condo" ~ "Copropriété",
+                            market == "Co-Op" ~ "Coopératif",
+                            market == "Unknown" ~ "Non disponible",
+                            market == "All" ~ "Total"
+  )) |> 
+  filter(market != "Non disponible", !is.na(market))
+
+starts_by_market$market <- factor(starts_by_market$market,
+                                  levels = c("Total", "Prop.-occ.",
+                                             "Locatif", "Copropriété",
+                                             "Coopératif"))
 
 # Table with 5-year aggregations
 table_6_1_3_five_year <- 
@@ -453,34 +496,37 @@ table_6_1_3_five_year <-
     year >= 1999 ~ "1999-2003",
     year >= 1994 ~ "1994-1998",
     year >= 1990 ~ "1990-1993")) |> 
-<<<<<<< HEAD
   summarize(Moyenne = mean(value), .by = c(`Période`, market)) |> 
   pivot_wider(names_from = market, values_from = Moyenne) |> 
-  select(`Période`, Total = All, Propriétaire = Homeowner, Locatif = Rental, `Coopérative` = `Co-Op`) |> 
-  mutate(across(Total:Coopérative, \(x) scales::comma(x, 1))) |> 
-  gt::gt()
-=======
-  summarize(avg = mean(value), .by = c(`Date Range`, market)) |> 
-  pivot_wider(names_from = market, values_from = avg) |> 
-  select(`Date Range`, Total = All, Homeowner:`Co-Op`) |> 
-  mutate(across(Total:`Co-Op`, \(x) convert_number(x, 1))) |> 
-  gt::gt() 
->>>>>>> 7cf3a3d1bee0ebb36193c637cdfa0a4ad50aa4dd
+  # mutate(across(Total:Coopérative, convert_number)) |> 
+  gt::gt() |> 
+  data_color(
+    columns = c(2:6),
+    colors = scales::col_numeric(
+      palette = c("white", color_theme("purpletransport")),
+      domain = NULL
+    )
+  ) |> 
+  fmt(columns = c(2:6), fns = convert_number_noround)
 
 gt_save_word(gt_table = table_6_1_3_five_year, file_path = "outputs/6/table_6_1_3_five_year.docx")
 
 # Comparison of long-term residential start trends by intended market
 plot_6_1_3_market <- 
-  starts_by_market |> 
+  starts_by_market |>
   filter(is.na(zone)) |>
-  filter(market != "All", market != "Unknown") |>
+  filter(market != "Total", market != "Unknown") |>
   ggplot(aes(year, value, colour = market)) +
   geom_line() +
-  scale_y_continuous("Mises en chantier") +
+  scale_y_continuous("Mises en chantier", labels = convert_number) +
   scale_x_continuous("Année") +
-  scale_colour_discrete("Marché visé") +
+  scale_colour_manual(
+    "Marché visé",
+    values = curbcut_colors$brandbook$color[c(2:4, 9)]
+  ) +
   theme_minimal() +
   theme(legend.position = "bottom")
+  
 
 ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market.pdf"), 
                 plot = plot_6_1_3_market, width = 6.5, height = 5)
@@ -489,28 +535,17 @@ ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market.pdf"),
 plot_6_1_3_market_facet <-
   starts_by_market |> 
   filter(is.na(zone)) |>
-  filter(market != "All", market != "Unknown") |>
+  filter(market != "Total") |>
   mutate(value = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
          .by = market) |>
   ggplot(aes(year, value, group = market, colour = market)) +
   geom_line() +
   gghighlight::gghighlight(use_direct_label = FALSE) +
-  scale_y_continuous("Mises en chantier") +
+  scale_y_continuous("Mises en chantier", labels = convert_number) +
   scale_x_continuous("Année") +
   scale_colour_manual("Marché visé", 
-                      values = curbcut_colors$brandbook$color[c(2:4, 9)],
-                      labels = c(
-                        "Homeowner" = "Propriétaire",
-                        "Rental" = "Locatif",
-                        "Co-Op" = "Coopérative",
-                        "Condo" = "Condo"
-                      )) +
-  facet_wrap(~market, labeller = as_labeller(c(
-    "Homeowner" = "Propriétaire",
-    "Rental" = "Locatif",
-    "Co-Op" = "Coopérative",
-    "Condo" = "Condo"
-  ))) +
+                      values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
+  facet_wrap(~market) +
   graph_theme
 
 ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market_facet.pdf"), 
@@ -520,17 +555,12 @@ ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market_facet.pdf"),
 plot_6_1_3_market_rental <-
   starts_by_market |> 
   filter(is.na(zone)) |>
-  filter(market != "All") |>
-  summarize(rental_pct = value[market == "Rental"] / sum(value), .by = year) |>
+  filter(market != "Total") |>
+  summarize(rental_pct = value[market == "Locatif"] / sum(value), .by = year) |>
   ggplot(aes(year, rental_pct)) +
   geom_line() +
-<<<<<<< HEAD
-  scale_y_continuous("Mises en chantier", limits = c(0, 1), labels = scales::percent) +
-  scale_x_continuous("Année") +
-=======
-  scale_y_continuous("Starts", limits = c(0, 1), labels = convert_pct) +
+  scale_y_continuous("Mises en chantier", limits = c(0, 1), labels = convert_pct) +
   scale_x_continuous("Year") +
->>>>>>> 7cf3a3d1bee0ebb36193c637cdfa0a4ad50aa4dd
   graph_theme
 
 ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market_rental.pdf"), 
@@ -574,22 +604,22 @@ plot_6_1_5_percentiles <-
   new_prices |> 
   pivot_longer(c(p20, p40, median, p60, p80)) |> 
   mutate(name = case_when(
-    name == "p20" ~ "20th percentile",
-    name == "p40" ~ "40th percentile",
-    name == "median" ~ "Median",
-    name == "p60" ~ "60th percentile",
-    name == "p80" ~ "80th percentile")) |> 
-  mutate(name = factor(name, levels = c("20th percentile", "40th percentile", 
-                                        "Median", "60th percentile", 
-                                        "80th percentile"))) |> 
+    name == "p20" ~ "20e percentile",
+    name == "p40" ~ "40e percentile",
+    name == "median" ~ "Médiane",
+    name == "p60" ~ "60e percentile",
+    name == "p80" ~ "80e percentile")) |> 
+  mutate(name = factor(name, levels = c("20e percentile", "40e percentile", 
+                                        "Médiane", "60e percentile", 
+                                        "80e percentile"))) |> 
   filter(year != 2019) |> 
   ggplot(aes(year, value, colour = name)) +
   geom_line() +
-  scale_y_continuous("Price", labels = convert_dollar) +
-  scale_x_continuous("Year") +
-  scale_colour_discrete(NULL) +
-  ggtitle(
-    "Average annual price for absorbed homeowner and condominimum units") +
+  scale_y_continuous("Prix", labels = convert_dollar) +
+  scale_x_continuous("Année") +
+  scale_colour_manual(name = NULL,values = curbcut_colors$brandbook$color[c(2:4, 8,9)]) +
+  # ggtitle(
+  #   "Prix annuel moyen pour les logements absorbés en propriété et en copropriété") +
   theme_minimal() +
   theme(legend.position = "bottom")
 
@@ -598,10 +628,10 @@ plot_6_1_5_units <-
   filter(year != 2019) |> 
   ggplot(aes(year, units)) +
   geom_line() +
-  scale_y_continuous("Units", labels = convert_number) +
-  scale_x_continuous("Year") +
-  ggtitle(
-    "Annual absorbed homeowner and condominimum units") +
+  scale_y_continuous("Unités", labels = convert_number) +
+  scale_x_continuous("Année") +
+  # ggtitle(
+  #   "Annual absorbed homeowner and condominimum units") +
   theme_minimal()
 
 
