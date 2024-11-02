@@ -176,7 +176,7 @@ map_total_hh <- ggplot(data = total_hh_map) +
   gg_cc_tiles +
   geom_sf(aes(geometry = geometry, fill = total_quantile), alpha = 0.9, color = "transparent", show.legend = TRUE) +
   scale_fill_manual(values = curbcut_scale,
-                    name = "Nombre de ménages (n)",) +
+                    name = "Nombre de ménages",) +
   gg_cc_theme +
   guides(fill = guide_legend(title.position = "top",
                              title.hjust = 0.5))
@@ -253,12 +253,12 @@ table_4_1_1_1 <- table_4_1_1_1_data |>
   )
 
 #Saving the files as photos
-ggsave(plot = plot_4_1_1_1, "outputs/4/plot_4_1_1_1.pdf", width = 6.5, height = 5)
-ggsave(plot = map_total_hh, "outputs/4/map_total_hh.pdf", width = 7.5, height = 6)
-ggsave(plot = map_owner_hh, "outputs/4/map_owner_hh.pdf", width = 7.5, height = 6)
-ggsave(plot = map_tenant_hh, "outputs/4/map_tenant_hh.pdf", width = 7.5, height = 6)
+ggsave_pdf_png_pdf_png(plot = plot_4_1_1_1, "outputs/4/1_statutoccupation.pdf", width = 6.5, height = 3)
+ggsave_pdf_png_pdf_png(plot = map_total_hh, "outputs/4/2_carte_nbmenages.pdf", width = 6.5, height = 6)
+ggsave_pdf_png_pdf_png(plot = map_owner_hh, "outputs/4/3_carte_nb_proprietaire.pdf", width = 6.5, height = 6)
+ggsave_pdf_png_pdf_png(plot = map_tenant_hh, "outputs/4/4_carte_nb_locataire.pdf", width = 6.5, height = 6)
 
-gt_save_word(gt_table = table_4_1_1_1, file_path = "outputs/4/table_4_1_1_1.docx")
+gt_save_word(gt_table = table_4_1_1_1, file_path = "outputs/4/1_statutoccupation.docx")
 
 # Correlation between owner and typology?
 single_semi_row <- get_census(dataset = "CA21",
@@ -609,13 +609,13 @@ table_4_1_1_2_owner <- data_4_1_1_2_table_owner |>
 #   guides(fill = guide_legend(title.position = "top", title.hjust = 0.5))
 
 #Saving the visuals as images
-ggsave(plot = plot_4_1_1_2, "outputs/4/plot_4_1_1_2.pdf", width = 6.5, height = 5)
+ggsave_pdf_png_pdf_png(plot = plot_4_1_1_2, "outputs/4/5_statutoccupation_rev.pdf", width = 6.5, height = 3.5)
 # gtsave(table_4_1_1_2_2, "outputs/4/table_4_1_1_2_2.png", vwidth = 2400)
 # gtsave(table_4_1_1_2_owner, "outputs/4/table_4_1_1_2_owner.png", vwidth = 2400)
 # 
 # gtsave(table_4_1_1_2_tenant, "outputs/4/table_4_1_1_2_tenant.png", vwidth = 2400)
-gt_save_word(table_4_1_1_2_owner, "outputs/4/table_4_1_1_2_owner.docx")
-gt_save_word(table_4_1_1_2_tenant, "outputs/4/table_4_1_1_2_tenant.docx")
+gt_save_word(table_4_1_1_2_owner, "outputs/4/4_proprietaire_rev_district.docx")
+gt_save_word(table_4_1_1_2_tenant, "outputs/4/3_locataire_rev_district.docx")
 #Data frame for the plot
 # data_4_1_2 <- read_excel("data/4/mode_occupation_revenu_SR.xlsx") |> #Edited version of the spreadsheet
 #   select(-GeoUID) |> 
@@ -760,14 +760,14 @@ gt_save_word(table_4_1_1_2_tenant, "outputs/4/table_4_1_1_2_tenant.docx")
 #                              title.hjust = 0.5))
 #   
 # #Saving the visuals as images
-# ggsave("outputs/4/plot_4_1_2.png", plot = plot_4_1_2, width = 800/72, height = 600/72, dpi = 72)
-# ggsave("outputs/4/map_4_1_2_19999.png", plot = map_4_1_2_19999, width = 800/72, height = 600/72, dpi = 72)
-# ggsave("outputs/4/map_4_1_2_39999.png", plot = map_4_1_2_39999, width = 800/72, height = 600/72, dpi = 72)
-# ggsave("outputs/4/map_4_1_2_59999.png", plot = map_4_1_2_59999, width = 800/72, height = 600/72, dpi = 72)
-# ggsave("outputs/4/map_4_1_2_79999.png", plot = map_4_1_2_79999, width = 800/72, height = 600/72, dpi = 72)
-# ggsave("outputs/4/map_4_1_2_99999.png", plot = map_4_1_2_99999, width = 800/72, height = 600/72, dpi = 72)
-# ggsave("outputs/4/map_4_1_2_124999.png", plot = map_4_1_2_124999, width = 800/72, height = 600/72, dpi = 72)
-# ggsave("outputs/4/map_4_1_2_125000.png", plot = map_4_1_2_125000, width = 800/72, height = 600/72, dpi = 72)
+# ggsave_pdf_png("outputs/4/plot_4_1_2.png", plot = plot_4_1_2, width = 800/72, height = 600/72, dpi = 72)
+# ggsave_pdf_png("outputs/4/map_4_1_2_19999.png", plot = map_4_1_2_19999, width = 800/72, height = 600/72, dpi = 72)
+# ggsave_pdf_png("outputs/4/map_4_1_2_39999.png", plot = map_4_1_2_39999, width = 800/72, height = 600/72, dpi = 72)
+# ggsave_pdf_png("outputs/4/map_4_1_2_59999.png", plot = map_4_1_2_59999, width = 800/72, height = 600/72, dpi = 72)
+# ggsave_pdf_png("outputs/4/map_4_1_2_79999.png", plot = map_4_1_2_79999, width = 800/72, height = 600/72, dpi = 72)
+# ggsave_pdf_png("outputs/4/map_4_1_2_99999.png", plot = map_4_1_2_99999, width = 800/72, height = 600/72, dpi = 72)
+# ggsave_pdf_png("outputs/4/map_4_1_2_124999.png", plot = map_4_1_2_124999, width = 800/72, height = 600/72, dpi = 72)
+# ggsave_pdf_png("outputs/4/map_4_1_2_125000.png", plot = map_4_1_2_125000, width = 800/72, height = 600/72, dpi = 72)
 
 # 4.1.1.3 Type de ménage (taille et composition) selon mode d'occupation --------
 #Size cannot be cross-tabbed at the moment, to be looked at in the future
@@ -999,8 +999,8 @@ plot_4_1_1_3_owner <- ggplot(table_data_4_1_1_3_comp_ed_owner) +
   theme(legend.key.width = unit(3, "cm"),
         legend.title.position = "top")
 
-ggsave(plot = plot_4_1_1_3_tenant, "outputs/4/plot_4_1_1_3_tenant.pdf", width = 6.5, height = 5)
-ggsave(plot = plot_4_1_1_3_owner, "outputs/4/plot_4_1_1_3_owner.pdf", width = 6.5, height = 5)
+ggsave_pdf_png(plot = plot_4_1_1_3_tenant, "outputs/4/7_carte_composition_locataire.pdf", width = 6.5, height =5)
+ggsave_pdf_png(plot = plot_4_1_1_3_owner, "outputs/4/8_carte_composition_proprietaire.pdf", width = 6.5, height = 5)
 
 
 
@@ -1031,7 +1031,7 @@ ggsave(plot = plot_4_1_1_3_owner, "outputs/4/plot_4_1_1_3_owner.pdf", width = 6.
 #     table.width = px(6 * 252)
 #   )
 
-ggsave(plot = plot_4_1_1_3_comp, "outputs/4/plot_4_1_1_3_comp.pdf", width = 6.5, height = 5)
+ggsave_pdf_png(plot = plot_4_1_1_3_comp, "outputs/4/6_composition_statutocc.pdf", width = 6.5, height = 3)
 # gtsave(table_4_1_1_3_comp, "outputs/4/table_4_1_1_3_comp.png", vwidth = 1600)
 # gtsave(table_4_1_1_3_comp_ed, "outputs/4/table_4_1_1_3_comp_ed.png", vwidth = 1600)
 
@@ -1180,14 +1180,14 @@ ggsave(plot = plot_4_1_1_3_comp, "outputs/4/plot_4_1_1_3_comp.pdf", width = 6.5,
 #                              title.hjust = 0.5))
 # 
 # #Saving visuals as images
-# ggsave("outputs/4/plot_4_1_3.png", plot = plot_4_1_3, width = 800/72, height = 600/72, dpi = 72)
-# ggsave("outputs/4/map_4_1_3_wochild.png", plot = map_4_1_3_wochild, width = 800/72, height = 600/72, dpi = 72)
-# ggsave("outputs/4/map_4_1_3_child.png", plot = map_4_1_3_child, width = 800/72, height = 600/72, dpi = 72)
-# ggsave("outputs/4/map_4_1_3_single.png", plot = map_4_1_3_single, width = 800/72, height = 600/72, dpi = 72)
-# ggsave("outputs/4/map_4_1_3_multigen.png", plot = map_4_1_3_multigen, width = 800/72, height = 600/72, dpi = 72)
-# ggsave("outputs/4/map_4_1_3_other.png", plot = map_4_1_3_other, width = 800/72, height = 600/72, dpi = 72)
-# ggsave("outputs/4/map_4_1_3_sole.png", plot = map_4_1_3_sole, width = 800/72, height = 600/72, dpi = 72)
-# ggsave("outputs/4/map_4_1_3_noncf.png", plot = map_4_1_3_noncf, width = 800/72, height = 600/72, dpi = 72)
+# ggsave_pdf_png("outputs/4/plot_4_1_3.png", plot = plot_4_1_3, width = 800/72, height = 600/72, dpi = 72)
+# ggsave_pdf_png("outputs/4/map_4_1_3_wochild.png", plot = map_4_1_3_wochild, width = 800/72, height = 600/72, dpi = 72)
+# ggsave_pdf_png("outputs/4/map_4_1_3_child.png", plot = map_4_1_3_child, width = 800/72, height = 600/72, dpi = 72)
+# ggsave_pdf_png("outputs/4/map_4_1_3_single.png", plot = map_4_1_3_single, width = 800/72, height = 600/72, dpi = 72)
+# ggsave_pdf_png("outputs/4/map_4_1_3_multigen.png", plot = map_4_1_3_multigen, width = 800/72, height = 600/72, dpi = 72)
+# ggsave_pdf_png("outputs/4/map_4_1_3_other.png", plot = map_4_1_3_other, width = 800/72, height = 600/72, dpi = 72)
+# ggsave_pdf_png("outputs/4/map_4_1_3_sole.png", plot = map_4_1_3_sole, width = 800/72, height = 600/72, dpi = 72)
+# ggsave_pdf_png("outputs/4/map_4_1_3_noncf.png", plot = map_4_1_3_noncf, width = 800/72, height = 600/72, dpi = 72)
 
 # 4.1.1.4 Statut d'immigrant selon mode d'occupation ----------------------
 #Percentages based on provided PDF
@@ -1245,13 +1245,14 @@ plot_4_1_1_4 <-
                                "Locataires en logement non subventionné" = "#CD718C", 
                                "Propriétaires en copropriété" = "#A3B0D199", 
                                "Propriétaires d'un logement en propriété absolue" = "#A3B0D1"),
-                    guide = guide_legend(nrow = 2)) +
+                    guide = guide_legend(nrow = 2),
+                    labels = \(x) str_wrap(x, 36)) +
   scale_y_continuous(labels = percent) +
   labs(title = NULL, x = NULL, y = "Proportion des ménages", fill = NULL) +
   graph_theme +
   theme(axis.text.x = element_text(angle = 0, hjust = 0.5))  # Ajuster le texte de l'axe des x
 
-ggsave(plot = plot_4_1_1_4, "outputs/4/plot_4_1_1_4.pdf", width = 6.5, height = 5)
+ggsave_pdf_png(plot = plot_4_1_1_4, "outputs/4/9_statutimmigration_statutoccupation.pdf", width = 6.5, height = 3.5)
 
 # 4.1.1.5 Âge du principal soutien du ménage selon mote d'occupation------------
 #https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=9810023201&pickMembers%5B0%5D=1.1730&pickMembers%5B1%5D=2.1&pickMembers%5B2%5D=3.1&pickMembers%5B3%5D=4.1
@@ -1297,13 +1298,13 @@ plot_4_1_1_5 <- ggplot(data_4_1_1_5, aes(x = Age, y = Value, fill = Type)) +
             aes(label = prop), position = position_dodge(width = 0.9),
             vjust = -1.5, size = 2.5, color = "black") +
   scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
-  scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 18)) +
+  scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 12)) +
   scale_y_continuous(labels = function(x) convert_number(x)) +
   labs(x = NULL, 
        y = "Nombre de ménages") +
   graph_theme
 
-ggsave(plot = plot_4_1_1_5, "outputs/4/plot_4_1_1_5.pdf", width = 6.5, height = 4)
+ggsave_pdf_png(plot = plot_4_1_1_5, "outputs/4/10_age_statutoccupation.pdf", width = 6.5, height = 4)
 
 # 4.1.1.6 Typologie (unifamilial, multi logement, etc.) selon mode d'occupation----
 #https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=9810024001
@@ -1415,7 +1416,7 @@ plot_4_1_1_6 <- ggplot(data_4_1_1_6, aes(x = Build, y = Value, fill = Type)) +
 # apt_laval <- data_4_1_1_6_table |> filter("Type de ménage" == "Total") |> pull(`Appartement dans un immeuble de moins de cinq étages (%)`)
 # sfh_owner <- data_4_1_1_6_table |> filter("Type de ménage" == "Propriétaire") |> pull(`Maison individuelle non attenante (%)`)
 
-ggsave(plot = plot_4_1_1_6, "outputs/4/plot_4_1_1_6.pdf", width = 7, height = 4)
+ggsave_pdf_png(plot = plot_4_1_1_6, "outputs/4/11_type_statutoccupation.pdf", width = 7, height = 3.5)
 # gtsave(table_4_1_1_6, "outputs/4/table_4_1_1_6.png", vwidth = 2400)
 
 # 4.1.2.1 Projection des ménages X-2046 (PRÉCISER JALONS, C17) -----------------
@@ -1494,14 +1495,14 @@ plot_4_1_2_1 <-
   scale_x_continuous(breaks = c(2010, 2020, 2029, 2033, 2037, 2040, 2050),
                      limits = c(2010, 2050)) +
   scale_y_continuous(labels = function(x) convert_number(x)) +
-  labs(x = "", y = "Nombre de ménages (n)", linetype = "") +
+  labs(x = "", y = "Nombre de ménages", linetype = "") +
   graph_theme +
   theme(
     axis.text.x = element_text(color = ifelse(custom_labels %in% c("2029", "2033", "2037"), 
                                               color_theme("redhousing"), "black"))
   )
 
-ggsave(plot = plot_4_1_2_1, "outputs/4/plot_4_1_2_1.pdf", width = 6.5, height = 5)
+ggsave_pdf_png(plot = plot_4_1_2_1, "outputs/4/12_projections_2051.pdf", width = 6.5, height = 3)
 
 
 
@@ -1531,7 +1532,8 @@ plot_4_1_2_1_hou_age <-
   scale_fill_manual(values = c("2021" = color_theme("yellowclimate"), "2051" = color_theme("pinkhealth")))+
   graph_theme
 
-ggsave(plot = plot_4_1_2_1_hou_age, "outputs/4/plot_4_1_2_1_hou_age.pdf", width = 8, height = 5)
+ggsave_pdf_png(plot = plot_4_1_2_1_hou_age, "outputs/4/13_projections_menages.pdf", 
+               width = 9, height = 6)
 
 
 
@@ -1549,7 +1551,7 @@ projection_4_1_2_3_1 <- read_excel("data/4/PopGrAS_RA_base_2024.xlsx", skip = 5)
 
 # Reshape the data from wide to long format
 projection_long_raw <- pivot_longer(projection_4_1_2_3_1, cols = `0-4`:`100+`, names_to = "Groupe d'âge")
-projection_long <- projection_long[projection_long_raw$Année %in% c(2021, 2051), ]
+projection_long <- projection_long_raw[projection_long_raw$Année %in% c(2021, 2051), ]
 projection_long$`Groupe d'âge` <- factor(projection_long$`Groupe d'âge`,
                                          levels = unique(projection_long$`Groupe d'âge`))
 
@@ -1564,8 +1566,8 @@ plot_4_1_2_3_1 <-
   scale_fill_manual(values = c("2021" = color_theme("yellowclimate"), "2051" = color_theme("pinkhealth")))+
   graph_theme
 
-ggsave(plot = plot_4_1_2_3_1, "outputs/4/plot_4_1_2_3_1.pdf", width = 9, height = 4.5)
-
+ggsave_pdf_png(plot = plot_4_1_2_3_1, "outputs/4/14_projections_individus.pdf", 
+               width = 9, height = 6)
 
 growth_total <- 
   sum(projection_long_raw$value[projection_long_raw$Année == 2041]) - sum(projection_long_raw$value[projection_long_raw$Année == 2021])
@@ -1621,28 +1623,27 @@ pop_growth <- convert_pct(pop_growth)
 
 # 4.1.2.3.2 Composantes de la croissance démographique annuelle  --------
 #https://statistique.quebec.ca/fr/document/projections-de-population-regions-administratives-et-regions-metropolitaines-rmr
-sheet_4_1_2_3_2 <- read_excel("data/4/4_1_2_3_2.xlsx")
+sheet_4_1_2_3_2 <- read_excel("data/4/Compo_RA_base_2024.xlsx", skip = 5) |> 
+  filter(`...3` == "Laval",
+         `...1` == "Référence A2024") |> 
+  rename(`Année` = 4) |> 
+  mutate_all(as.numeric)
 
-data_4_1_2_3_2 <- sheet_4_1_2_3_2 |> #Separate data frame so loading from the spreadsheet constantly isn't needed
-  select(-`Composantes démographiques projetées, scénario Référence A2022, régions administratives du Québec, 2021-2041`)|> 
-  slice(-c(278:370)) |> 
-  slice(-c(1:257)) |> 
-  rename(`Année` = `...4`, `Population (n)` = `...5`, `Naissances (n)` = `...7`,
-         `Indice synthétique de fécondité` = `...8`, `Décès (n)` = `...10`,
-         `Espérance de vie - Hommes` = `...11`,
-         `Espérance de vie - Femmes` = `...12`,
-         `Espérance de vie - Total` = `...13`,
-         `Accroissement naturel (n)` = `...15`, `Immigrants (n)` = `...17`,
-         `Émigration (n)` = `...18`, `Solde migratoire international (n)` = `...19`,
-         `Cette année (n)` = `...21`, `L'année prochaine (n)` = `...22`,
-         `Solde résidents non permanents (n)` = `...23`, `Entrants (n)` = `...25`,
-         `Sortants (n)` = `...26`, `Solde migration interprovinciale (n)` = `...27`, `Solde (n)` = `...31`,
-         `Solde interne des naissances (n)` = `...32`, `Solde interne total (n)` = `...33`,
-         `Ajustement et résidu d'arrondissement (n)` = `...37`, `Accroissement total (n)` = `...38`) |> 
-  select(-starts_with("...")) |> 
-  mutate(across(-`Année`, ~ suppressWarnings(as.numeric(.))))
-  
-
+# data_4_1_2_3_2 <- sheet_4_1_2_3_2 |> #Separate data frame so loading from the spreadsheet constantly isn't needed
+#   rename(`Année` = `...4`, `Population (n)` = `...5`, `Naissances (n)` = `...7`,
+#          `Indice synthétique de fécondité` = `...8`, `Décès (n)` = `...10`,
+#          `Espérance de vie - Hommes` = `...11`,
+#          `Espérance de vie - Femmes` = `...12`,
+#          `Espérance de vie - Total` = `...13`,
+#          `Accroissement naturel (n)` = `...15`, `Immigrants (n)` = `...17`,
+#          `Émigration (n)` = `...18`, `Solde migratoire international (n)` = `...19`,
+#          `Cette année (n)` = `...21`, `L'année prochaine (n)` = `...22`,
+#          `Solde résidents non permanents (n)` = `...23`, `Entrants (n)` = `...25`,
+#          `Sortants (n)` = `...26`, `Solde migration interprovinciale (n)` = `...27`, `Solde (n)` = `...31`,
+#          `Solde interne des naissances (n)` = `...32`, `Solde interne total (n)` = `...33`,
+#          `Ajustement et résidu d'arrondissement (n)` = `...37`, `Accroissement total (n)` = `...38`) |> 
+#   select(-starts_with("...")) |> 
+#   mutate(across(-`Année`, ~ suppressWarnings(as.numeric(.))))
 # table_4_1_2_3_2 <- data_4_1_2_3_2 |> 
 #   gt() |>
 #   tab_style(
@@ -1705,21 +1706,19 @@ data_4_1_2_3_2 <- sheet_4_1_2_3_2 |> #Separate data frame so loading from the sp
 #   )
 
 data_4_1_2_3_2_plot <- sheet_4_1_2_3_2 |> #Separate data frame so loading from the spreadsheet constantly isn't needed
-  select(-`Composantes démographiques projetées, scénario Référence A2022, régions administratives du Québec, 2021-2041`)|> 
-  slice(-c(278:370)) |> 
-  slice(-c(1:257)) |> 
-  rename(`Année` = `...4`, `Accroissement naturel` = `...15`, `Solde migratoire international` = `...19`,
-         `Solde résidents non permanents` = `...23`, `Solde migration interprovinciale` = `...27`,
-         `Solde interne total` = `...33`) |> 
-  select(-starts_with("...")) |> 
-  # mutate(across(-c(`Année`), ~ lag(.))) |> 
-  mutate(across(-`Année`, ~ suppressWarnings(as.numeric(.)))) |> 
+  transmute(`Année` = `Année`, 
+            `Accroissement naturel` = `naturel`, 
+            `Solde migratoire international` = `international`,
+            # `Solde résidents non permanents` = `des RNP`, 
+            `Solde migration interprovinciale` = `migratoire...24`,
+            `Solde interne total` = `interne`) |> 
   pivot_longer(
     cols = -`Année`,
     names_to = "Change",
     values_to = "Value"
   ) |> 
-  filter(is.finite(Value))
+  filter(is.finite(Value)) |> 
+  filter(Année >= 2024)
 
 plot_4_1_2_3_2 <- ggplot(data_4_1_2_3_2_plot, aes(x = `Année`, y = Value, fill = Change)) +
   geom_bar(stat = "identity") +
@@ -1727,16 +1726,16 @@ plot_4_1_2_3_2 <- ggplot(data_4_1_2_3_2_plot, aes(x = `Année`, y = Value, fill 
   scale_fill_manual(values = c(
     "Accroissement naturel" = "#A3B0D1",
     "Solde migratoire international" = "#73AD80",
-    "Solde résidents non permanents" = "#E08565",
+    # "Solde résidents non permanents" = "#E08565",
     "Solde migration interprovinciale" = "#9E9090", 
     "Solde interne total" = "#F5D574"
-  )) +
+  ), labels = \(x) str_wrap(x, 18)) +
   scale_y_continuous(labels = function(x) convert_number(x)) +
   graph_theme +
   theme(axis.text.x = element_text(angle = 315, hjust = 1)) +
   guides(fill = guide_legend(nrow = 2))
 
-ggsave(plot = plot_4_1_2_3_2, "outputs/4/plot_4_1_2_3_2.pdf", width = 6.5, height = 5)
+ggsave_pdf_png(plot = plot_4_1_2_3_2, filename = "outputs/4/15_projections_composantes.pdf", width = 6.5, height = 6)
 # gtsave(table_4_1_2_3_2, "outputs/4/table_4_1_2_3_2.png", vwidth = 3200)
 
 # R Markdown --------------------------------------------------------------
