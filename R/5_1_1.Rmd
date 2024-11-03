@@ -9,6 +9,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 library(tidyverse)
 library(gt)
 qs::qload(here::here("data", "section_5_1_1.qsm"))
+source(here::here("R/utils", "startup.R"))
 ```
 
 # 5.1.1.1 Répartition des logements selon le typologie
@@ -16,13 +17,13 @@ qs::qload(here::here("data", "section_5_1_1.qsm"))
 ```{r housing_type_figures}
 
 single_shares <- 
-  housing |> 
+  housing_CSD |> 
   sf::st_drop_geometry() |> 
   summarize(total = sum(type_total, na.rm = TRUE),
             single = sum(type_single, na.rm = TRUE),.by = year) |> 
   mutate(pct = single / total) |> 
   pull(pct) |> 
-  convert_pct(0.1)
+  convert_pct()
 
 ```
 
@@ -49,13 +50,13 @@ map_5_1_1_1_single
 ```{r housing_tenure_figures}
 
 owner_shares <- 
-  housing |> 
+  housing_CSD |> 
   sf::st_drop_geometry() |> 
   summarize(total = sum(tenure_total, na.rm = TRUE),
             owner = sum(tenure_owner, na.rm = TRUE),.by = year) |> 
   mutate(pct = owner / total) |> 
   pull(pct) |> 
-  convert_pct(0.1)
+  convert_pct()
 
 ```
 
@@ -100,16 +101,16 @@ map_5_1_1_3_four
 
 ```{r construction_facts}
 ages <- 
-  housing |> 
+  housing_CSD |> 
   sf::st_drop_geometry() |> 
   filter(year == 2021) |> 
-  select(NOM, age_total:age_2021) |> 
+  select(age_total:age_2021) |> 
   mutate(age_2000 = age_1990 + age_2000,
          age_2021 = age_2005 + age_2010 + age_2015 + age_2021) |> 
   select(-age_1990, -age_2005, -age_2010, -age_2015) |> 
   summarize(across(age_total:age_2021, sum)) |> 
   mutate(across(age_1960:age_2021, \(x) x / age_total)) |> 
-  mutate(across(age_1960:age_2021, convert_pct, 0.1))
+  mutate(across(age_1960:age_2021, convert_pct))
 ```
 
 _Data source: Canadian Census_
@@ -136,15 +137,15 @@ _Data source: Canadian Census_
 
 ```{r subsid_data}
 subsid_data <- 
-  housing |> 
+  housing_CSD |> 
   sf::st_drop_geometry() |> 
   filter(year >= 2011) |> 
   summarize(across(subsid_total:subsid, sum), .by = year) |> 
-  mutate(pct = convert_pct(subsid / subsid_total, 0.1)) |> 
-  mutate(subsid = convert_number(subsid, 10))
+  mutate(pct = convert_pct(subsid / subsid_total)) |> 
+  mutate(subsid = convert_number(subsid))
 
-can_subsid_pct <- convert_pct(can_subsid$subsid / 100, 0.1)
-qc_subsid_pct <- convert_pct(qc_subsid$subsid / 100, 0.1)
+can_subsid_pct <- convert_pct(can_subsid$subsid / 100)
+qc_subsid_pct <- convert_pct(qc_subsid$subsid / 100)
 ```
 
 There is only limited systematic information available about households living in non-market housing. In particular, for the last ten years the Canadian Census has identified tenant households who live in subsidized housing. According to this indicator, the share of the overall tenant population in Laval living in subsidized housing has been flat, from `r subsid_data$subsid[1]` (`r subsid_data$pct[1]`) in 2011 to `r subsid_data$subsid[3]` (`r subsid_data$pct[3]`) in 2021. This rate is quite a bit lower than both the Canadian (`r can_subsid_pct`) and Quebec (`r qc_subsid_pct`) rates.

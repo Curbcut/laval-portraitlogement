@@ -97,8 +97,8 @@ defav_plot <-
   gg_cc_theme
 
 
-ggplot2::ggsave(filename = here::here("outputs/4/4_3_1_defav.pdf"),
-                plot = defav_plot, width = 6.5, height = 4)
+ggsave_pdf_png(filename = here::here("outputs/4/23_defav.pdf"),
+                plot = defav_plot, width = 6.5, height = 6)
 
 
 # 4.3.2 -------------------------------------------------------------------
