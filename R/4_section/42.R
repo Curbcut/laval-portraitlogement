@@ -21,8 +21,8 @@ occ_rev_comp <- crosstab_get(mode_occupation = c("Propriétaire" = "Propriétair
   mutate(comp_pretty = case_when(
     str_detect(composition, "wo_kids") ~ "Couple sans enfants",
     str_detect(composition, "w_kids") ~ "Couple avec enfants",
-    str_detect(composition, "mono") ~ "Famille monoparentale",
-    str_detect(composition, "multi") ~ "Ménage multigénérationnel",
+    str_detect(composition, "mono") ~ "Famille mono-parentale",
+    str_detect(composition, "multi") ~ "Ménage multi-générationnel",
     str_detect(composition, "solo") ~ "Personne seule",
     str_detect(composition, "other") ~ "Deux personnes ou plus",
     TRUE ~ NA_character_))
@@ -41,8 +41,8 @@ occ_rev_comp <- merge(
     mutate(comp_pretty = case_when(
       str_detect(composition, "wo_kids") ~ "Couple sans enfants",
       str_detect(composition, "w_kids") ~ "Couple avec enfants",
-      str_detect(composition, "mono") ~ "Famille monoparentale",
-      str_detect(composition, "multi") ~ "Ménage multigénérationnel",
+      str_detect(composition, "mono") ~ "Famille mono-parentale",
+      str_detect(composition, "multi") ~ "Ménage multi-générationnel",
       str_detect(composition, "solo") ~ "Personne seule",
       str_detect(composition, "other") ~ "Deux personnes ou plus",
       TRUE ~ NA_character_)),
@@ -77,18 +77,18 @@ plot_4_2_1 <-
   ggplot(occ_rev_comp, aes(x = comp_pretty, y = median_revenue, fill = mode_occupation, alpha = alpha_cat)) +
   geom_bar(stat = "identity", position = "dodge") +
   scale_fill_manual(values = c("Propriétaire" = "#A3B0D1", "Locataire" = "#CD718C")) +
-  scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 12)) +
+  scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 12, whitespace_only = FALSE)) +
   scale_y_continuous(labels = \(x) paste(convert_number(x), "$")) +
   scale_alpha_manual(values = c("< 10 %" = 0.2, "10 % - 20 %" = 0.5, 
                                 "20 % - 30 %" = 0.8, "> 30%" = 1)) +
   guides(
     alpha = guide_legend(
-      title = "Proportion des ménages\nselon le statut d'occupation",
+      title = "Proportion des ménages\nselon le mode d'occupation",
       nrow = 2
     ),
     fill = guide_legend(nrow = 1)
   ) +
-  labs(x = NULL, y = "Revenu annuel médian", fill = "Statut d'occupation") +
+  labs(x = NULL, y = "Revenu annuel médian", fill = "Mode d'occupation") +
   theme_minimal() +
   theme(legend.position = "bottom",
         legend.title.position = "top",
@@ -98,7 +98,8 @@ plot_4_2_1 <-
         legend.spacing.x = unit(0.5, "in"),
         axis.title.y = element_text(size = 11))
 
-ggsave(plot = plot_4_2_1, "outputs/4/plot_4_2_1.pdf", width = 6.5, height = 4)
+ggsave_pdf_png(plot = plot_4_2_1, "outputs/4/16_revenu_composition.pdf", 
+               width = 6.5, height = 4)
 
 rev_fun_421 <- function(mode_occupation, composition) {
   z <- occ_rev_comp$median_revenue[occ_rev_comp$mode_occupation == mode_occupation &
@@ -246,10 +247,103 @@ hou_med_inc <- hou_med_inc |>
 # low_laval_tenant <- data_4_2_2_table |> filter(NOM == "Laval (V)") |> pull(tenant_low_prop) |> convert_pct()
 # low_laval_owner <- data_4_2_2_table |> filter(NOM == "Laval (V)") |> pull(owner_low_prop) |> convert_pct()
 # 
-# ggsave(plot = map_4_2_2, "outputs/4/map_4_2_2.pdf", width = 7.5, height = 6)
+# ggsave_pdf_png(plot = map_4_2_2, "outputs/4/map_4_2_2.pdf", width = 7.5, height = 6)
 # gtsave(table_4_2_2, "outputs/4/table_4_2_2.png", vwidth = 3200)
 # 
 # # 4.2.3 -------------------------------------------------------------------
+
+mode_occupation <- c(owner = "Propriétaire", tenant = "Locataire")
+characteristic <- c(total = "Total - Rapport des frais de logement au revenu",
+                    core_need = "Ayant des besoins impérieux en matière de logement",
+                    afford = "Non abordable seulement",
+                    size = "Taille non convenable seulement",
+                    repair = "Réparations majeures requises seulement",
+                    afford_size = "Non abordable et de taille non convenable",
+                    afford_repair = "Non abordable et réparations majeures requises",
+                    size_repair = "Taille non convenable et réparations majeures requises",
+                    none = "Ne rencontre aucune des trois normes")
+
+core_need <- 
+  crosstab_get(mode_occupation = mode_occupation, characteristic = characteristic, 
+               scale = "CSD")
+
+sum_tenure_char <- \(tenure, char) {
+  vct <- {grepl(tenure, names(core_need)) & grepl(char, names(core_need)) |
+      grepl("none", names(core_need))}
+  rowSums(core_need[vct])
+}
+
+core_need$owner_afford <- sum_tenure_char("owner", "afford")
+core_need$owner_repair <- sum_tenure_char("owner", "repair")
+core_need$owner_size <- sum_tenure_char("owner", "size")
+
+core_need$tenant_afford <- sum_tenure_char("tenant", "afford")
+core_need$tenant_repair <- sum_tenure_char("tenant", "repair")
+core_need$tenant_size <- sum_tenure_char("tenant", "size")
+
+core_need <- 
+  core_need[c("owner_total", "tenant_total", "owner_core_need", "tenant_core_need",
+              "owner_afford", "owner_repair", "owner_size",
+              "tenant_afford", "tenant_repair", "tenant_size")]
+
+core_need_long <- 
+  core_need |> 
+  pivot_longer(
+    cols = starts_with("owner_") | starts_with("tenant_"),
+    names_to = c("type", "metric"),
+    names_sep = "_",
+    values_to = "value"
+  ) |>
+  # Pivot wider to get owner and tenant as columns
+  pivot_wider(
+    names_from = "type",
+    values_from = "value"
+  )
+
+core_need_long$metric <- c("Total", "Besoin(s) impérieu(x)",
+                           "Non abordable", "Taille non convenable", "Réparations majeures requises")
+
+core_need_long_table <- 
+core_need_long |>
+  mutate(
+    owner_pct = (owner / first(owner[metric == "Total"])),
+    tenant_pct = (tenant / first(tenant[metric == "Total"]))
+  ) |> 
+  select(metric, tenant, tenant_pct, owner, owner_pct) |> 
+  slice(2:nrow(core_need_long)) |> 
+  gt() |>
+  data_color(
+    columns = c(3,5),
+    colors = scales::col_numeric(
+      palette = c("white", color_theme("purpletransport")),
+      domain = c(0,0.15), na.color = "white"
+    )
+  ) |> 
+  fmt(columns = c(2,4), fns = convert_number) |> 
+  fmt(columns = c(3,5), fns = convert_pct) |> 
+  tab_style(
+    style = cell_text(font = font_local_name, size = px(15)),
+    locations = cells_body()) |> 
+  tab_style(
+    style = cell_text(font = font_local_name),
+    locations = cells_column_labels()) |> 
+  tab_options(
+    table.font.size = 14,
+    row_group.font.size = 12,
+    table.width = px(8 * 88)
+  ) |> 
+  # Set column labels for clarity
+  cols_label(
+    metric = " ",
+    owner = "Propriétaire (n)",
+    tenant = "Locataire (n)",
+    owner_pct = "Propriétaire (%)",
+    tenant_pct = "Locataire (%)"
+  )
+
+core_need_long_table
+gt_save_word(gt_table = core_need_long_table, file_path = "outputs/4/5_besoinsimperieux.docx")
+
 # 
 # data_4_2_3_percent <- get_cmhc(survey = "Core Housing Need", series = "Housing Standards",
 #                                dimension = "% of Households in Core Housing Need", breakdown = "Historical Time Periods",
@@ -263,10 +357,10 @@ hou_med_inc <- hou_med_inc |>
 #   regions = list(CSD = 2465005),
 #   level = "CT",
 #   vectors = c("core" = "v_CA21_4303", "hh" = "v_CA21_4302"),
-#   geo_format = "sf") |> 
-#   select(GeoUID, core, hh) |> 
-#   interpolate(additive_vars = c("core", "hh")) |> 
-#   mutate(prop = core / hh) |> 
+#   geo_format = "sf") |>
+#   select(GeoUID, core, hh) |>
+#   interpolate(additive_vars = c("core", "hh")) |>
+#   mutate(prop = core / hh) |>
 #   mutate(low_quantile = cut(prop, breaks = classInt::classIntervals(prop, n = 5, style = "jenks")$brks, include.lowest = TRUE,
 #                             labels = c("< 4,0 %", "4,0 - 5,5 %", "5,5 - 7,8 %", "7,8 - 9,3 %", "> 9,3 %")))
 # 
@@ -280,29 +374,29 @@ hou_med_inc <- hou_med_inc |>
 #                              title.hjust = 0.5))
 # 
 # # Combine all data frames into one
-# data_4_2_3_2021 <- do.call(rbind, data_list) |> 
-#   filter(DateString == 2021 & `Households in Core Housing Need` == "Total") |> 
-#   select(GeoUID, Value) |> 
-#   full_join(laval_hh_2021, by = "GeoUID") |> 
-#   st_as_sf() |> 
+# data_4_2_3_2021 <- do.call(rbind, data_list) |>
+#   filter(DateString == 2021 & `Households in Core Housing Need` == "Total") |>
+#   select(GeoUID, Value) |>
+#   full_join(laval_hh_2021, by = "GeoUID") |>
+#   st_as_sf() |>
 #   interpolate(additive_vars = c("Value", "households"))
 # 
 # #Evolution of core housing
 # laval_hh <- get_cmhc(survey = "Census", series = "All Households",
 #                      dimension = "Age of Primary Household Maintainer",
 #                      breakdown = "Historical Time Periods",
-#                      geo_uid = 2465005) |> 
-#   filter(`Age of Primary Household Maintainer` == "Total") |> 
+#                      geo_uid = 2465005) |>
+#   filter(`Age of Primary Household Maintainer` == "Total") |>
 #   select(DateString, Value)
 # 
 # data_4_2_3_evol <- get_cmhc(survey = "Core Housing Need", series = "Housing Standards",
 #                              dimension = "Households in Core Housing Need", breakdown = "Historical Time Periods",
-#                              geo_uid = 2465005) |> 
-#   rename("Count" = "Value") |> 
-#   select(DateString, `Households in Core Housing Need`, Count) |> 
-#   left_join(laval_hh, by = "DateString") |> 
+#                              geo_uid = 2465005) |>
+#   rename("Count" = "Value") |>
+#   select(DateString, `Households in Core Housing Need`, Count) |>
+#   left_join(laval_hh, by = "DateString") |>
 #   filter(`Households in Core Housing Need` != "Above Standards",
-#          `Households in Core Housing Need` != "Below One or More Housing Standards") |> 
+#          `Households in Core Housing Need` != "Below One or More Housing Standards") |>
 #   mutate(`Households in Core Housing Need` = case_when(
 #     `Households in Core Housing Need` == "Below Affordability Standard" ~ "Inférieur au seuil d'abordabilité",
 #     `Households in Core Housing Need` == "Below Adequacy Standard" ~ "Inférieur au seuil de taille convenable",
@@ -314,7 +408,7 @@ hou_med_inc <- hou_med_inc |>
 # 
 # plot_4_2_3_evol <- ggplot(data_4_2_3_evol, aes(x = DateString, y = prop, color = `Households in Core Housing Need`, group = `Households in Core Housing Need`)) +
 #   geom_line(linewidth = 1.5) +
-#   geom_point(size = 2) + 
+#   geom_point(size = 2) +
 #   labs(x = "",
 #        y = "Proportion de ménages ayant\ndes besoins impérieux (%)",
 #        color = "Housing Standard") +
@@ -363,7 +457,7 @@ hou_med_inc <- hou_med_inc |>
 # core_2021 <- data_4_2_3_table |> filter(Year == 2021) |> pull(Total) |> convert_pct()
 # core_diff <- data_4_2_3_table |> filter(Year == 2006 | Year == 2021) |> summarise(across(-Year, ~ .[Year == 2006] - .[Year == 2021])) |> pull(Total) |> convert_pct()
 # 
-# ggsave(plot = plot_4_2_3_evol, "outputs/4/plot_4_2_3_evol.pdf", width = 7.5, height = 6)
+# ggsave_pdf_png(plot = plot_4_2_3_evol, "outputs/4/plot_4_2_3_evol.pdf", width = 7.5, height = 6)
 # gtsave(table_4_2_3, "outputs/4/table_4_2_3.png", vwidth = 3200)
 
 # 4.2.4 -------------------------------------------------------------------
@@ -486,12 +580,12 @@ plot_4_2_4 <-
                                 "20 % - 30 %" = 0.8, "> 30%" = 1)) +
   guides(
     alpha = guide_legend(
-      title = "Proportion des ménages\nselon le statut d'occupation",
+      title = "Proportion des ménages\nselon le mode d'occupation",
       nrow = 2
     ),
     fill = guide_legend(nrow = 1)
   ) +
-  labs(x = NULL, y = "Revenu annuel médian", fill = "Statut d'occupation") +
+  labs(x = NULL, y = "Frais médian\nde logement", fill = "Mode d'occupation") +
   theme_minimal() +
   theme(legend.position = "bottom",
         legend.title.position = "top",
@@ -501,7 +595,7 @@ plot_4_2_4 <-
         legend.spacing.x = unit(0.5, "in"),
         axis.title.y = element_text(size = 11))
 
-ggsave(plot = plot_4_2_4, "outputs/4/plot_4_2_4.pdf", width = 6.5, height = 4)
+ggsave_pdf_png(plot = plot_4_2_4, "outputs/4/17_housingcosts_rev_occ.pdf", width = 6.5, height = 3.5)
 
 loyer_fun_421 <- function(mode_occupation, income) {
   z <- income_housingcost$housingcost[income_housingcost$occupation == mode_occupation &
@@ -559,9 +653,9 @@ plot_4_2_5 <-
     labels = c("total" = "Tous les ménages", "lowinc" = "Faible revenu")
   ) +
   graph_theme +
-  scale_y_continuous(labels = convert_number)
+  scale_y_sqrt(labels = convert_number)  # Using square root transformation
 
-ggsave(plot = plot_4_2_5, "outputs/4/plot_4_2_5.pdf", width = 6.5, height = 7.5)
+ggsave_pdf_png(plot = plot_4_2_5, "outputs/4/18_ratiorevhousingcosts.pdf", width = 6.5, height = 2.5)
 
 
 # denom <- sum(occ_stress_lowinc$count[occ_stress_lowinc$lowinc == "total" &
@@ -672,7 +766,7 @@ plot_4_2_7 <-
                                          nrow = 1)) +
   gg_cc_theme
 
-ggsave(plot = plot_4_2_7, "outputs/4/plot_4_2_7.pdf", width = 6.5, height = 6)
+ggsave_pdf_png(plot = plot_4_2_7, "outputs/4/19_carte_surpeuplement.pdf", width = 6.5, height = 6)
 
 
 # 4.2.8 -------------------------------------------------------------------
@@ -728,13 +822,13 @@ housing_loyermed_plot <-
   geom_line(linewidth = 1.5) +
   labs(title = element_blank(),
        x = NULL,
-       y = "Loyer mensuel médian ($)") +
+       y = "Loyer mensuel médian") +
   scale_color_manual(values = c("Laval" = color_theme("greenecology"), "Québec" = color_theme("blueexplorer"))) +
-  scale_y_continuous(labels = convert_number) +
+  scale_y_continuous(labels = convert_dollar) +
   graph_theme +
   theme(legend.title = element_blank())
 
-ggplot2::ggsave(filename = here::here("outputs/4/plot_4_2_10_loyer.pdf"),
+ggsave_pdf_png(filename = here::here("outputs/4/20_loyer.pdf"),
                 plot = housing_loyermed_plot, width = 6.5, height = 3)
 
 housing_loyer_2023 <- avg_rent_annual$Value[
@@ -744,18 +838,53 @@ housing_loyer_2010 <- avg_rent_annual$Value[
 housing_loyer_var <- convert_pct((housing_loyer_2023 - housing_loyer_2010) / housing_loyer_2010)
 
 
+housing_cost <- get_census(dataset = "CA21",
+                              regions = list(CSD = 2465005),
+                              level = "CT",
+                              vectors = c("med_owner" = "v_CA21_4309", 
+                                          "med_tenant" = "v_CA21_4317"),
+                              geo_format = "sf")
+
+housing_cost <- 
+interpolate(housing_cost, average_vars = c("med_owner", "med_tenant"))
+
+housing_cost_plot <- 
+housing_cost |> 
+  pivot_longer(cols = c("med_owner", "med_tenant"), 
+               names_to = "variable", 
+               values_to = "value") |> 
+  mutate(variable = case_when(variable == "med_tenant" ~ "Locataires",
+                              TRUE ~ "Propriétaires")) |> 
+  ggplot() +
+  geom_sf(aes(fill = value), color = NA) + # No borders for cleaner look
+  facet_wrap(~variable, ncol = 2) + # Creates one column with two rows
+  scale_fill_viridis_c(option = "plasma", name = "Median Cost") + # Color palette
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  scale_fill_stepsn("Loyen mensuel moyen", 
+                    labels = \(x) paste(convert_number(x), "$"),
+                    limits = c(800, 1500),
+                    colours = curbcut_colors$left_5$fill[2:6]) +
+  gg_cc_theme +
+  theme(legend.key.width = unit(2, "cm"),
+        legend.title.position = "top")
+
+ggsave_pdf_png(plot = housing_cost_plot, "outputs/4/21_carte_coutlogement.pdf", width = 6.5, height = 4)
+
+
 # 4.2.11 ------------------------------------------------------------------
 
 # Créer le dataframe
 logements_data <- data.frame(
-  Programme = c("Financés par la CMM",
-                "En coopératives d'habitation",
-                "Gérés par des OBNL",
-                "Gérés par l'OMH de Laval",
-                "AccèsLogis Québec",
-                "Programme LAQ",
-                "Logements HLM privés et autochtones"),
-  Nombre_de_Logements = c(2571, 933, 2065, 1974, 1108, 271, 80)
+  Programme = c(
+    "Logements sociaux et communautaires financés par la CMM",
+    "Logements en COOP et OBNL d'habitation relevant d'anciens programmes",
+    "Logements HLM publics",
+    "AccèsLogis Québec",
+    "Logements du programme LAQ - volet social et communautaire",
+    "Logements HLM privés et autochtones"
+  ),
+  Nombre_de_Logements = c(2571, 1535, 1120, 893, 271, 80)
 )
 
 # Créer le graphique
@@ -764,6 +893,7 @@ aide_au_logement <-
                              y = Nombre_de_Logements)) +
   geom_bar(stat = "identity", fill = "#CD718C") +
   scale_y_continuous(labels = convert_number) +
+  scale_x_discrete(labels = \(x) str_wrap(x, 12)) +
   coord_flip() +
   labs(title = NULL,
        x = "Programme",
@@ -772,14 +902,14 @@ aide_au_logement <-
   theme_minimal() +
   theme(axis.text.x = element_text(hjust = 1))
 
-ggsave(plot = aide_au_logement, "outputs/4/plot_4_2_11_aide_au_logement.pdf", width = 6.5, height = 6)
+ggsave_pdf_png(plot = aide_au_logement, "outputs/4/22_aidelogement.pdf", width = 6.5, height = 6)
 
 
 # 4.2.12 ------------------------------------------------------------------
 
 # 4.2.13 ------------------------------------------------------------------
 
-att <- read_xlsx("data/OMHL_Données délai d'attente moyen par territoire - juillet 2024.xlsx") |> 
+att <- readxl::read_xlsx("data/OMHL_Données délai d'attente moyen par territoire - juillet 2024.xlsx") |> 
   setNames(c("programme", "territoire", "jours"))
 
 # Get the clientele
@@ -844,7 +974,7 @@ att |>
     table.width = px(3 * 96)
   )
 
-gtsave(att_programme_table, "outputs/4/4_2_13_attprogrammetable.png", zoom = 2)
+gt_save_word(att_programme_table, "outputs/4/6_attente_programme.docx")
 
 
 # R Markdown --------------------------------------------------------------
