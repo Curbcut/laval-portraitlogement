@@ -69,10 +69,10 @@ rep_plot <-
 # rep_plot_bind <- rep_pct_plot + patchwork::plot_spacer() + rep_plot +
 #   patchwork::plot_layout(widths = c(1, 0.01, 1))
 
-ggplot2::ggsave(filename = here::here("outputs/5/5_1_2_1_reppct.pdf"), 
+ggsave_pdf_png(filename = here::here("outputs/5/31_carte_repair.pdf"), 
                 plot = rep_pct_plot, width = 6.5, height = 6)
 
-ggplot2::ggsave(filename = here::here("outputs/5/5_1_2_1_rep.pdf"), 
+ggsave_pdf_png(filename = here::here("outputs/5/32_carte_repair_DA.pdf"), 
                 plot = rep_plot, width = 6.5, height = 6)
 
 rep_census_CSD <- cancensus::get_census(dataset = "CA21",
@@ -162,8 +162,8 @@ rep_evol <-
   graph_theme
 
 
-ggplot2::ggsave(filename = here::here("outputs/5/5_1_2_2_repevol.pdf"), 
-                plot = rep_evol, width = 6, height = 4)
+ggsave_pdf_png(filename = here::here("outputs/5/33_reparation_historique.pdf"), 
+               plot = rep_evol, width = 6, height = 3.5)
 
 
 # 5.1.2.3 -------------------------------------------------------------------

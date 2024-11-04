@@ -45,141 +45,142 @@ rm(cmhc_nbhd_2016, cmhc_nbhd_2017, cmhc_nbhd_2018, cmhc_nbhd_2019,
 
 # 5.2.1.1 -----------------------------------------------------------------
 
-# library(rvest)
-# 
-# # Xpaths of tables
-# url <- "https://www.centris.ca/en/tools/real-estate-statistics/laval"
-# 
-# categories <- c("total", "single_family", "condo", "plex_2_to_5_units")
-# 
-# get_table <- function(url) {
-#   tables <- lapply(seq_along(categories), \(x) {
-#     total <- 
-#       read_html(url) |> 
-#       html_nodes(xpath=glue::glue('//*[@id="contenuStats"]/div[{x}]/table')) %>%
-#       html_table()
-#     total <- as.data.frame(total[[1]])
-#     total <- total[c(1,4,7,10), c(1, 8)]
-#     names(total) <- c("indicateur", "last_12months")
-#     total$last_12months <- gsub(",|\\$", "", total$last_12months)
-#     total$last_12months <- as.numeric(total$last_12months)
-#     total$category <- categories[[x]]
-#     total
-#   })
-#   Reduce(rbind, tables)
-# }
-# 
-# 
-# # For all sectors
-# sectors <- page |> 
-#   html_nodes(xpath ='//*[@id="CityDistrictCommunity"]/li') |> 
-#   html_attr("data-option-value")
-# 
-# sectors_name <- page |> 
-#   html_nodes(xpath ='//*[@id="CityDistrictCommunity"]/li') |> 
-#   html_nodes("a") |> 
-#   html_text()
-# 
-# sectors <- sectors[sectors  != ""]
-# 
-# sectors_scrape <- 
-#   sapply(paste0(url, "/", sectors), get_table, simplify = FALSE, USE.NAMES = TRUE)
-# 
-# sectors_name <- sectors_name[sectors_name != "All municipalities"]
-# sectors_name <- gsub("(Laval \\()|(\\))", "", sectors_name)
-# 
-# sectors <- Reduce(rbind, mapply(\(df, name) {
-#   df$sector <- name
-#   df
-# }, sectors_scrape, sectors_name, SIMPLIFY = FALSE)) |> 
-#   tibble::as_tibble()
-# 
-# sectors <- sectors[sectors$indicateur %in% c("Sales", "Average selling time (days)", "Median  price"), ]
-# 
-# z <- sectors %>%
-#   pivot_wider(
-#     names_from = c(category, indicateur),
-#     values_from = last_12months
-#   )
-# 
-# prix_sur_marche_table <- 
-#   gt(z[c(1,3:ncol(z))]) |> 
-#   fmt_missing(
-#     columns = everything(),  # Apply to all columns
-#     missing_text = ""        # Replace NA with blank
-#   ) |> 
-#   data_color(
-#     columns = c(3,5,6,8,9,11)-1,
-#     colors = scales::col_numeric(
-#       palette = c("white", color_theme("purpletransport")),
-#       domain = NULL
-#     )
-#   ) |> 
-#   fmt(columns = c(3,5,6,8,9,11)-1, fns = convert_number) |>
-#   data_color(
-#     columns = c(4,7,10)-1,
-#     colors = scales::col_numeric(
-#       palette = c("white", color_theme("purpletransport")),
-#       domain = NULL
-#     )
-#   ) |>
-#   fmt(columns = c(4,7,10)-1, fns = \(x) paste0(convert_number(x), " $")) |> 
-#   # tab_spanner(
-#   #   label = "Laval",
-#   #   columns = c(`total_Sales`)
-#   # ) |>
-#   tab_spanner(
-#     label = "Unifamiliale",
-#     columns = c(`single_family_Sales`,
-#                 `single_family_Median  price`,
-#                 `single_family_Average selling time (days)`)
-#   ) |>
-#   tab_spanner(
-#     label = "Copropriété",
-#     columns = c(`condo_Sales`,
-#                 `condo_Median  price`,
-#                 `condo_Average selling time (days)`)
-#   ) |>
-#   tab_spanner(
-#     label = "Plex (2 à 5 logements)",
-#     columns = c(`plex_2_to_5_units_Sales`,
-#                 `plex_2_to_5_units_Median  price`,
-#                 `plex_2_to_5_units_Average selling time (days)`)
-#   ) |>
-#   cols_label(
-#     sector = "Secteur",
-#     # `total_Sales` = "Ventes",
-#     `single_family_Sales` = "Ventes",
-#     `single_family_Median  price` = "Prix médian",
-#     `single_family_Average selling time (days)` = "Délai de vente moyen (jours)",
-#     
-#     `condo_Sales` = "Ventes",
-#     `condo_Median  price` = "Prix médian",
-#     `condo_Average selling time (days)` = "Délai de vente moyen (jours)",
-#     
-#     `plex_2_to_5_units_Sales` = "Ventes",
-#     `plex_2_to_5_units_Median  price` = "Prix médian",
-#     `plex_2_to_5_units_Average selling time (days)` = "Délai de vente moyen (jours)"
-#   ) |>
-#   tab_style(
-#     style = cell_text(
-#       font = font_local_name
-#     ),
-#     locations = cells_body()
-#   ) |>
-#   tab_style(
-#     style = cell_text(
-#       font = font_local_name
-#     ),
-#     locations = cells_column_labels()
-#   ) |>
-#   tab_options(
-#     table.font.size = table_font_size,
-#     row_group.font.size = table_font_size,
-#     table.width = px(6 * 96)
-#   )
-# 
-# gtsave(prix_sur_marche_table, "outputs/5/5_2_1_prixsurmarchetable.png", zoom = 1)
+library(rvest)
+
+# Xpaths of tables
+url <- "https://www.centris.ca/en/tools/real-estate-statistics/laval"
+
+categories <- c("total", "single_family", "condo", "plex_2_to_5_units")
+page <- rvest::read_html(url)
+
+get_table <- function(url) {
+  tables <- lapply(seq_along(categories), \(x) {
+    total <-
+      read_html(url) |>
+      html_nodes(xpath=glue::glue('//*[@id="contenuStats"]/div[{x}]/table')) %>%
+      html_table()
+    total <- as.data.frame(total[[1]])
+    total <- total[c(1,4,7,10), c(1, 8)]
+    names(total) <- c("indicateur", "last_12months")
+    total$last_12months <- gsub(",|\\$", "", total$last_12months)
+    total$last_12months <- as.numeric(total$last_12months)
+    total$category <- categories[[x]]
+    total
+  })
+  Reduce(rbind, tables)
+}
+
+
+# For all sectors
+sectors <- page |>
+  html_nodes(xpath ='//*[@id="CityDistrictCommunity"]/li') |>
+  html_attr("data-option-value")
+
+sectors_name <- page |>
+  html_nodes(xpath ='//*[@id="CityDistrictCommunity"]/li') |>
+  html_nodes("a") |>
+  html_text()
+
+sectors <- sectors[sectors  != ""]
+
+sectors_scrape <-
+  sapply(paste0(url, "/", sectors), get_table, simplify = FALSE, USE.NAMES = TRUE)
+
+sectors_name <- sectors_name[sectors_name != "All municipalities"]
+sectors_name <- gsub("(Laval \\()|(\\))", "", sectors_name)
+
+sectors <- Reduce(rbind, mapply(\(df, name) {
+  df$sector <- name
+  df
+}, sectors_scrape, sectors_name, SIMPLIFY = FALSE)) |>
+  tibble::as_tibble()
+
+sectors <- sectors[sectors$indicateur %in% c("Sales", "Average selling time (days)", "Median  price"), ]
+
+z <- sectors %>%
+  pivot_wider(
+    names_from = c(category, indicateur),
+    values_from = last_12months
+  )
+
+prix_sur_marche_table <-
+  gt(z[c(1,3:ncol(z))]) |>
+  fmt_missing(
+    columns = everything(),  # Apply to all columns
+    missing_text = ""        # Replace NA with blank
+  ) |>
+  data_color(
+    columns = c(3,5,6,8,9,11)-1,
+    colors = scales::col_numeric(
+      palette = c("white", color_theme("purpletransport")),
+      domain = NULL
+    )
+  ) |>
+  fmt(columns = c(3,5,6,8,9,11)-1, fns = convert_number) |>
+  data_color(
+    columns = c(4,7,10)-1,
+    colors = scales::col_numeric(
+      palette = c("white", color_theme("purpletransport")),
+      domain = NULL
+    )
+  ) |>
+  fmt(columns = c(4,7,10)-1, fns = \(x) paste0(convert_number(x), " $")) |>
+  # tab_spanner(
+  #   label = "Laval",
+  #   columns = c(`total_Sales`)
+  # ) |>
+  tab_spanner(
+    label = "Unifamiliale",
+    columns = c(`single_family_Sales`,
+                `single_family_Median  price`,
+                `single_family_Average selling time (days)`)
+  ) |>
+  tab_spanner(
+    label = "Copropriété",
+    columns = c(`condo_Sales`,
+                `condo_Median  price`,
+                `condo_Average selling time (days)`)
+  ) |>
+  tab_spanner(
+    label = "Plex (2 à 5 logements)",
+    columns = c(`plex_2_to_5_units_Sales`,
+                `plex_2_to_5_units_Median  price`,
+                `plex_2_to_5_units_Average selling time (days)`)
+  ) |>
+  cols_label(
+    sector = "Secteur",
+    # `total_Sales` = "Ventes",
+    `single_family_Sales` = "Ventes",
+    `single_family_Median  price` = "Prix médian",
+    `single_family_Average selling time (days)` = "Délai de vente moyen (jours)",
+
+    `condo_Sales` = "Ventes",
+    `condo_Median  price` = "Prix médian",
+    `condo_Average selling time (days)` = "Délai de vente moyen (jours)",
+
+    `plex_2_to_5_units_Sales` = "Ventes",
+    `plex_2_to_5_units_Median  price` = "Prix médian",
+    `plex_2_to_5_units_Average selling time (days)` = "Délai de vente moyen (jours)"
+  ) |>
+  tab_style(
+    style = cell_text(
+      font = font_local_name
+    ),
+    locations = cells_body()
+  ) |>
+  tab_style(
+    style = cell_text(
+      font = font_local_name
+    ),
+    locations = cells_column_labels()
+  ) |>
+  tab_options(
+    table.font.size = table_font_size,
+    row_group.font.size = table_font_size,
+    table.width = px(6 * 96)
+  )
+
+gt_save_word(prix_sur_marche_table, "outputs/5/11_prixsurmarchetable.docx")
 
 # Prices taken from CMHC HMIP
 new_prices <-
@@ -227,25 +228,26 @@ plot_5_2_1_1_percentiles <-
                                         "80e percentile"))) |> 
   filter(year != 2019) |> 
   ggplot(aes(year, value, colour = name)) +
-  geom_line() +
+  geom_line(size=1) +
   scale_y_continuous("Prix", labels = convert_dollar) +
   scale_x_continuous("Année") +
   scale_colour_manual(values = curbcut_colors$left_5$fill[2:6]) +
+  guides(colour = guide_legend(nrow = 2)) +  # Set legend to two rows
   graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_1_percentiles.pdf"), 
-                plot = plot_5_2_1_1_percentiles, width = 7.5, height = 5)
+ggsave_pdf_png(filename = here::here("outputs/5/34_prx_absorbe.pdf"), 
+                plot = plot_5_2_1_1_percentiles, width = 6.5, height = 5)
 
 plot_5_2_1_1_units <-
   new_prices |> 
   ggplot(aes(year, units)) +
-  geom_line() +
+  geom_line(size=1) +
   scale_y_continuous("Unités", labels = convert_number) +
   scale_x_continuous("Année") +
-    graph_theme
+  graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_1_units.pdf"), 
-                plot = plot_5_2_1_1_units, width = 6.5, height = 5)
+ggsave_pdf_png(filename = here::here("outputs/5/35_absorbes.pdf"), 
+                plot = plot_5_2_1_1_units, width = 6.5, height = 2.5)
 
 # 5.2.1.2 Loyer moyen des logements locatifs selon le nombre de ch --------
 
@@ -295,14 +297,14 @@ plot_5_2_1_2_facet <-
   ) |> 
   filter(is.na(zone)) |>
   ggplot(aes(year, value, group = bedroom)) +
-  geom_line() +
-  gghighlight::gghighlight(use_direct_label = FALSE) +
+  geom_line(size = 1) +
+  gghighlight::gghighlight(use_direct_label = FALSE, unhighlighted_colour = "grey90") +
   scale_y_continuous("Loyer mensuel moyen", labels = convert_dollar) +
   scale_x_continuous("Année") +
   facet_wrap(~bedroom) +
   graph_theme
 
- ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_2_facet.pdf"),
+ ggsave_pdf_png(filename = here::here("outputs/5/36_loyermoyen_rentmarket.pdf"),
       plot = plot_5_2_1_2_facet, width = 6.5, height = 5)
 
 plot_5_2_1_2_change_facet <-
@@ -324,14 +326,14 @@ plot_5_2_1_2_change_facet <-
   filter(is.na(zone)) |>
   filter(year >= 1991) |> 
   ggplot(aes(year, value, group = bedroom)) +
-  geom_line() +
-  gghighlight::gghighlight(use_direct_label = FALSE) +
+  geom_line(size = 1) +
+  gghighlight::gghighlight(use_direct_label = FALSE, unhighlighted_colour = "grey90") +
   scale_y_continuous("Changement annuel du loyer moyen", labels = convert_dollar) +
   scale_x_continuous("Année") +
   facet_wrap(~bedroom) +
   graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_2_change_facet.pdf"),
+ggsave_pdf_png(filename = here::here("outputs/5/37_loyer_moyen_variation.pdf"),
                  plot = plot_5_2_1_2_change_facet, width = 6.5, height = 5)
 
 # Table with 5-year aggregations
@@ -362,7 +364,7 @@ table_5_2_1_2_five_year <-
 )
 
 # gtsave(table_5_2_1_2_five_year, "outputs/5/table_5_2_1_2_five_year.png", zoom = 1)
-gt_save_word(gt_table = table_5_2_1_2_five_year, file_path = "outputs/5/table_5_2_1_2_five_year.docx")
+gt_save_word(gt_table = table_5_2_1_2_five_year, file_path = "outputs/5/12_loyer_rentmarket.docx")
 
 # Map of average rents by five-year chunk
 map_5_2_1_2_annual <-
@@ -389,16 +391,16 @@ map_5_2_1_2_annual <-
   # gg_cc_tiles +
   geom_sf(colour = "black") +
   facet_grid(rows = vars(bedroom), cols = vars(date)) +
-
   scale_fill_stepsn("Loyen mensuel moyen", 
                     labels = \(x) paste(convert_number(x), "$"),
+                    limits = c(400, 1200),
                     colours = curbcut_colors$left_5$fill[2:6]) +
   gg_cc_theme_nodistricts +
   theme(legend.key.width = unit(2, "cm"),
         legend.title.position = "top")
 
- ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_2_annual.pdf"),
-                plot = map_5_2_1_2_annual, width = 7.5, height = 6)
+ ggsave_pdf_png(filename = here::here("outputs/5/38_loyer_trend.pdf"),
+                plot = map_5_2_1_2_annual, width = 7.5, height = 9)
 
 rent_by_construction <- 
   map(1990:2023, \(x) {
@@ -460,14 +462,14 @@ plot_5_2_1_2_construction_facet <-
   rent_by_construction |> 
   filter(is.na(zone), !is.na(value)) |>
   ggplot(aes(year, value, group = construction)) +
-  geom_line() +
-  gghighlight::gghighlight(use_direct_label = FALSE) +
+  geom_line(size=1) +
+  gghighlight::gghighlight(use_direct_label = FALSE, unhighlighted_colour = "grey90") +
   scale_y_continuous("Loyer mensuel moyen", labels = convert_dollar) +
   scale_x_continuous("Année") +
   facet_wrap(~construction) +
   graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_2_construction_facet.pdf"),
+ggsave_pdf_png(filename = here::here("outputs/5/39_loyer_rentmarket_age.pdf"),
                  plot = plot_5_2_1_2_construction_facet, width = 6.5, height = 5)
 
 # Table with 5-year aggregations
@@ -500,7 +502,7 @@ table_5_2_1_2_construction_five_year <-
     `Date Range` = "Période",
   )
 
-gt_save_word(gt_table = table_5_2_1_2_construction_five_year, file_path = "outputs/5/table_5_2_1_2_construction_five_year.docx")
+gt_save_word(gt_table = table_5_2_1_2_construction_five_year, file_path = "outputs/5/13_loyer_rentmarket_age.docx")
 
 # 5.2.1.3 Taux d'inoccupation ---------------------------------------------
 
@@ -550,14 +552,14 @@ plot_5_2_1_3_facet <-
   ) |> 
   filter(is.na(zone), !is.na(value)) |>
   ggplot(aes(year, value / 100, group = bedroom)) +
-  geom_line() +
-  gghighlight::gghighlight(use_direct_label = FALSE) +
+  geom_line(size = 1) +
+  gghighlight::gghighlight(use_direct_label = FALSE, unhighlighted_colour = "grey90") +
   scale_y_continuous("Taux d'inoccupation moyen", labels = convert_pct) +
   scale_x_continuous("Year") +
   facet_wrap(~bedroom) +
   graph_theme
 
- ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_3_facet.pdf"),
+ ggsave_pdf_png(filename = here::here("outputs/5/40_inoccupation_rentalmarket.pdf"),
                  plot = plot_5_2_1_3_facet, width = 6.5, height = 5)
 
 # Table with 5-year aggregations
@@ -599,7 +601,7 @@ table_5_2_1_3_five_year <-
 
 # gtsave(table_5_2_1_3_five_year, "outputs/5/table_5_2_1_3_five_year.png", zoom = 1)
 gt_save_word(gt_table = table_5_2_1_3_five_year, 
-      file_path = "outputs/5/table_5_2_1_3_five_year.docx")
+      file_path = "outputs/5/14_inoccupation_rentmarket_cc.docx")
 
 # Map of vacancy rate by five-year chunk
 map_5_2_1_3_annual <-
@@ -628,14 +630,15 @@ map_5_2_1_3_annual <-
   geom_sf(colour = "black") +
   facet_grid(rows = vars(bedroom), cols = vars(date)) +
   scale_fill_stepsn("Taux d'innocupation", 
+                    limits = c(0,0.04),
                     colours = curbcut_colors$left_5$fill[2:6], 
                     label = convert_pct) +
   gg_cc_theme_nodistricts +
   theme(legend.key.width = unit(2, "cm"),
         legend.title.position = "top")
 
- ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_3_annual.pdf"),
-               plot = map_5_2_1_3_annual, width = 6.5, height = 5)
+ ggsave_pdf_png(filename = here::here("outputs/5/41_inoccupation_rentmarket_CC.pdf"),
+               plot = map_5_2_1_3_annual, width = 7.5, height = 9)
 
 vacancy_by_rent <- 
   map(1990:2023, \(x) {
@@ -676,14 +679,14 @@ plot_5_2_1_3_rent_facet <-
   vacancy_by_rent |> 
   filter(is.na(zone), !is.na(value)) |>
   ggplot(aes(year, value / 100, group = quartile)) +
-  geom_line() +
-  gghighlight::gghighlight(use_direct_label = FALSE) +
+  geom_line(size=1) +
+  gghighlight::gghighlight(use_direct_label = FALSE, unhighlighted_colour = "grey90") +
   scale_y_continuous("Taux d'innocupation moyen", labels = convert_pct) +
   scale_x_continuous("Année") +
   facet_wrap(~quartile) +
   graph_theme
 
- ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_3_rent_facet.pdf"),
+ ggsave_pdf_png(filename = here::here("outputs/5/42_inoccupation_rentmarket_Q.pdf"),
                 plot = plot_5_2_1_3_rent_facet, width = 6.5, height = 5)
 
 # Table with 5-year aggregations
@@ -714,7 +717,7 @@ table_5_2_1_3_rent_five_year <-
 
 # gtsave(table_5_2_1_3_rent_five_year, "outputs/5/table_5_2_1_3_rent_five_year.png", zoom = 1)
 gt_save_word(gt_table = table_5_2_1_3_rent_five_year, 
-             file_path = "outputs/5/table_5_2_1_3_rent_five_year.docx")
+             file_path = "outputs/5/15_inoccupation_Q.docx")
 
 
 # Map of vacancy rate by five-year chunk
@@ -739,8 +742,8 @@ map_5_2_1_3_rent_annual <-
   theme(legend.key.width = unit(2, "cm"),
         legend.title.position = "top")
 
-ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_3_rent_annual.pdf"),
-              plot = map_5_2_1_3_rent_annual, width = 6.5, height = 5)
+ggsave_pdf_png(filename = here::here("outputs/5/43_carte_inoccupation_Q.pdf"),
+              plot = map_5_2_1_3_rent_annual, width = 7.5, height = 9)
 
 vacancy_by_construction <- 
   map(1990:2023, \(x) {
@@ -785,14 +788,14 @@ plot_5_2_1_3_construction_facet <-
   mutate(construction = factor(construction, levels = c(
     "Avant 1960", "1960 - 1979", "1980 - 1999", "Après 2000", "Total"))) |>
   ggplot(aes(year, value / 100, group = construction)) +
-  geom_line() +
-  gghighlight::gghighlight(use_direct_label = FALSE) +
+  geom_line(size=1) +
+  gghighlight::gghighlight(use_direct_label = FALSE, unhighlighted_colour = "grey90") +
   scale_y_continuous("Taux d'inoccupation moyen", labels = convert_pct) +
   scale_x_continuous("Année") +
   facet_wrap(~construction) +
   graph_theme
 
- ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_3_construction_facet.pdf"),
+ ggsave_pdf_png(filename = here::here("outputs/5/44_inoccupation_rentkmarket_age.pdf"),
                 plot = plot_5_2_1_3_construction_facet, width = 6.5, height = 5)
 
 
@@ -828,6 +831,75 @@ fst <-
   filter(CFSAUID %in% uef$FST) |> 
   rename(FST = CFSAUID)
 
+plot_5_2_1_4_boxplot <- 
+  uef |> 
+  mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
+  mutate(`Per unit` = value / units) |> 
+  rename(`Per property` = value) |> 
+  pivot_longer(c(`Per property`, `Per unit`)) |> 
+  ggplot(aes(type, value)) +
+  geom_boxplot(outliers = FALSE) +
+  facet_wrap(~name, labeller = as_labeller(c(
+    `Per property` = "Par propriété",
+    `Per unit` = "Par unité"
+  ))) +
+  scale_y_continuous("Valeur foncière", labels = convert_dollar) +
+  scale_x_discrete("Type de propriété") +
+  graph_theme
+
+ ggsave_pdf_png(filename = here::here("outputs/5/45_valeur_boxplot.pdf"),
+                plot = plot_5_2_1_4_boxplot, width = 6.5, height = 4)
+
+plot_5_2_1_4_year_property <-
+  uef |> 
+  mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
+  summarize(n = n(), value = mean(value), .by = c(year_built, type)) |> 
+  filter(year_built >= 1900) |>
+  ggplot(aes(year_built, value, size = n, fill = type, 
+             colour = after_scale(alpha(fill, 0.6)))) +
+  geom_point() +
+  gghighlight::gghighlight() +
+  facet_wrap(~type) +
+  scale_y_continuous("Valeur foncière", labels = convert_dollar) +
+  scale_x_continuous("Année de construction") +
+  scale_size_continuous(name = "Nombre de propriétés") +  # Ensure the legend title is explicitly set here
+  scale_fill_manual(values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        legend.margin = margin(t = -5, r = 0, b = 5, l = 0),
+        text=element_text(family=font_local_name),
+        legend.text = element_text(size = 10),
+        axis.title.y = element_text(size = 11))
+
+ ggsave_pdf_png(filename = here::here("outputs/5/46_valeur_type_annee.pdf"),
+               plot = plot_5_2_1_4_year_property, width = 6.5, height = 5)
+
+plot_5_2_1_4_year_unit <- 
+  uef |> 
+  mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
+  summarize(n = sum(units), value = sum(value) / sum(units), 
+            .by = c(year_built, type)) |> 
+  filter(year_built >= 1900) |>
+  ggplot(aes(year_built, value, size = n, fill = type, 
+             colour = after_scale(alpha(fill, 0.6)))) +
+  geom_point() +
+  gghighlight::gghighlight() +
+  facet_wrap(~type) +
+  scale_y_continuous("Valeur foncière", labels = convert_dollar) +
+  scale_x_continuous("Année de construction") +
+  scale_size_continuous(name = "Nombre de propriétés") +
+  scale_fill_manual(values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        legend.margin = margin(t = -5, r = 0, b = 5, l = 0),
+        text=element_text(family=font_local_name),
+        legend.text = element_text(size = 10),
+        axis.title.y = element_text(size = 11))
+
+
+ggsave_pdf_png(filename = here::here("outputs/5/47_valeur_type_anne_unite.pdf"),
+                plot = plot_5_2_1_4_year_unit, width = 6.5, height = 5)
+
 map_5_2_1_4 <- 
   uef |> 
   summarize(`Per property` = mean(value),
@@ -855,66 +927,9 @@ map_5_2_1_4 <-
   theme(legend.key.width = unit(2, "cm"),
         legend.title.position = "top")
 
- ggplot2::ggsave(filename = here::here("outputs/5/map_5_2_1_4.pdf"),
-                 plot = map_5_2_1_4, width = 7.5, height = 6)
+ggsave_pdf_png(filename = here::here("outputs/5/48_valeur_prop_piedcarre_unite.pdf"),
+               plot = map_5_2_1_4, width = 6.5, height = 3)
 
-plot_5_2_1_4_boxplot <- 
-  uef |> 
-  mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
-  mutate(`Per unit` = value / units) |> 
-  rename(`Per property` = value) |> 
-  pivot_longer(c(`Per property`, `Per unit`)) |> 
-  ggplot(aes(type, value)) +
-  geom_boxplot(outliers = FALSE) +
-  facet_wrap(~name, labeller = as_labeller(c(
-    `Per property` = "Par propriété",
-    `Per unit` = "Par unité"
-  ))) +
-  scale_y_continuous("Valeur foncière", labels = convert_dollar) +
-  scale_x_discrete("Type de propriété") +
-  graph_theme
-
- ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_4_boxplot.pdf"),
-                plot = plot_5_2_1_4_boxplot, width = 6.5, height = 5)
-
-plot_5_2_1_4_year_property <-
-  uef |> 
-  mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
-  summarize(n = n(), value = mean(value), .by = c(year_built, type)) |> 
-  filter(year_built >= 1900) |>
-  ggplot(aes(year_built, value, size = n, fill = type, 
-             colour = after_scale(alpha(fill, 0.6)))) +
-  geom_point() +
-  gghighlight::gghighlight() +
-  facet_wrap(~type) +
-  scale_y_continuous("Valeur foncière", labels = convert_dollar) +
-  scale_x_continuous("Année de construction") +
-  scale_size_area("Nombre de propriétés") +
-  scale_fill_manual(values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
-  graph_theme
-
- ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_4_year_property.pdf"),
-               plot = plot_5_2_1_4_year_property, width = 6.5, height = 5)
-
-plot_5_2_1_4_year_unit <- 
-  uef |> 
-  mutate(type = if_else(str_detect(type, "rangée"), "En rangée", type)) |> 
-  summarize(n = sum(units), value = sum(value) / sum(units), 
-            .by = c(year_built, type)) |> 
-  filter(year_built >= 1900) |>
-  ggplot(aes(year_built, value, size = n, fill = type, 
-             colour = after_scale(alpha(fill, 0.6)))) +
-  geom_point() +
-  gghighlight::gghighlight() +
-  facet_wrap(~type) +
-  scale_y_continuous("Valeur foncière", labels = convert_dollar) +
-  scale_x_continuous("Année de construction") +
-  scale_size_area("Nombre de propriétés") +
-  scale_fill_manual(values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
-  graph_theme
-
-ggplot2::ggsave(filename = here::here("outputs/5/plot_5_2_1_4_year_unit.pdf"),
-                plot = plot_5_2_1_4_year_unit, width = 6.5, height = 5)
 
 
 # Save --------------------------------------------------------------------

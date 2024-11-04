@@ -136,7 +136,7 @@ mixite_sociale <-
   theme(legend.spacing.x = unit(2, 'cm'),
         legend.spacing.y = unit(1, 'cm'))
 
-ggplot2::ggsave(filename = here::here("outputs/5/5_4_1_mixitecomposite.pdf"), 
+ggsave_pdf_png(filename = here::here("outputs/5/50_mixitesociale.pdf"), 
                 plot = mixite_sociale, width = 6.5, height = 6)
 
 
@@ -189,8 +189,8 @@ mixite_sociale_facet <-
   theme(legend.spacing.x = unit(2, 'cm'),
         legend.spacing.y = unit(1, 'cm'))
 
-ggplot2::ggsave(filename = here::here("outputs/5/5_4_1_mixitefacet.pdf"), 
-                plot = mixite_sociale_facet, width = 6.5, height = 5)
+ggsave_pdf_png(filename = here::here("outputs/5/51_mixitesociale_facet.pdf"), 
+                plot = mixite_sociale_facet, width = 6.5, height = 4.5)
 
 # 5.4.2 -------------------------------------------------------------------
 
@@ -233,7 +233,7 @@ densite_res_plot <-
                                          nrow = 1)) +
   gg_cc_theme
 
-ggplot2::ggsave(filename = here::here("outputs/5/5_4_2_densiteres.pdf"), 
+ggsave_pdf_png(filename = here::here("outputs/5/52_densiteres.pdf"), 
                 plot = densite_res_plot, width = 6.5, height = 6)
 
 
@@ -276,8 +276,8 @@ densite_res_evol_plot <-
   facet_wrap(~ period) + # Facet wrap par période
   gg_cc_theme
 
-ggplot2::ggsave(filename = here::here("outputs/5/5_4_2_densiteresevol.pdf"), 
-                plot = densite_res_evol_plot, width = 6.5, height = 5)
+ggsave_pdf_png(filename = here::here("outputs/5/52_densiteres_evol.pdf"), 
+               plot = densite_res_evol_plot, width = 6.5, height = 6)
 
 # 5.4.3 -------------------------------------------------------------------
 

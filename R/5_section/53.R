@@ -229,7 +229,7 @@ map_5_3_3 <- ggplot(data = res_aines) +
   guides(fill = guide_legend(title.position = "top",
                              title.hjust = 0.5))
 
-ggsave(plot = map_5_3_3, "outputs/5/map_5_3_3_res_aines.pdf", width = 6.5, height = 6)
+ggsave_pdf_png(plot = map_5_3_3, "outputs/5/49_RPA.pdf", width = 6.5, height = 6)
 
 # Table
 persones_ages_census <- get_census(dataset = "CA21",
@@ -294,12 +294,13 @@ res_aines_table <-
     table.font.size = table_font_size,
     row_group.font.size = table_font_size,
     table.width = px(3 * 96)
-  ) |>
-  gt_split(row_every_n = ceiling(nrow(res_aines) / 2))
+  )# |>
+  #gt_split(row_every_n = ceiling(nrow(res_aines) / 2))
 
-gtsave(grp_pull(res_aines_table, 1), "outputs/5/5_3_3_res_aines_1.png", zoom = 2)
-gtsave(grp_pull(res_aines_table, 2), "outputs/5/5_3_3_res_aines_2.png", zoom = 2)
-  
+# gtsave(grp_pull(res_aines_table, 1), "outputs/5/5_3_3_res_aines_1.png", zoom = 2)
+# gtsave(grp_pull(res_aines_table, 2), "outputs/5/5_3_3_res_aines_2.png", zoom = 2)
+#   
+gt_save_word(res_aines_table, file_path = "outputs/5/16_RPA.docx")
 
 cor_aines_rpa <- round(cor(res_aines$places, res_aines$ages) * 1000) / 1000
 cor_aines_rpa <- gsub("\\.", ",", cor_aines_rpa)

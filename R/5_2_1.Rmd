@@ -84,6 +84,12 @@ one_pct <- convert_pct((rent_years$`1 Bedroom`[7] - rent_years$`1 Bedroom`[6]) /
 one_2014 <- convert_dollar(rent_years$`1 Bedroom`[6])
 one_2019 <- convert_dollar(rent_years$`1 Bedroom`[7])
 
+two_abs <- convert_dollar(rent_years$`2 Bedroom`[7] - rent_years$`2 Bedroom`[6])
+two_pct <- convert_pct((rent_years$`2 Bedroom`[7] - rent_years$`2 Bedroom`[6]) /
+                             rent_years$`2 Bedroom`[6])
+two_2014 <- convert_dollar(rent_years$`2 Bedroom`[6])
+two_2019 <- convert_dollar(rent_years$`2 Bedroom`[7])
+
 three_abs <- convert_dollar(rent_years$`3 Bedroom +`[7] - rent_years$`3 Bedroom +`[6])
 three_pct <- convert_pct((rent_years$`3 Bedroom +`[7] - rent_years$`3 Bedroom +`[6]) /
                              rent_years$`3 Bedroom +`[6])

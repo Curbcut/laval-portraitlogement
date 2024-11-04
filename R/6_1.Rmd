@@ -10,6 +10,7 @@ qs::qload(here::here("data", "section_6_1.qsm"))
 library(tidyverse)
 library(gt)
 library(patchwork)
+source(here::here("R/utils/startup.R"))
 
 ```
 
@@ -32,7 +33,7 @@ comp_pct <-
   filter(!is.na(zone), type == "All", year >= 2014, year <= 2018) |> 
   summarize(val = sum(value[zone == "Chomedey/Sainte-Dorothée"]) / sum(value)) |> 
   pull(val) |> 
-  convert_pct(0.1)
+  convert_pct()
 
 # Completion % for rental
 rent_pct <- 
@@ -40,7 +41,7 @@ rent_pct <-
   filter(is.na(zone), market != "All", year >= 2015) |> 
   summarize(val = sum(value[market == "Rental"]) / sum(value)) |> 
   pull(val) |> 
-  convert_pct(0.1)
+  convert_pct()
 
 ```
 
@@ -107,7 +108,7 @@ starts_maxima <-
          min = if_else(year == min(year), FALSE, min),
          max = if_else(year == max(year), FALSE, max),
          min = if_else(year == max(year), TRUE, min)) |> 
-  mutate(value_trend = convert_number(value_trend, 1)) |> 
+  mutate(value_trend = convert_number(value_trend)) |> 
   filter(max)
 
 starts_minima <- 
@@ -126,7 +127,7 @@ starts_minima <-
          min = if_else(year == min(year), FALSE, min),
          max = if_else(year == max(year), FALSE, max),
          min = if_else(year == max(year), TRUE, min)) |> 
-  mutate(value_trend = convert_number(value_trend, 1)) |> 
+  mutate(value_trend = convert_number(value_trend)) |> 
   filter(min)
 
 max_years <- paste(paste(starts_maxima$year[1:2], collapse = ", "), starts_maxima$year[3], sep = " and ")
@@ -141,7 +142,7 @@ start_pct <-
   filter(!is.na(zone), type == "All", year >= 2014, year <= 2018) |> 
   summarize(val = sum(value[zone == "Chomedey/Sainte-Dorothée"]) / sum(value)) |> 
   pull(val) |> 
-  convert_pct(0.1)
+  convert_pct()
 
 # Starts in the last three years
 starts_21_23 <- 
@@ -154,7 +155,7 @@ starts_21_23 <-
 
 _Data source: CMHC Starts and Completions Survey._
 
-Since 1990, housing starts in Laval have varied cyclically, with three distinct peaks and troughs. Rolling five-year averages of housing starts peaked in `r max_years` at `r max_vals` respectively, and bottomed out at `r min_years` at `r min_vals` respectively. (However, although 2023 saw a recent low in housing starts, it is likely that the five-year average will continue to decline for the next several years, given the fact that only `r convert_number(starts_minima$value[3], 1)`) housing units were initiated in 2023.
+Since 1990, housing starts in Laval have varied cyclically, with three distinct peaks and troughs. Rolling five-year averages of housing starts peaked in `r max_years` at `r max_vals` respectively, and bottomed out at `r min_years` at `r min_vals` respectively. (However, although 2023 saw a recent low in housing starts, it is likely that the five-year average will continue to decline for the next several years, given the fact that only `r convert_number(starts_minima$value[3])`) housing units were initiated in 2023.
 
 ```{r plot_6_1_2_overall}
 plot_6_1_2_overall
@@ -193,11 +194,11 @@ start_market_min_max <-
          .by = market) |> 
   filter(year >= 1992) |> 
   summarize(
-    owner_max = convert_number(max(value_trend[market == "Homeowner"]), 1),
+    owner_max = convert_number(max(value_trend[market == "Homeowner"])),
     owner_year = year[value_trend == max(value_trend[market == "Homeowner"])],
-    condo_max = convert_number(max(value_trend[market == "Condo"]), 1),
+    condo_max = convert_number(max(value_trend[market == "Condo"])),
     condo_year = year[value_trend == max(value_trend[market == "Condo"])],
-    rental_max = convert_number(max(value_trend[market == "Rental"]), 1),
+    rental_max = convert_number(max(value_trend[market == "Rental"])),
     rental_year = year[value_trend == max(value_trend[market == "Rental"])])
 ```
 

@@ -82,7 +82,7 @@ completions_by_market <-
 plot_6_1_1_overall <- 
   completions_by_type |> 
   filter(is.na(zone)) |>
-  filter(type == "All") |>
+  filter(type == "Total") |>
   mutate(value_trend = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
          .by = type) |>
   pivot_longer(c(value, value_trend)) |> 
@@ -99,8 +99,8 @@ plot_6_1_1_overall <-
   # ggtitle("Annual housing completions") +
   graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_1_overall.pdf"), 
-                plot = plot_6_1_1_overall, width = 6.5, height = 3)
+# ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_1_overall.pdf"), 
+#                 plot = plot_6_1_1_overall, width = 6.5, height = 3)
 
 # Table with 5-year aggregations
 table_6_1_1_five_year <- 
@@ -203,7 +203,7 @@ plot_6_1_1_market_facet <-
 map_6_1_1_annual_1 <- 
   completions_by_type |> 
   filter(!is.na(zone)) |>
-  filter(type == "All") |> 
+  filter(type == "Total") |> 
   mutate(date = case_when(
     year >= 2019 ~ "2019-2023",
     year >= 2014 ~ "2014-2018",
@@ -226,7 +226,7 @@ map_6_1_1_annual_1 <-
 map_6_1_1_annual_2 <- 
   completions_by_type |> 
   filter(!is.na(zone)) |>
-  filter(type == "All") |> 
+  filter(type == "Total") |> 
   mutate(date = case_when(
     year >= 2019 ~ "2019-2023",
     year >= 2014 ~ "2014-2018",
@@ -270,7 +270,7 @@ starts_by_type <-
 plot_6_1_2_overall <- 
   starts_by_type |> 
   filter(is.na(zone)) |>
-  filter(type == "All") |>
+  filter(type == "Total") |>
   mutate(value_trend = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
          .by = type) |>
   pivot_longer(c(value, value_trend)) |> 
@@ -286,8 +286,8 @@ plot_6_1_2_overall <-
     "Valeur réelle" = 0.2, "Moyenne mobile quinquennale" = 1)) +
   graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_overall.pdf"), 
-                plot = plot_6_1_2_overall, width = 6.5, height = 6)
+# ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_overall.pdf"), 
+#                 plot = plot_6_1_2_overall, width = 6.5, height = 6)
 
 
 # Table with 5-year aggregations
@@ -351,8 +351,8 @@ plot_6_1_2_type <-
                       values = curbcut_colors$brandbook$color[c(2:4, 9)]) +
   graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_overall.pdf"), 
-                plot = plot_6_1_2_overall, width = 6.5, height = 6)
+# ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_overall.pdf"), 
+#                 plot = plot_6_1_2_overall, width = 6.5, height = 6)
 
 
 # Variation with between-type difference emphasized
@@ -378,8 +378,8 @@ plot_6_1_2_type_facet <-
   facet_wrap(~type) +
   graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_type_facet.pdf"), 
-                plot = plot_6_1_2_type_facet, width = 6.5, height = 5)
+# ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_type_facet.pdf"), 
+#                 plot = plot_6_1_2_type_facet, width = 6.5, height = 5)
 
 
 # Pct of annual starts which are apartment
@@ -394,8 +394,8 @@ plot_6_1_2_type_apart <-
   scale_x_continuous("Year") +
   graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_type_apart.pdf"), 
-                plot = plot_6_1_2_type_apart, width = 6.5, height = 5)
+# ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_2_type_apart.pdf"), 
+#                 plot = plot_6_1_2_type_apart, width = 6.5, height = 5)
 
 # Map of housing starts by five-year chunk
 map_6_1_2_annual_1 <- 
@@ -453,8 +453,8 @@ map_6_1_2_annual_2 <-
 map_6_1_2_annual <- 
   patchwork::wrap_plots(map_6_1_2_annual_1, map_6_1_2_annual_2)
 
-ggplot2::ggsave(filename = here::here("outputs/6/map_6_1_2_annual.pdf"), 
-                plot = map_6_1_2_annual, width = 7.5, height = 5)
+# ggplot2::ggsave(filename = here::here("outputs/6/map_6_1_2_annual.pdf"), 
+#                 plot = map_6_1_2_annual, width = 7.5, height = 5)
 
 # 6.1.3 Mises en chantier par mode d'occupation ---------------------------
 
@@ -528,8 +528,8 @@ plot_6_1_3_market <-
   theme(legend.position = "bottom")
   
 
-ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market.pdf"), 
-                plot = plot_6_1_3_market, width = 6.5, height = 5)
+# ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market.pdf"), 
+#                 plot = plot_6_1_3_market, width = 6.5, height = 5)
 
 # Variation with between-type difference emphasized
 plot_6_1_3_market_facet <-
@@ -548,8 +548,8 @@ plot_6_1_3_market_facet <-
   facet_wrap(~market) +
   graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market_facet.pdf"), 
-                plot = plot_6_1_3_market_facet, width = 6.5, height = 5)
+# ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market_facet.pdf"), 
+#                 plot = plot_6_1_3_market_facet, width = 6.5, height = 5)
 
 # Pct of annual starts which are rental
 plot_6_1_3_market_rental <-
@@ -563,8 +563,8 @@ plot_6_1_3_market_rental <-
   scale_x_continuous("Year") +
   graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market_rental.pdf"), 
-                plot = plot_6_1_3_market_rental, width = 6.5, height = 5)
+# ggplot2::ggsave(filename = here::here("outputs/6/plot_6_1_3_market_rental.pdf"), 
+#                 plot = plot_6_1_3_market_rental, width = 6.5, height = 5)
 
 # 6.1.5 Prix des logements neufs ------------------------------------------
 

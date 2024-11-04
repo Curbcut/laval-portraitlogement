@@ -94,7 +94,8 @@ color_theme <- function(theme) {
 
 graph_theme <- 
   theme_minimal() +
-  theme(legend.title = element_blank(), legend.position = "bottom",
+  theme(legend.title = element_blank(), 
+        legend.position = "bottom",
         legend.margin = margin(t = -5, r = 0, b = 5, l = 0),
         text=element_text(family=font_local_name),
         legend.text = element_text(size = 10),
