@@ -236,7 +236,7 @@ plot_5_2_1_1_percentiles <-
   graph_theme
 
 ggsave_pdf_png(filename = here::here("outputs/5/34_prx_absorbe.pdf"), 
-                plot = plot_5_2_1_1_percentiles, width = 6.5, height = 5)
+                plot = plot_5_2_1_1_percentiles, width = 6.5, height = 4)
 
 plot_5_2_1_1_units <-
   new_prices |> 
@@ -737,6 +737,7 @@ map_5_2_1_3_rent_annual <-
   geom_sf(colour = "black") +
   facet_grid(rows = vars(quartile), cols = vars(date)) +
   scale_fill_stepsn("Taux d'innocupation", colours = curbcut_colors$left_5$fill[2:6],
+                    limits = c(0, .04),
                     label = convert_pct) +
   gg_cc_theme_nodistricts +
   theme(legend.key.width = unit(2, "cm"),

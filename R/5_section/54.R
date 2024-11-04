@@ -276,7 +276,7 @@ densite_res_evol_plot <-
   facet_wrap(~ period) + # Facet wrap par période
   gg_cc_theme
 
-ggsave_pdf_png(filename = here::here("outputs/5/52_densiteres_evol.pdf"), 
+ggsave_pdf_png(filename = here::here("outputs/5/53_densiteres_evol.pdf"), 
                plot = densite_res_evol_plot, width = 6.5, height = 6)
 
 # 5.4.3 -------------------------------------------------------------------

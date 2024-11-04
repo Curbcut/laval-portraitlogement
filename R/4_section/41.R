@@ -1732,7 +1732,7 @@ plot_4_1_2_3_2 <- ggplot(data_4_1_2_3_2_plot, aes(x = `Année`, y = Value, fill 
   ), labels = \(x) str_wrap(x, 18)) +
   scale_y_continuous(labels = function(x) convert_number(x)) +
   graph_theme +
-  theme(axis.text.x = element_text(angle = 315, hjust = 1)) +
+  # theme(axis.text.x = element_text(angle = 315, hjust = 1)) +
   guides(fill = guide_legend(nrow = 2))
 
 ggsave_pdf_png(plot = plot_4_1_2_3_2, filename = "outputs/4/15_projections_composantes.pdf", width = 6.5, height = 6)

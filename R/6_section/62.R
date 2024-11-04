@@ -9,14 +9,14 @@ source("R/utils/startup.R")
 
 # 6.2.4 -------------------------------------------------------------------
 
-coop <- read_xlsx("data/Liste logement social_20240606.xlsx", 
+coop <- readxl::read_xlsx("data/Liste logement social_20240606.xlsx", 
                   sheet = "COOP", skip = 2) |> 
   filter(!is.na(Adresse)) |> 
   filter(!is.na(`Nb unités`))
-omhl <- read_xlsx("data/Liste logement social_20240606.xlsx", 
+omhl <- readxl::read_xlsx("data/Liste logement social_20240606.xlsx", 
                   sheet = "OMHL", skip = 2) |> 
   filter(!is.na(Adresse))
-obnl <- read_xlsx("data/Liste logement social_20240606.xlsx", 
+obnl <- readxl::read_xlsx("data/Liste logement social_20240606.xlsx", 
                   sheet = "OBNL", skip = 2) |> 
   filter(!is.na(Adresse))
 
@@ -87,8 +87,8 @@ nonluc_types <-
                                "Unités 3CC+" = "3+ chambres")) +
   graph_theme
 
-ggplot2::ggsave(filename = here::here("outputs/6/6_2_2_nonluctypes.pdf"),
-                plot = nonluc_types, width = 6.5, height = 4)
+ggsave_pdf_png(filename = here::here("outputs/6/66_nonluc_programmes.pdf"),
+                plot = nonluc_types, width = 6.5, height = 3)
 
 all_all <- all |> 
   group_by(`Type d'unité`) |> 
@@ -113,8 +113,8 @@ nonluc_types_all <-
   theme(legend.position = "none")
 
 
-ggplot2::ggsave(filename = here::here("outputs/6/6_2_2_nonluctypesall.pdf"),
-                plot = nonluc_types_all, width = 6.5, height = 4)
+ggsave_pdf_png(filename = here::here("outputs/6/67_nonluctypesall.pdf"),
+                plot = nonluc_types_all, width = 6.5, height = 3)
 
 # 6.2.5 -------------------------------------------------------------------
 

@@ -22,7 +22,7 @@ source(here::here("R/utils/startup.R"))
 min_max_vals <- 
   completions_by_type |> 
   filter(is.na(zone)) |>
-  filter(type == "All") |> 
+  filter(type == "Total") |> 
   mutate(value_trend = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
          .by = type) |>
   filter(value_trend %in% c(min(value_trend), max(value_trend)))
@@ -30,7 +30,16 @@ min_max_vals <-
 # Completion % in Chomedey/Sainte-Dorothée
 comp_pct <- 
   completions_by_type |> 
-  filter(!is.na(zone), type == "All", year >= 2014, year <= 2018) |> 
+  #   mutate(date = case_when(
+  #   year >= 2019 ~ "2019-2023",
+  #   year >= 2014 ~ "2014-2018",
+  #   year >= 2009 ~ "2009-2013",
+  #   year >= 2004 ~ "2004-2008",
+  #   year >= 1999 ~ "1999-2003",
+  #   year >= 1994 ~ "1994-1998",
+  #   year >= 1990 ~ "1990-1993")) |> 
+  # group_by(date) |> 
+  filter(!is.na(zone), type == "Total", year >= 2014, year <= 2018) |>
   summarize(val = sum(value[zone == "Chomedey/Sainte-Dorothée"]) / sum(value)) |> 
   pull(val) |> 
   convert_pct()
@@ -38,7 +47,7 @@ comp_pct <-
 # Completion % for rental
 rent_pct <- 
   completions_by_market |> 
-  filter(is.na(zone), market != "All", year >= 2015) |> 
+  filter(is.na(zone), market != "Total", year >= 2015) |> 
   summarize(val = sum(value[market == "Rental"]) / sum(value)) |> 
   pull(val) |> 
   convert_pct()
@@ -189,17 +198,17 @@ map_6_1_2_annual
 start_market_min_max <- 
   starts_by_market |> 
   filter(is.na(zone)) |>
-  filter(market != "All", market != "Unknown", market != "Co-Op") |> 
+  filter(market != "Total", market != "Inocnnu", market != "Coopératif") |> 
   mutate(value_trend = slider::slide_dbl(value, mean, .before = 2, .after = 2), 
          .by = market) |> 
   filter(year >= 1992) |> 
   summarize(
-    owner_max = convert_number(max(value_trend[market == "Homeowner"])),
-    owner_year = year[value_trend == max(value_trend[market == "Homeowner"])],
-    condo_max = convert_number(max(value_trend[market == "Condo"])),
-    condo_year = year[value_trend == max(value_trend[market == "Condo"])],
-    rental_max = convert_number(max(value_trend[market == "Rental"])),
-    rental_year = year[value_trend == max(value_trend[market == "Rental"])])
+    owner_max = convert_number(max(value_trend[market == "Prop.-occ."])),
+    owner_year = year[value_trend == max(value_trend[market == "Prop.-occ."])],
+    condo_max = convert_number(max(value_trend[market == "Copropriété"])),
+    condo_year = year[value_trend == max(value_trend[market == "Copropriété"])],
+    rental_max = convert_number(max(value_trend[market == "Locatif"])),
+    rental_year = year[value_trend == max(value_trend[market == "Locatif"])])
 ```
 
 _Data source: CMHC Starts and Completions Survey._
