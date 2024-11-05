@@ -21,17 +21,19 @@ source(here::here("R/utils/gt_save_word.R"))
 source(here::here("R/utils/interpolation.R"))
 source(here::here("R/utils/ggsave_pdf_png.R"))
 
-# font_import()
-# loadfonts(device = "win", quiet = TRUE)
-# windowsFonts(`KMR Apparat Regular`=windowsFont(font_local_name))
-# font_local_name %in% names(windowsFonts())
-tryCatch({
-  font_add(family = "KMR Apparat Regular", regular = here::here("data/fonts/KMR-Apparat-Regular.ttf"))
-  font_add(family = "KMR-Apparat-Regular", regular = here::here("data/fonts/KMR-Apparat-Regular.ttf"))
-}, error = function(e) cat("Fonts didn't load"))
-showtext_auto()
+if (.Platform$OS.type == "windows") {
+  # font_import()
+  # loadfonts(device = "win", quiet = TRUE)
+  # windowsFonts(`KMR Apparat Regular`=windowsFont(font_local_name))
+  # font_local_name %in% names(windowsFonts())
+  tryCatch({
+    font_add(family = "KMR Apparat Regular", regular = here::here("data/fonts/KMR-Apparat-Regular.ttf"))
+    font_add(family = "KMR-Apparat-Regular", regular = here::here("data/fonts/KMR-Apparat-Regular.ttf"))
+  }, error = function(e) cat("Fonts didn't load"))
+  showtext_auto()
+  font_local_name <- "KMR Apparat Regular"
+} else font_local_name <- "KMR Apparat"
 
-font_local_name <- "KMR Apparat Regular"
 
 # Checking vectors for Canada ---------------------------------------------
 
