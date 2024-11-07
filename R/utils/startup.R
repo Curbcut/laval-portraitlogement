@@ -15,6 +15,7 @@ library(gt)
 library(readxl)
 library(qs)
 library(officer)
+library(tsibble)
 
 source(here::here("R/utils/crosstab.R"))
 source(here::here("R/utils/gt_save_word.R"))
