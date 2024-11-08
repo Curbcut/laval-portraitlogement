@@ -75,6 +75,13 @@ ggsave_pdf_png(filename = here::here("outputs/5/31_carte_repair.pdf"),
 ggsave_pdf_png(filename = here::here("outputs/5/32_carte_repair_DA.pdf"), 
                 plot = rep_plot, width = 6.5, height = 6)
 
+# Save for complementary graphs
+write_excel_csv(sf::st_drop_geometry(rep_census[c("GeoUID", "majorrep", "total", "bins")]),
+                file = "data/complementary_data_output/reparations_majeures.csv")
+
+sf::st_write(rep_census[c("GeoUID", "majorrep", "total", "bins")],
+             "data/complementary_data_output/reparations_majeures.shp")
+
 rep_census_CSD <- cancensus::get_census(dataset = "CA21",
                                     regions = list(CSD = 2465005),
                                     level = "CSD",

@@ -768,6 +768,11 @@ plot_4_2_7 <-
 
 ggsave_pdf_png(plot = plot_4_2_7, "outputs/4/19_carte_surpeuplement.pdf", width = 6.5, height = 6)
 
+write_excel_csv(sf::st_drop_geometry(notsuitable[c("GeoUID", "not_suitable", "total", "bins")]),
+                file = "data/complementary_data_output/taille_non_convenable.csv")
+
+sf::st_write(notsuitable[c("GeoUID", "not_suitable", "total", "bins")],
+             "data/complementary_data_output/taille_non_convenable.shp")
 
 # 4.2.8 -------------------------------------------------------------------
 

@@ -1546,7 +1546,8 @@ projection_4_1_2_3_1 <- read_excel("data/4/PopGrAS_RA_base_2024.xlsx", skip = 5)
   filter(`...3` == "Laval",
          `...1` == "Référence A2024") |> 
   rename(`Année` = `...4`) |> 
-  mutate_all(as.numeric)
+  mutate_all(as.numeric)# |> 
+  # filter(`...5` == 3)
 
 
 # Reshape the data from wide to long format
