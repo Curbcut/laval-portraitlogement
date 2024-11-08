@@ -82,7 +82,7 @@ rep_census <- sf::st_transform(rep_census, crs = 32618)
 rep_da_pct_plot <- 
   ggplot(rep_census) +
   gg_cc_tiles +
-  geom_sf(aes(fill = bins), lwd = 0, color = "black", show.legend = TRUE) + 
+  geom_sf(aes(fill = bins), lwd = 0, color = "transparent", show.legend = TRUE) + 
   scale_fill_manual(values = curbcut_colors$left_5$fill[2:6],
                     name = "Nombre de logements nécessitant des réparations majeures",
                     labels = labels,
