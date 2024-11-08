@@ -64,6 +64,41 @@ rep_plot <-
                                          nrow = 1)) +
   gg_cc_theme
 
+# Additional ask : DAs, proportion, breaks.
+rep_census <- cancensus::get_census(dataset = "CA21",
+                                    regions = list(CSD = 2465005),
+                                    level = "DA",
+                                    vectors = c("total"= "v_CA21_4272",
+                                                "majorrep" = "v_CA21_4274"),
+                                    geo_format = "sf")
+rep_census$majorrep_pct <- rep_census$majorrep / rep_census$total
+labels <- c("< 2,5 %", "2,5 % - 5 %", "5 % - 10 %", "10 % - 15 %", "> 15 %")
+rep_census$bins <- cut(rep_census$majorrep_pct, 
+                       breaks = c(-Inf, 0.025, 0.05, 0.10, 0.15, Inf), 
+                       labels = labels, 
+                       include.lowest = TRUE)
+rep_census <- sf::st_transform(rep_census, crs = 32618)
+
+rep_da_pct_plot <- 
+  ggplot(rep_census) +
+  gg_cc_tiles +
+  geom_sf(aes(fill = bins), lwd = 0, color = "black", show.legend = TRUE) + 
+  scale_fill_manual(values = curbcut_colors$left_5$fill[2:6],
+                    name = "Nombre de logements nécessitant des réparations majeures",
+                    labels = labels,
+                    drop = FALSE,
+                    guide = guide_legend(title.position = "top", 
+                                         label.position = "bottom", 
+                                         nrow = 1)) +
+  gg_cc_theme
+# Save for complementary graphs
+write_excel_csv(sf::st_drop_geometry(rep_census[c("GeoUID", "majorrep", "total", "bins")]),
+                file = "data/complementary_data_output/reparations_majeures.csv")
+sf::st_write(rep_census[c("GeoUID", "majorrep", "total", "bins")],
+             "data/complementary_data_output/reparations_majeures.shp")
+ggsave_pdf_png(filename = here::here("outputs/7/repairs_DA_pct.pdf"), 
+               plot = rep_da_pct_plot, width = 6.5, height = 6)
+
 # library(patchwork)
 # 
 # rep_plot_bind <- rep_pct_plot + patchwork::plot_spacer() + rep_plot +
@@ -74,13 +109,6 @@ ggsave_pdf_png(filename = here::here("outputs/5/31_carte_repair.pdf"),
 
 ggsave_pdf_png(filename = here::here("outputs/5/32_carte_repair_DA.pdf"), 
                 plot = rep_plot, width = 6.5, height = 6)
-
-# Save for complementary graphs
-write_excel_csv(sf::st_drop_geometry(rep_census[c("GeoUID", "majorrep", "total", "bins")]),
-                file = "data/complementary_data_output/reparations_majeures.csv")
-
-sf::st_write(rep_census[c("GeoUID", "majorrep", "total", "bins")],
-             "data/complementary_data_output/reparations_majeures.shp")
 
 rep_census_CSD <- cancensus::get_census(dataset = "CA21",
                                     regions = list(CSD = 2465005),
