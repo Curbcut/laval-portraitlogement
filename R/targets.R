@@ -22,7 +22,8 @@ isq <-
     scenario == "Fort E2024" ~ "strong"))
 
 # Visualization
-isq |> 
+plot_isq_households <- 
+  isq |> 
   ggplot(aes(year, value, colour = scenario)) +
   geom_point() +
   scale_x_continuous(NULL) + 
@@ -739,5 +740,61 @@ census_br <- bind_rows(
   get_census("CA16", regions = list(CSD = "2465005"), vectors = br_2016),
   get_census("CA21", regions = list(CSD = "2465005"), vectors = br_2021)) |>
   mutate(year = c(2011, 2016, 2021)) |> 
-  select(year, type_total:type_movable)
+  select(year, br_total, br_zero, br_one:br_four)
 
+census_br <- 
+  census_br |> 
+  replace_na(list(br_zero = 0)) |> 
+  mutate(br_one = br_zero + br_one) |> 
+  select(-br_zero)
+
+census_br |> 
+  mutate(across(br_one:br_four, \(x) x / br_total)) |> 
+  select(-br_total) |> 
+  pivot_longer(-year) |> 
+  ggplot(aes(year, value, colour = name)) +
+  geom_line()
+
+
+
+# Dedicated old-age housing -----------------------------------------------
+
+# Import ISQ projections
+isq_age <-
+  read_excel("data/isq_age.xlsx", skip = 5) |> 
+  select(1, 3:5, a75 = `75-79`, a80 = `80-84`, a85 = `85-89`, a90 = `90+`) |> 
+  set_names(c("scenario", "region", "year", "total", "a75", "a80", "a85", 
+              "a90")) |> 
+  slice(-1) |> 
+  filter(region == "Laval") |> 
+  select(-region) |> 
+  mutate(scenario = case_when(
+    scenario == "Faible D2024" ~ "weak",
+    scenario == "Référence A2024" ~ "reference",
+    scenario == "Fort E2024" ~ "strong")) |> 
+  mutate(total = as.numeric(total))
+
+# Isolate number of households headed by 75+
+isq_age <- 
+  isq_age |> 
+  mutate(value = a75 + a80 + a85 + a90) |> 
+  select(scenario, year, value)
+
+# Visualization
+isq_age |> 
+  ggplot(aes(year, value, colour = scenario)) +
+  geom_line() +
+  scale_x_continuous(NULL) + 
+  scale_y_continuous("Households headed by 75+", labels = scales::comma) +
+  scale_colour_manual(NULL, labels = c("Reference scenario", "Strong scenario", 
+                                       "Weak scenario"),
+                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        text = element_text(family = "KMR Apparat"))
+
+
+# Save outputs ------------------------------------------------------------
+
+qsavem(isq, plot_isq_households, 
+  file = "data/targets.qsm")

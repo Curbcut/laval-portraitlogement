@@ -1,0 +1,42 @@
+---
+title: "Targets"
+author: "Curbcut"
+output: html_document
+---
+
+```{r setup_targets, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+qs::qload(here::here("data", "targets.qsm"))
+library(tidyverse)
+library(gt)
+library(patchwork)
+source(here::here("R/utils/startup.R"))
+
+```
+
+# Housing targets modelling strategy
+
+At a high level, we are modelling the number of housing starts needed each year to support the expected growth in households.
+
+Each term in the model rests on assumptions which can be modified to support different policy priorities.
+
+In addition to the global number of housing starts, we look at starts by typology and bedroom count, and separately model older adult housing.
+
+
+# ISQ household projections
+
+```{r isq}
+max_weak <- 
+  isq |> 
+  filter(scenario == "weak") |> 
+  filter(value == max(value)) |> 
+  pull(year)
+
+```
+
+The ISQ maintains three projections for the future growth in households in Québec's administrative regions: a reference scenario, a weak scenario (which forecasts slower household growth than the reference scenario), and a strong scenario (which forecasts faster household growth). These three scenarios form the basis for your housing targets. Figure TKTK displays the number of households forecasted in the City of Laval each year from 2021 (the base year) to 2051 under the three scenarios. The figure demonstrates that, while the reference and strong scenarios each project monotonic household growth throughout the study period, under the weak scenario total households are foreceasted to begin declining after `r max_weak`. This will have important implications for housing production targets in under this scenario.
+
+```{r plot_isq_households}
+plot_isq_households
+```
+
