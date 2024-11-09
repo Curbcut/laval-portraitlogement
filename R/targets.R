@@ -67,7 +67,8 @@ occ_weak <-
 occ_rate <- bind_rows(occ_raw, occ_strong, occ_weak)
 
 # Visualization
-occ_rate |> 
+plot_occ_rate <- 
+  occ_rate |> 
   ggplot(aes(year, occ_rate, colour = type)) +
   stat_function(fun = \(x) -0.0006591 * x + 2.2956686, lwd = 0.2,
                 colour = curbcut_colors$brandbook$color[3]) +
@@ -796,5 +797,5 @@ isq_age |>
 
 # Save outputs ------------------------------------------------------------
 
-qsavem(isq, plot_isq_households, 
+qsavem(isq, plot_isq_households, occ_rate, occ_model, plot_occ_rate,
   file = "data/targets.qsm")

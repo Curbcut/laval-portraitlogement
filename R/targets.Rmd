@@ -16,11 +16,15 @@ source(here::here("R/utils/startup.R"))
 
 # Housing targets modelling strategy
 
+TKTK
+
 At a high level, we are modelling the number of housing starts needed each year to support the expected growth in households.
 
 Each term in the model rests on assumptions which can be modified to support different policy priorities.
 
 In addition to the global number of housing starts, we look at starts by typology and bedroom count, and separately model older adult housing.
+
+TKTK
 
 
 # ISQ household projections
@@ -39,4 +43,34 @@ The ISQ maintains three projections for the future growth in households in Québ
 ```{r plot_isq_households}
 plot_isq_households
 ```
+
+
+# Occupancy rate
+
+```{r occ_rate}
+
+occ_2001 <- 
+  occ_rate |> 
+  filter(year == 2001) |> 
+  pull(occ_rate) |> 
+  convert_pct()
+
+occ_2021 <- 
+  occ_rate |> 
+  filter(year == 2021) |> 
+  pull(occ_rate) |> 
+  convert_pct()
+
+```
+
+If the ISQ household projections are to be realized, each of these future households will require a dwelling unit to occupy. However, in reality the City will require somewhat more than one dwelling unit per household, since every housing market has some number of unoccupied dwelling units. For rental apartments, these unoccupied units are the basis for the rental vacancy rate, but in the ownership sector as well unoccupied units are a standard feature of a healthy housing market.
+
+The ratio of occupied private dwelling units to all private dwelling units is the occupancy rate, and it can be measured empirically using the Canadian Census. The census provides a count of all private dwelling units, derived from the Statistical Building Register which Statistics Canada uses to produce the sampling frame for the census. It also provides a count of households, which is identical to the number of occupied private dwelling units (since households are defined as private dwellings occupied by usual residents). The ratio of the latter measure to the former is the occupancy rate.
+
+Historically, the occupancy rate has been declining in Laval; in other words, over time, a smaller percentage of total dwelling units have been occupied by their usual residents when the census was taken. In 2001, the occupancy rate was `r occ_2001`, while it had declined to `r occ_2021` by 2021. This trend is plausibly linear; the linear correlation between the year and the occupancy rate is in fact `r round(sqrt(summary(occ_model)$r.squared), 3)`. Under a linear trend, we should expect to see the occupancy rate decline steadily over the study period. However, the trend is also potentially exponential, which would imply a progressively slowing decline in the occupancy rate over the study period. It is not possible to empirically adjudicate between these possibilities, so instead we adopt them as two scenarios: a strong scenario where the occupancy rate is assumed to decline according to the linear function occ_rate = `r occ_model$coefficients["(Intercept)"][[1]]` `r occ_model$coefficients["year"][[1]]` * year, and a weak scenario where the occupancy rate is assumed to decline according to the decaying exponential function occ_rate = 0.954 + 0.01 * 0.958 ^ (year - 2021). These scenarios are each illustrated in Figure TKTK.
+
+```{r plot_occ_rate}
+plot_occ_rate
+```
+
 
