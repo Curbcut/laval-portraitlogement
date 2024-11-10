@@ -26,25 +26,33 @@ First, it is important to be clear about what the ISQ household growth scenarios
 
 The housing targets produced in this analysis should therefore be understood as the targets which will allow the ISQ projections to be realized, subject to the ISQ's other assumptions remaining plausible (e.g. the Québec population ages as it is expected to, and immigration proceeds as it is expected to) and subject to the housing dynamics captured in the remainder of our model. If the City has different normative goals for household growth in Laval, those can be substituted into the model in place of the ISQ's projections, and the model will produce the resulting targets for the amount of housing construction necessary to realize those household growth goals.
 
+Second, it is important to clarify which housing outcomes the City has some control over, and how. The key dynamics of housing systems are regional in nature; in particular, the region is the scale at which aggregate housing demand is produced, and the scale at which demand and supply jointly determine housing costs. This is because households are much more indifferent to their location within a region than they are to their location between regions: in the case of the Montreal region, while each individual household is likely to have some preferences as to whether they live in Laval or Longueuil or elsewhere, in general households' locational choices are most strictly limited by daily commuting needs which anchor them to a given region. It is plausible to commute from Laval to Longueuil or vice-versa, but it is not plausible to commute from Laval to Quebec City, or from Laval to Ottawa.
+
+Aggregate housing demand is the amount of housing desired at different price points by all the households currently living in the region or interested in living in the region (plus the housing desired by non-local investors). If the amount of this demand increases (for example because the Montreal economy is booming, because the Montreal region becomes a more attractive destination for international migration, or because national interest rates drop), then, given a fixed amount of regional housing supply, regional housing costs will increase. Likewise, as any location in the region adds housing supply, then, given a fixed amount of regional housing demand, regional housing costs will decrease. While a new influx of housing in a particular location will likely result in a short-term drop in housing costs relative to other locations in the region which did not receive that influx, in the long run the downward price pressure of new supply will tend to equilibriate across the entire region, as individual households' locational preferences update in response to changing prices.
+
+The result of this regional housing price equilibrium process is that, broadly speaking, local housing costs are jointly driven by, on the one hand, the relationship between regional demand and supply (which answers the question: how costly is housing in general?), and, on the other, the relative desirability of its housing vis-a-vis the housing elsewhere in the region (which answers the question: given baseline regional housing costs, how much more or less expensive is local housing because of its relative desirability?).
+
+The key implication of this analysis for the City of Laval is that the City's major lever for affecting housing affordability is the type of construction rather than the volume of construction it allows. are twofold. First, while it is intuitive that the City has minimal control over aggregate housing demand in the Montreal region, it is also true that the City has minimal control over aggregate housing supply in the region. If Laval were to receive a boom in new housing construction, some of the resulting supply would tend to reduce housing costs in Laval, but much of that supply would reduce housing costs elsewhere in the Montreal region. a locally significant 
+
+Specifically, the main policy lever the City has over housing affordability is deciding what percentage of new housing development will be multi-family. On
+
+
+
 Second, TKTK regional issue: the important housing system dynamics are happening at a regional scale, and Laval gets a certain proportion of those dynamics
 
 
-At a high level, we are modelling the number of housing starts needed each year to support the expected growth in households.
 
-Each term in the model rests on assumptions which can be modified to support different policy priorities.
-
-In addition to the global number of housing starts, we look at starts by typology and bedroom count, and separately model older adult housing.
 
 TKTK
 
-We do not believe it is possible to plausibly model housing affordability in relation to the housing supply targets, for several reasons:
+# The housing targets model
 
-- Housing supply will affect affordability most strongly at the regional rather than municipal scale.
-- Major structural drivers of affordability are entirely exogenous (interest rates, construction costs).
+We estimate the required amount of new housing construction in Laval each year with the following model:
 
-The main policy lever the City has over housing affordability is deciding what percentage of new housing development will be multi-family.
-
-TKTK
+$$
+HC_t = \frac{HH_t}{OR_t} - D_{t-1}*(1-AR)
+$$
+Where $t$ is the year, $HC_t$ is the number of new housing completions, $HH_t$ is the number of households, $OR_t$ is the occupancy rate of private dwelling units, $D_{t-1}$ is the number of private dwelling units in the previous year, and $AR$ is the attrition rate of private dwelling units.
 
 
 # ISQ household projections
