@@ -3,7 +3,7 @@
 source("R/utils/startup.R")
 
 
-# Households --------------------------------------------------------------
+# ISQ household projections -----------------------------------------------
 
 # Import ISQ projections
 isq <-
@@ -133,13 +133,6 @@ plot_dwelling_targets <-
         text = element_text(family = "KMR Apparat"))
 
 
-# Total 2021 dwellings ----------------------------------------------------
-
-dwellings_2021 <- 
-  get_census("CA21", regions = list(CSD = "2465005")) |> 
-  pull(Dwellings)
-
-
 # Dwelling attrition rate -------------------------------------------------
 
 # Obtain total private dwellings from each census period
@@ -187,6 +180,11 @@ attrition_pct <-
 
 
 # Generate annual housing targets -----------------------------------------
+
+# Total 2021 dwellings
+dwellings_2021 <- 
+  get_census("CA21", regions = list(CSD = "2465005")) |> 
+  pull(Dwellings)
 
 # Calculate cumulative attrition estimates
 attrition_targets <- 

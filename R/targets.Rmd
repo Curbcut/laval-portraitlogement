@@ -16,13 +16,33 @@ source(here::here("R/utils/startup.R"))
 
 # Housing targets modelling strategy
 
-TKTK
+To answer the question "how many housing units should the City of Laval be building each year", it is necessary to first answer two other questions. The first is "how many households are expected (or desired) to be living in the City each year". The second is "how many dwelling units will it be necessary to build to ensure that there is sufficient housing for that number of households".
+
+We answer the first question by using the three scenarios for household growth to 2051 in the City of Laval which have been produced by the ISQ: a reference scenario, a weak scenario, and a strong scenario. We answer the second question by using historical trends to model a set of factors related to dwelling occupancy, housing construction and demolition, and household housing preferences.
+
+Below we present the detailed steps involved in this modeling exercise, along with the resulting housing targets. But first we identify a set of important qualifications about what can and cannot be inferred from this analysis.
+
+First, it is important to be clear about what the ISQ household growth scenarios mean, and how they are incorporated into our housing targets. These scenarios represent the ISQ's best guess about how a range of factors at the local, regional, provincial, national and global scales will translate into household formation in Laval, and, given the inherent uncertainty in those factors, represent a rough guide to several currently plausible outcomes. However, a fundamental limitation of using the ISQ's household projections to guide City housing policy is that City housing policy is implicitly one of the most important inputs to these projections. Under all of its scenarios, the ISQ is assuming that there will be more households in Laval in 2051 than there are today, and under two of the three scenarios the number of households is expected to continue increasing each year. However, household growth can only occur if the City permits sufficient new housing construction. For example, if the City decides to permit no new housing construction between now and 2051, then the number of households in Laval will stagnate and likely decline (thanks to building attrition), regardless of what the ISQ projects. More realistically, if the City only permits sufficient housing construction to reach half the number of new households that the ISQ projects will be present in Laval in 2051, then the number of households will necessarily fall short of the ISQ projection.
+
+The housing targets produced in this analysis should therefore be understood as the targets which will allow the ISQ projections to be realized, subject to the ISQ's other assumptions remaining plausible (e.g. the Québec population ages as it is expected to, and immigration proceeds as it is expected to) and subject to the housing dynamics captured in the remainder of our model. If the City has different normative goals for household growth in Laval, those can be substituted into the model in place of the ISQ's projections, and the model will produce the resulting targets for the amount of housing construction necessary to realize those household growth goals.
+
+Second, TKTK regional issue: the important housing system dynamics are happening at a regional scale, and Laval gets a certain proportion of those dynamics
+
 
 At a high level, we are modelling the number of housing starts needed each year to support the expected growth in households.
 
 Each term in the model rests on assumptions which can be modified to support different policy priorities.
 
 In addition to the global number of housing starts, we look at starts by typology and bedroom count, and separately model older adult housing.
+
+TKTK
+
+We do not believe it is possible to plausibly model housing affordability in relation to the housing supply targets, for several reasons:
+
+- Housing supply will affect affordability most strongly at the regional rather than municipal scale.
+- Major structural drivers of affordability are entirely exogenous (interest rates, construction costs).
+
+The main policy lever the City has over housing affordability is deciding what percentage of new housing development will be multi-family.
 
 TKTK
 
@@ -38,7 +58,7 @@ max_weak <-
 
 ```
 
-The ISQ maintains three projections for the future growth in households in Québec's administrative regions: a reference scenario, a weak scenario (which forecasts slower household growth than the reference scenario), and a strong scenario (which forecasts faster household growth). These three scenarios form the basis for your housing targets. Figure TKTK displays the number of households forecasted in the City of Laval each year from 2021 (the base year) to 2051 under the three scenarios. The figure demonstrates that, while the reference and strong scenarios each project monotonic household growth throughout the study period, under the weak scenario total households are foreceasted to begin declining after `r max_weak`. This will have important implications for housing production targets in under this scenario.
+The ISQ maintains three projections for the future growth in households in Québec's administrative regions: a reference scenario, a weak scenario (which forecasts slower household growth than the reference scenario), and a strong scenario (which forecasts faster household growth). These three scenarios form the basis for our housing targets. Figure TKTK displays the number of households forecasted in the City of Laval each year from 2021 (the base year) to 2051 under the three scenarios. The figure demonstrates that, while the reference and strong scenarios each project monotonic household growth throughout the study period, under the weak scenario total households are foreceasted to begin declining after `r max_weak`. This will have important implications for housing production targets under this scenario.
 
 ```{r plot_isq_households}
 plot_isq_households
@@ -82,4 +102,8 @@ For each of the ISQ's scenarios of household growth, the ratio of the number of 
 plot_dwelling_targets
 ```
 
+
+# Existing dwelling units
+
+To transalte the total required dwelling units each year into targets for housing production, we first need to estimate the number of 
 
