@@ -132,8 +132,11 @@ attrition <-
   filter(year >= 2006) |> 
   mutate(attrition = dwellings_add - dwellings)
 
-# Generate annual attrition estimate
-attrition_annual <- mean(attrition$attrition) / 5
+# Generate average annual attrition rate
+attrition_pct <- 
+  attrition |> 
+  summarize(attrition_rate = mean(attrition) / mean(dwellings) / 5) |> 
+  pull()
 
 
 # Generate annual housing targets -----------------------------------------
@@ -160,10 +163,18 @@ dwelling_targets <-
     scn_strong_strong = hh_strong / occ_strong) |> 
   select(-c(hh_reference:occ_weak))
 
-# Factor in attrition and take the dif of each series to create annual targets
-completion_targets <- 
+# Calculate cumulative attrition estimates
+attrition_targets <- 
   dwelling_targets |> 
-  mutate(across(-year, \(x) x - dwellings_2021 + attrition_annual * 1:30)) |> 
+  mutate(across(-year, \(x) x * attrition_pct)) |> 
+  mutate(across(-year, cumsum))
+
+# Add attrition then remove 2021 dwellings and take dif to create annual targets
+completion_targets <- 
+  (dwelling_targets + attrition_targets) |> 
+  as_tibble() |> 
+  mutate(year = year / 2) |> 
+  mutate(across(-year, \(x) x - dwellings_2021)) |> 
   add_row(year = 2021, scn_ref_weak = 0, scn_ref_strong = 0, scn_weak_weak = 0,
           scn_weak_strong = 0, scn_strong_weak = 0, scn_strong_strong = 0) |> 
   arrange(year) |> 
@@ -171,13 +182,24 @@ completion_targets <-
                                               .before = 1))) |> 
   filter(year >= 2025)
 
+
+# Final global housing targets --------------------------------------------
+
 # Visualization
 completion_targets |> 
   pivot_longer(-year) |> 
   ggplot(aes(year, value, colour = name)) +
   geom_point() +
-  scale_y_continuous("Needed units", labels = scales::comma) +
+  scale_y_continuous("Needed completions", labels = scales::comma) +
   scale_x_continuous(NULL) + 
+  scale_colour_manual(NULL, values = curbcut_colors$brandbook$color[c(
+    3, 8, 2, 6, 5, 4)], labels = c(
+      "Ref. ISQ, strong occ. rate change",
+      "Ref. ISQ, weak occ. rate change",
+      "Strong ISQ, strong occ. rate change",
+      "Strong ISQ, weak occ. rate change",
+      "Weak ISQ, strong occ. rate change",
+      "Weak ISQ, weak occ. rate change")) +
   theme_minimal() +
   theme(legend.position = "bottom",
         text = element_text(family = "KMR Apparat"))
@@ -245,28 +267,6 @@ starts_completions |>
 
 # Regression diagnostics
 lm(completions ~ starts_2, data = starts_completions) |> plot(which = 1)
-
-
-# Final global housing targets --------------------------------------------
-
-# Visualization
-completion_targets |> 
-  pivot_longer(-year) |> 
-  ggplot(aes(year, value, colour = name)) +
-  geom_point() +
-  scale_y_continuous("Needed completions", labels = scales::comma) +
-  scale_x_continuous(NULL) + 
-  scale_colour_manual(NULL, values = curbcut_colors$brandbook$color[c(
-    3, 8, 2, 6, 5, 4)], labels = c(
-      "Ref. ISQ, strong occ. rate change",
-      "Ref. ISQ, weak occ. rate change",
-      "Strong ISQ, strong occ. rate change",
-      "Strong ISQ, weak occ. rate change",
-      "Weak ISQ, strong occ. rate change",
-      "Weak ISQ, weak occ. rate change")) +
-  theme_minimal() +
-  theme(legend.position = "bottom",
-        text = element_text(family = "KMR Apparat"))
 
 
 # Typology projections ----------------------------------------------------
@@ -787,6 +787,55 @@ isq_age |>
   geom_line() +
   scale_x_continuous(NULL) + 
   scale_y_continuous("Households headed by 75+", labels = scales::comma) +
+  scale_colour_manual(NULL, labels = c("Reference scenario", "Strong scenario", 
+                                       "Weak scenario"),
+                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        text = element_text(family = "KMR Apparat"))
+
+# Ratio of 75+ to RPAs in 2023
+rpa_ratio <- 
+  isq_age |> 
+  filter(scenario == "reference", year == 2023) |> 
+  pull(value) |> 
+  (\(x) 12038 / x)()
+
+# Get RPA net dwelling targets
+dwelling_targets_rpa <- 
+  isq_age |> 
+  pivot_wider(names_from = scenario) |> 
+  mutate(across(-year, \(x) x * rpa_ratio))
+
+# Visualization
+dwelling_targets_rpa |> 
+  pivot_longer(-year) |> 
+  ggplot(aes(year, value, colour = name)) +
+  geom_point() +
+  scale_y_continuous("Needed completions", labels = scales::comma) +
+  scale_x_continuous(NULL) + 
+  scale_colour_manual(NULL, labels = c("Reference scenario", "Strong scenario", 
+                                       "Weak scenario"),
+                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        text = element_text(family = "KMR Apparat"))
+
+# Get completion targets factoring in attrition
+
+completion_targets_rpa <-
+  dwelling_targets_rpa |> 
+  mutate(across(-year, \(x) slider::slide_dbl(x, \(y) y[2] - y[1], 
+                                              .before = 1))) |> 
+  filter(year >= 2025)
+
+# Visualization
+completion_targets_rpa |> 
+  pivot_longer(-year) |> 
+  ggplot(aes(year, value, colour = name)) +
+  geom_point() +
+  scale_y_continuous("Needed completions", labels = scales::comma) +
+  scale_x_continuous(NULL) + 
   scale_colour_manual(NULL, labels = c("Reference scenario", "Strong scenario", 
                                        "Weak scenario"),
                       values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
