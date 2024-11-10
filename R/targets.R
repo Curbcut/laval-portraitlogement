@@ -335,7 +335,6 @@ scenario_1_vals <-
     other = 1 - single - apart)
 
 dwellings_2021_typology <- scenario_1_vals * dwellings_2021
-attrition_annual_typology <- scenario_1_vals * attrition_annual
 
 # Scenario 2: preserve recent absolute number of non-apartment starts
 scenario_2_vals <-
@@ -378,15 +377,19 @@ dwelling_targets_typology_1 <-
     other = \(x) x * scenario_1_vals$other))) |> 
   select(-c(scn_ref_weak:scn_strong_strong))
 
-# Factor in attrition and take the dif of each series to create annual targets
-completion_targets_typology_1 <-
+attrition_targets_typology_1 <- 
   dwelling_targets_typology_1 |> 
-  mutate(across(ends_with("_single"), \(x) x - dwellings_2021_typology$single + 
-                  attrition_annual_typology$single * 1:30),
-         across(ends_with("_apart"), \(x) x - dwellings_2021_typology$apart + 
-                  attrition_annual_typology$apart * 1:30),
-         across(ends_with("_other"), \(x) x - dwellings_2021_typology$other + 
-                  attrition_annual_typology$other * 1:30)) |> 
+  mutate(across(-year, \(x) x * attrition_pct)) |> 
+  mutate(across(-year, cumsum))
+
+# Add attrition then remove 2021 dwellings and take dif to create annual targets
+completion_targets_typology_1 <-
+  (dwelling_targets_typology_1 + attrition_targets_typology_1) |> 
+  as_tibble() |> 
+  mutate(year = year / 2) |> 
+  mutate(across(ends_with("_single"), \(x) x - dwellings_2021_typology$single),
+         across(ends_with("_apart"), \(x) x - dwellings_2021_typology$apart),
+         across(ends_with("_other"), \(x) x - dwellings_2021_typology$other)) |> 
   add_row(year = 2021, scn_ref_weak_single = 0, scn_ref_weak_apart = 0, 
           scn_ref_weak_other = 0, scn_ref_strong_single = 0, 
           scn_ref_strong_apart = 0, scn_ref_strong_other = 0, 
@@ -567,7 +570,8 @@ starts_monthly <-
 
 # Visualization
 starts_monthly |> 
-  ggplot(aes(month, pct, colour = type)) +
+  pivot_longer(-month) |> 
+  ggplot(aes(month, value, colour = name)) +
   geom_line()
 
 # Create month-specific distribution function for completions -> starts
@@ -710,7 +714,6 @@ start_targets_typology_3 |>
         text = element_text(family = "KMR Apparat"))
 
 
-
 # Bedroom counts ----------------------------------------------------------
 
 br_2011 <- c(
@@ -794,12 +797,15 @@ isq_age |>
   theme(legend.position = "bottom",
         text = element_text(family = "KMR Apparat"))
 
+# 2023 RPAs
+rpa_2023 <- 12038
+
 # Ratio of 75+ to RPAs in 2023
 rpa_ratio <- 
   isq_age |> 
   filter(scenario == "reference", year == 2023) |> 
   pull(value) |> 
-  (\(x) 12038 / x)()
+  (\(x) rpa_2023 / x)()
 
 # Get RPA net dwelling targets
 dwelling_targets_rpa <- 
@@ -821,7 +827,24 @@ dwelling_targets_rpa |>
   theme(legend.position = "bottom",
         text = element_text(family = "KMR Apparat"))
 
-# Get completion targets factoring in attrition
+# Calculate cumulative attrition estimates
+attrition_targets_rpa <- 
+  dwelling_targets_rpa |> 
+  mutate(across(-year, \(x) x * attrition_pct)) |> 
+  mutate(across(-year, cumsum))
+
+# Add attrition then remove 2021 dwellings and take dif to create annual targets
+completion_targets_rpa <- 
+  (dwelling_targets_rpa + attrition_targets_rpa) |> 
+  as_tibble() |> 
+  mutate(year = year / 2) |> 
+  mutate(across(-year, \(x) x - dwellings_2021)) |> 
+  add_row(year = 2021, scn_ref_weak = 0, scn_ref_strong = 0, scn_weak_weak = 0,
+          scn_weak_strong = 0, scn_strong_weak = 0, scn_strong_strong = 0) |> 
+  arrange(year) |> 
+  mutate(across(-year, \(x) slider::slide_dbl(x, \(y) y[2] - y[1], 
+                                              .before = 1))) |> 
+  filter(year >= 2025)
 
 completion_targets_rpa <-
   dwelling_targets_rpa |> 
