@@ -8,6 +8,7 @@ source("R/utils/startup.R")
 # Import ISQ projections
 isq <-
   read_excel("data/isq.xlsx", skip = 5) |> 
+  suppressMessages() |> 
   set_names(c("scenario", "code", "region", paste0("year_", 2021:2051))) |> 
   slice(-1) |> 
   filter(region == "Laval") |> 
@@ -42,6 +43,7 @@ plot_isq_households <-
 occ_raw <- 
   map(c("CA01", "CA06", "CA11", "CA16", "CA21"), \(x) {
     get_census(x, regions = list(CSD = "2465005")) |> 
+      suppressMessages() |> 
       mutate(year = x)}) |> 
   bind_rows() |> 
   mutate(year = c(2001, 2006, 2011, 2016, 2021),
@@ -81,6 +83,51 @@ plot_occ_rate <-
   scale_colour_manual(NULL, labels = c("Actual values", "Strong scenario", 
                                        "Weak scenario"),
                       values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        text = element_text(family = "KMR Apparat"))
+
+
+# Total required dwelling units -------------------------------------------
+
+# Join ISQ and occupancy data
+dwelling_targets <- 
+  isq |> 
+  pivot_wider(names_from = scenario, names_prefix = "hh_") |> 
+  inner_join({
+    occ_rate |> 
+      filter(type != "actual") |> 
+      pivot_wider(names_from = type, names_prefix = "occ_", 
+                  values_from = occ_rate)}, by = "year")
+
+# Create six scenarios
+dwelling_targets <- 
+  dwelling_targets |> 
+  mutate(
+    scn_ref_weak = hh_reference / occ_weak,
+    scn_ref_strong = hh_reference / occ_strong,
+    scn_weak_weak = hh_weak / occ_weak,
+    scn_weak_strong = hh_weak / occ_strong,
+    scn_strong_weak = hh_strong / occ_weak,
+    scn_strong_strong = hh_strong / occ_strong) |> 
+  select(-c(hh_reference:occ_weak))
+
+# Visualizations
+plot_dwelling_targets <- 
+  dwelling_targets |> 
+  pivot_longer(-year) |> 
+  ggplot(aes(year, value, colour = name)) +
+  geom_point() +
+  scale_y_continuous("Total needed dwelling units", labels = scales::comma) +
+  scale_x_continuous(NULL) + 
+  scale_colour_manual(NULL, values = curbcut_colors$brandbook$color[c(
+    3, 8, 2, 6, 5, 4)], labels = c(
+      "Ref. ISQ, strong occ. rate change",
+      "Ref. ISQ, weak occ. rate change",
+      "Strong ISQ, strong occ. rate change",
+      "Strong ISQ, weak occ. rate change",
+      "Weak ISQ, strong occ. rate change",
+      "Weak ISQ, weak occ. rate change")) +
   theme_minimal() +
   theme(legend.position = "bottom",
         text = element_text(family = "KMR Apparat"))
@@ -140,28 +187,6 @@ attrition_pct <-
 
 
 # Generate annual housing targets -----------------------------------------
-
-# Join ISQ and occupancy data
-dwelling_targets <- 
-  isq |> 
-  pivot_wider(names_from = scenario, names_prefix = "hh_") |> 
-  inner_join({
-    occ_rate |> 
-      filter(type != "actual") |> 
-      pivot_wider(names_from = type, names_prefix = "occ_", 
-                  values_from = occ_rate)}, by = "year")
-
-# Create six scenarios
-dwelling_targets <- 
-  dwelling_targets |> 
-  mutate(
-    scn_ref_weak = hh_reference / occ_weak,
-    scn_ref_strong = hh_reference / occ_strong,
-    scn_weak_weak = hh_weak / occ_weak,
-    scn_weak_strong = hh_weak / occ_strong,
-    scn_strong_weak = hh_strong / occ_weak,
-    scn_strong_strong = hh_strong / occ_strong) |> 
-  select(-c(hh_reference:occ_weak))
 
 # Calculate cumulative attrition estimates
 attrition_targets <- 
@@ -860,5 +885,6 @@ completion_targets_rpa |>
 
 # Save outputs ------------------------------------------------------------
 
-qsavem(isq, plot_isq_households, occ_rate, occ_model, plot_occ_rate,
-  file = "data/targets.qsm")
+qsavem(isq, plot_isq_households, occ_rate, occ_model, plot_occ_rate, 
+       plot_dwelling_targets, 
+       file = "data/targets.qsm")

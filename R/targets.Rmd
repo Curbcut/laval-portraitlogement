@@ -74,3 +74,12 @@ plot_occ_rate
 ```
 
 
+# Total required dwelling units
+
+For each of the ISQ's scenarios of household growth, the ratio of the number of projected households to the projected occupancy rate (HH / OR) yields a required number of total dwelling units. For each of the three ISQ scenarios (reference, weak and strong) there are two total dwelling unit scenarios, corresponding to the two occupancy rate scenarios (weak and strong). Figure TKTK shows these values; since the ISQ's weak scenario implies a shrinking number of households after 2037, total required dwellings in this scenario also begin to shrink, even taking into account a potentially declining occupancy rate.
+
+```{r plot_dwelling_targets}
+plot_dwelling_targets
+```
+
+
