@@ -838,16 +838,7 @@ completion_targets_rpa <-
   (dwelling_targets_rpa + attrition_targets_rpa) |> 
   as_tibble() |> 
   mutate(year = year / 2) |> 
-  mutate(across(-year, \(x) x - dwellings_2021)) |> 
-  add_row(year = 2021, scn_ref_weak = 0, scn_ref_strong = 0, scn_weak_weak = 0,
-          scn_weak_strong = 0, scn_strong_weak = 0, scn_strong_strong = 0) |> 
-  arrange(year) |> 
-  mutate(across(-year, \(x) slider::slide_dbl(x, \(y) y[2] - y[1], 
-                                              .before = 1))) |> 
-  filter(year >= 2025)
-
-completion_targets_rpa <-
-  dwelling_targets_rpa |> 
+  mutate(across(-year, \(x) x - rpa_2023)) |> 
   mutate(across(-year, \(x) slider::slide_dbl(x, \(y) y[2] - y[1], 
                                               .before = 1))) |> 
   filter(year >= 2025)
