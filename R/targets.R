@@ -76,9 +76,9 @@ plot_occ_rate <-
   occ_rate |> 
   ggplot(aes(year, occ_rate, colour = type)) +
   stat_function(fun = \(x) -0.0006591 * x + 2.2956686, lwd = 0.2,
-                colour = curbcut_colors$brandbook$color[8]) +
-  stat_function(fun = \(x) 0.01 * 0.958 ^ (x - 2021) + 0.954, lwd = 0.2,
                 colour = curbcut_colors$brandbook$color[5]) +
+  stat_function(fun = \(x) 0.01 * 0.958 ^ (x - 2021) + 0.954, lwd = 0.2,
+                colour = curbcut_colors$brandbook$color[8]) +
   geom_point(aes(shape = type), size = 2) +
   scale_x_continuous(NULL) + 
   scale_y_continuous("Taux d'occupation", limits = c(0.92, 1), 

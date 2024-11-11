@@ -55,9 +55,9 @@ In the following analysis, we provide targets for housing construction broken do
 We estimate the required amount of new housing construction in Laval each year with the following model:
 
 $$
-HC_t = \frac{HH_t}{OR_t} - D_{t-1}*(1-AR)
+MC_t = \frac{MÉ_t}{TO_t} - L_{t-1}*(1-TA)
 $$
-Where $t$ is the year, $HC_t$ is the number of new housing completions, $HH_t$ is the number of households, $OR_t$ is the occupancy rate of private dwelling units, $D_{t-1}$ is the number of private dwelling units in the previous year, and $AR$ is the attrition rate of private dwelling units.
+Where $t$ is the year, $MC_t$ is the number of new housing completions, $MÉ_t$ is the number of households, $TO_t$ is the occupancy rate of private dwelling units, $L_{t-1}$ is the number of private dwelling units in the previous year, and $TA$ is the attrition rate of private dwelling units.
 
 In what follows we describe the strategy used to estimate each of these terms.
 
@@ -73,7 +73,7 @@ max_weak <-
 
 ```
 
-The amount of housing construction which will be required each year in Laval is primarily a function of the number of households the City wishes to accommodate, $HH_t$. We derive this number from the ISQ's household projections. The ISQ maintains three projections for the future growth in households in Québec's administrative regions: a reference scenario, a weak scenario (which forecasts slower household growth than the reference scenario), and a strong scenario (which forecasts faster household growth). These three scenarios form the basis for our housing targets. Figure TKTK displays the number of households forecasted in the City of Laval each year from 2021 (the base year) to 2051 under the three scenarios. The figure demonstrates that, while the reference and strong scenarios each project monotonic household growth throughout the study period, under the weak scenario total households are foreceasted to begin declining after `r max_weak`. This will have important implications for housing production targets under this scenario.
+The amount of housing construction which will be required each year in Laval is primarily a function of the number of households the City wishes to accommodate, $MÉ_t$. We derive this number from the ISQ's household projections. The ISQ maintains three projections for the future growth in households in Québec's administrative regions: a reference scenario, a weak scenario (which forecasts slower household growth than the reference scenario), and a strong scenario (which forecasts faster household growth). These three scenarios form the basis for our housing targets. Figure TKTK displays the number of households forecasted in the City of Laval each year from 2021 (the base year) to 2051 under the three scenarios. The figure demonstrates that, while the reference and strong scenarios each project monotonic household growth throughout the study period, under the weak scenario total households are foreceasted to begin declining after `r max_weak`. This will have important implications for housing production targets under this scenario.
 
 ```{r plot_isq_households}
 plot_isq_households
@@ -100,7 +100,7 @@ occ_2021 <-
 
 If the ISQ household projections are to be realized, each of these future households will require a dwelling unit to occupy. However, in reality the City will require somewhat more than one dwelling unit per household, since every housing market has some number of unoccupied dwelling units. For rental apartments, these unoccupied units are the basis for the rental vacancy rate, but in the ownership sector as well unoccupied units are a standard feature of a healthy housing market.
 
-The ratio of occupied private dwelling units to all private dwelling units in a given year $t$ is the occupancy rate $OR_t$, and it can be measured empirically using the Canadian Census. The census provides a count of all private dwelling units, derived from the Statistical Building Register which Statistics Canada uses to produce the sampling frame for the census. It also provides a count of households, which is identical to the number of occupied private dwelling units (since households are defined as private dwellings occupied by usual residents). The ratio of the latter measure to the former is the occupancy rate.
+The ratio of occupied private dwelling units to all private dwelling units in a given year $t$ is the occupancy rate $TO_t$, and it can be measured empirically using the Canadian Census. The census provides a count of all private dwelling units, derived from the Statistical Building Register which Statistics Canada uses to produce the sampling frame for the census. It also provides a count of households, which is identical to the number of occupied private dwelling units (since households are defined as private dwellings occupied by usual residents). The ratio of the latter measure to the former is the occupancy rate.
 
 Since 2001, the occupancy rate has been steadily declining in Laval; in other words, over time, a smaller percentage of total dwelling units have been occupied by their usual residents when the census was taken. In 2001, the occupancy rate was `r occ_2001`, while it had declined to `r occ_2021` by 2021. This trend is plausibly linear; the linear correlation between the year and the occupancy rate is in fact `r round(sqrt(summary(occ_model)$r.squared), 3)`. Under a linear trend, we should expect to see the occupancy rate decline steadily over the study period. However, the trend is also potentially exponential, which would imply a progressively slowing decline in the occupancy rate over the study period. It is not possible to empirically adjudicate between these possibilities, so instead we adopt them as two scenarios: a strong scenario where the occupancy rate is assumed to decline according to the linear function $OR_{year} = 2.957 - 0.000659 * year$, and a weak scenario where the occupancy rate is assumed to decline according to the decaying exponential function $OR_{year} = 0.954 + 0.01 * 0.958 ^ {(year - 2021)}$. These scenarios are each illustrated in Figure TKTK.
 
@@ -111,7 +111,7 @@ plot_occ_rate
 
 # Total required dwelling units
 
-For each of the ISQ's scenarios of household growth, the ratio of the number of projected households to the projected occupancy rate in a year ($\frac{HH_t}{OR_t}$) yields a required number of total dwelling units for that year. For each of the three ISQ scenarios (reference, weak and strong) there are two total dwelling unit scenarios, corresponding to the two occupancy rate scenarios (weak and strong). Figure TKTK shows these values; since the ISQ's weak scenario implies a shrinking number of households after 2037, total required dwellings in this scenario also begin to shrink, even taking into account a potentially declining occupancy rate.
+For each of the ISQ's scenarios of household growth, the ratio of the number of projected households to the projected occupancy rate in a year ($\frac{MÉ_t}{TO_t}$) yields a required number of total dwelling units for that year. For each of the three ISQ scenarios (reference, weak and strong) there are two total dwelling unit scenarios, corresponding to the two occupancy rate scenarios (weak and strong). Figure TKTK shows these values; since the ISQ's weak scenario implies a shrinking number of households after 2037, total required dwellings in this scenario also begin to shrink, even taking into account a potentially declining occupancy rate.
 
 ```{r plot_dwelling_targets}
 plot_dwelling_targets
@@ -120,12 +120,12 @@ plot_dwelling_targets
 
 # Dwelling attrition rate
 
-To translate the total required dwelling units each year $t$ into targets for housing production for year $t$, we  need to estimate $D_{t-1}$ (the number of existing dwelling units present at the end of year $t-1$), and $AR_t$ (the attrition rate of existing dwelling units due to demolitions and conversions). $D_{t-1}$ is trivial, since it is simply the total required dwelling units for $t-1$ given above in Figure TKTK. $AR_t$ is more difficult to estimate, however, since there is no stable longitudinal data source enumerating the loss of housing units.
+To translate the total required dwelling units each year $t$ into targets for housing production for year $t$, we  need to estimate $L_{t-1}$ (the number of existing dwelling units present at the end of year $t-1$), and $AR_t$ (the attrition rate of existing dwelling units due to demolitions and conversions). $L_{t-1}$ is trivial, since it is simply the total required dwelling units for $t-1$ given above in Figure TKTK. $AR_t$ is more difficult to estimate, however, since there is no stable longitudinal data source enumerating the loss of housing units.
 
-We estimate $AR$ by combining two datasets: the total number of private dwelling units from the census and the number of annual housing completions from the CMHC Starts and Completions Survey. The census provides a reliable estimate of the number of private dwelling units in each census period, and if there were no attrition of private dwelling units, then $D_t$ would equal $D_{t-5} + \sum_{i = t - 4}^{t}{HC_i}$, i.e. the previous count of dwelling units plus all the newly completed units. It should therefore be possible to estimate the attrition rate as the difference between this amount and the actual number of dwelling units counted in the census in time $t$, expressed as a proportion of actual units:
+We estimate $TA$ by combining two datasets: the total number of private dwelling units from the census and the number of annual housing completions from the CMHC Starts and Completions Survey. The census provides a reliable estimate of the number of private dwelling units in each census period, and if there were no attrition of private dwelling units, then $L_t$ would equal $L_{t-5} + \sum_{i = t - 4}^{t}{MC_i}$, i.e. the previous count of dwelling units plus all the newly completed units. It should therefore be possible to estimate the attrition rate as the difference between this amount and the actual number of dwelling units counted in the census in time $t$, expressed as a proportion of actual units:
 
 $$
-\frac{D_{t-5} + \sum_{i = t - 4}^{t}{HC_i}-D_t}{D_t}
+\frac{L_{t-5} + \sum_{i = t - 4}^{t}{MC_i}-L_t}{L_t}
 $$
 This formula estimates the percentage of dwelling units which were removed from the market over a five-year inter-census period. In theory it would be desirable to examine this relationship longitudinally, to see if the attrition rate has been constant or has varied, but in practice there is too much uncertainty involved in combining the different data sources for this to be reliable. Instead, we opted to calculate the average estimated attrition rate over the 2001-2021 period, which is `r convert_pct(attrition_pct)` per year, and assume that this rate will hold steady for the study period.
 
@@ -136,7 +136,7 @@ A final, possibly better alternative would be to measure attrition using the Cit
 
 # Annual housing completion targets
 
-Using the procedure outlined above, the components to the global model $HC_t = \frac{HH_t}{OR_t} - D_{t-1}*(1-AR)$ can be estimated, and the number of annually required housing completions can be calculated. These are shown in Figure TKTK for the six scenarios we investigated. We set a floor of zero housing completions per year, so that the cases where the ISQ's household projections forecast shrinking household counts do not yield negative annual housing completions.
+Using the procedure outlined above, the components to the global model $MC_t = \frac{MÉ_t}{TO_t} - L_{t-1}*(1-TA)$ can be estimated, and the number of annually required housing completions can be calculated. These are shown in Figure TKTK for the six scenarios we investigated. We set a floor of zero housing completions per year, so that the cases where the ISQ's household projections forecast shrinking household counts do not yield negative annual housing completions.
 
 ```{r plot_completion_targets}
 plot_completion_targets
@@ -203,7 +203,7 @@ plot_completion_targets_typology_3
 Modeling housing development by dwelling type allows us to incorporate a more sophisticated perspective on the temporal relationship between housing starts and completions. We use historical trends in construction lengths to build year- and type-specific probability distribution functions for construction time as follows:
 
 $$
-CT_{t, type} \sim N(\mu_{t, type}, \sigma_{type})
+SR_{t, type} \sim N(\mu_{t, type}, \sigma_{type})
 $$
 In other words, each dwelling type has construction times which are normally distributed around a time- and type-specific mean, with a type-specific standard deviation. In combination with information about the seasonality of housing starts, this approach allows us to estimate the distribution of lags between starts and completions.
 
@@ -267,9 +267,9 @@ Housing for older adults is an increasingly important issue in an aging society.
 
 
 $$
-RPAC_t = \frac{RPA_{2023}}{HH75_{2023}}*HH75_t - RPA_{t-1}*(1-AR)
+RPAC_t = \frac{RPA_{2023}}{MÉ75_{2023}}*MÉ75_t - RPA_{t-1}*(1-TA)
 $$
-Here the number of required RPA completions per year is given by the ratio between the number of RPA units and the number of households headed by someone 75 years or older in 2023 (when this ratio was known), multiplied by the number of households headed by someone 75 years or older expected in the target year $t$, and subject to the usual housing attrition rate $AR$. In other words, we model future need for older-adult housing by assuming that the current supply of such housing is adequate to the population of older adults, and then calculating the number of new units which will be required to maintain this ratio in the future.
+Here the number of required RPA completions per year is given by the ratio between the number of RPA units and the number of households headed by someone 75 years or older in 2023 (when this ratio was known), multiplied by the number of households headed by someone 75 years or older expected in the target year $t$, and subject to the usual housing attrition rate $TA$. In other words, we model future need for older-adult housing by assuming that the current supply of such housing is adequate to the population of older adults, and then calculating the number of new units which will be required to maintain this ratio in the future.
 
 We use the ISQ's projections for households by the age of the household maintainer to establish the future demand for older adult housing. As with its more general household projections, the ISQ produces three scenarios (reference, weak and strong) for household growth by age, which are displayed in Figure TKTK.
 
