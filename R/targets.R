@@ -595,11 +595,19 @@ con_length_SD <-
     other = sd(value[type %in% c("Semi-Detached", "Row")]))
  
 # Histograms
-con_length_CT |> 
+plot_con_length_CT <- 
+  con_length_CT |> 
   filter(type != "All") |> 
-  ggplot(aes(value)) +
-  geom_histogram() +
-  facet_wrap(vars(type))
+  ggplot(aes(value, fill = type)) +
+  geom_histogram(bins = 20) +
+  facet_wrap(vars(type), scales = "free") +
+  scale_x_continuous("Average construction length in months") + 
+  scale_y_continuous("Count") + 
+  scale_fill_manual(NULL,
+                      values = curbcut_colors$brandbook$color[c(4, 3, 2, 5)]) +
+  theme_minimal() +
+  theme(legend.position = "none",
+        text = element_text(family = "KMR Apparat"))
 
 # Proportion of starts in each month
 starts_monthly <- 
@@ -930,7 +938,7 @@ qsavem(isq, plot_isq_households, occ_rate, occ_model, plot_occ_rate,
        scenario_1_vals, scenario_2_vals, scenario_3_vals,
        plot_dwelling_targets_typology_1, plot_completion_targets_typology_1, 
        plot_completion_targets_typology_2, plot_completion_targets_typology_3,
-       plot_con_length, con_length_type,
+       plot_con_length, con_length_type, plot_con_length_CT,
        plot_start_targets_typology_1, plot_start_targets_typology_2, 
        plot_start_targets_typology_3,
        plot_isq_age, rpa_ratio, plot_dwelling_targets_rpa, 

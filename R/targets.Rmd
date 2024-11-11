@@ -200,6 +200,13 @@ plot_completion_targets_typology_3
 
 # Starts versus completions by typology
 
+Modeling housing development by dwelling type allows us to incorporate a more sophisticated perspective on the temporal relationship between housing starts and completions. We use historical trends in construction lengths to build year- and type-specific probability distribution functions for construction length as follows:
+
+$$
+F(t,type) = N(\mu_{t,type}, \sigma_{type})
+$$
+In other words, given 
+
 
 Figure TKTK shows the average construction length of new housing construction by dwelling type. Two trends are evident. First, the construction time for apartments has been steadily increasing, from roughly half a year in the early 2000s to close to roughly 15 months in the 2020s. Second, non-apartment construction lengths have been quite stable, with particularly little variation in average construction length in the last decade.
 
@@ -210,6 +217,12 @@ plot_con_length
 We therefore assume that non-apartment construction lengths will remain constant in the future: `r con_length_type$single` months for single-detached homes and `r con_length_type$other` for semi-detached and row houses. And we apply linear regression to the 2014-2023 trend in apartment construction lengths to project future construction lengths for this dwelling type.
 
 This gives us expected average construction times for different building types for each year in the study period. But to model the distribution of construction times properly, we also need some measure of the variance of construction times. While CMHC does not release building-level data, we use census-tract level figures on average construction times as a plausible proxy.
+
+
+
+```{r plot_con_length_CT}
+plot_con_length_CT
+```
 
 
 # Start targets for typology scenario 1
