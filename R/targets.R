@@ -636,12 +636,13 @@ completions_monthly <-
   select(month, single = Single, apart = Apartment, other = Other)
 
 # Visualization
-plot_completions_monthly <- 
+plot_completions_monthly <-
   completions_monthly |> 
   pivot_longer(-month) |> 
   ggplot(aes(month, value, colour = name)) +
   geom_line() +
-  scale_x_continuous(NULL) + 
+  scale_x_continuous(NULL, breaks = 1:12, labels = month.name) + 
+  scale_y_continuous("Share of annual completions", labels = scales::percent) +
   scale_colour_manual(NULL, labels = c("Apartments", "Semi-detached, row, etc.", 
                                        "Single-detached"),
                       values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
