@@ -1299,7 +1299,32 @@ size_br <-
   select(year, s1_br:s4_br) |> 
   summarize(across(-year, mean))
 
-size_br
+
+# Dwelling targets by bedroom ---------------------------------------------
+
+dwelling_targets_br <- 
+  dwelling_targets_size |> 
+  mutate(across(ends_with("_s1"), \(x) x / size_br$s1_br),
+         across(ends_with("_s2"), \(x) x / size_br$s2_br),
+         across(ends_with("_s4"), \(x) x / size_br$s4_br)) |> 
+  pivot_longer(-year) |> 
+  mutate(name = str_replace(name, "s1", "1br"),
+         name = str_replace(name, "s2", "2br"),
+         name = str_replace(name, "s4", "3br")) |> 
+  mutate(scenario = str_remove(name, "(_strong_\\dbr)|(_weak_\\dbr)")) |> 
+  inner_join(pivot_longer(dwelling_targets, -year, names_to = "scenario", 
+                          values_to = "total"), by = c("year", "scenario")) |> 
+  select(-scenario) |> 
+  mutate(scenario = str_remove(name, "_\\dbr")) |> 
+  mutate(value = value * total / sum(value), .by = c(year, scenario)) |> 
+  select(-scenario, -total) |> 
+  pivot_wider()
+  
+# Visualization
+dwelling_targets_br |> 
+  pivot_longer(-year) |> 
+  ggplot(aes(year, value, colour = name)) +
+  geom_point()
 
 
 # Dedicated old-age housing -----------------------------------------------
