@@ -433,7 +433,7 @@ dwelling_targets_typology_1 <-
 
 # Total units visualization
 plot_dwelling_targets_typology_1 <-
-  dwelling_targets_typology_1 |> 
+dwelling_targets_typology_1 |> 
   pivot_longer(-year) |> 
   mutate(type = case_when(
     str_detect(name, "apart") ~ "Appartements",
@@ -457,7 +457,7 @@ plot_dwelling_targets_typology_1 <-
   scale_colour_manual("Scénario ISQ", 
                       values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", `_weak_` = "#A3B0D1"), 
                       labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
-  scale_shape_manual("Variation du taux d'occupation", 
+  scale_shape_manual("Variation du\ntaux d'occupation", 
                      values = c(strong = 16, weak = 17), 
                      labels = c(`strong` = "Fort", `weak` = "Faible")) +
   scale_linetype_manual("Typologie du logement", 
@@ -465,11 +465,16 @@ plot_dwelling_targets_typology_1 <-
                                      "dashed", "Autre" = "dotted")) +
   scale_y_continuous("Logements", labels = convert_number) + 
   graph_theme_w_legendtitle +
-  theme(legend.title.align = 0.5)
+  theme(legend.title.align = 0.5) +
+  guides(
+    colour = guide_legend(ncol = 1),
+    shape = guide_legend(ncol = 1),
+    linetype = guide_legend(ncol = 1)
+  )
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_dwelling_targets_typology_1, filename = "outputs/targets/plot_dwelling_targets_typology_1.pdf",
-  width = 8.5, height = 6.5)
+  width = 6.5, height = 6)
 
 attrition_targets_typology_1 <- 
   dwelling_targets_typology_1 |> 
@@ -537,11 +542,16 @@ plot_completion_targets_typology_1 <-
                                      "dashed", "Autre" = "dotted")) +
   scale_y_continuous("Logements", labels = convert_number) + 
   graph_theme_w_legendtitle +
-  theme(legend.title.align = 0.5)
+  theme(legend.title.align = 0.5) +
+  guides(
+    colour = guide_legend(ncol = 1),
+    shape = guide_legend(ncol = 1),
+    linetype = guide_legend(ncol = 1)
+  )
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_completion_targets_typology_1, filename = "outputs/targets/plot_completion_targets_typology_1.pdf",
-  width = 8.5, height = 6.5)
+  width = 6.5, height = 6)
 
 
 # Completion targets for typology scenario 2 ------------------------------
@@ -617,11 +627,16 @@ plot_completion_targets_typology_2 <-
                                      "dashed", "Autre" = "dotted")) +
   scale_y_continuous("Logements", labels = convert_number) + 
   graph_theme_w_legendtitle +
-  theme(legend.title.align = 0.5)
+  theme(legend.title.align = 0.5) +
+  guides(
+    colour = guide_legend(ncol = 1),
+    shape = guide_legend(ncol = 1),
+    linetype = guide_legend(ncol = 1)
+  )
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_completion_targets_typology_2, filename = "outputs/targets/plot_completion_targets_typology_2.pdf",
-  width = 8.5, height = 6.5)
+  width = 6.5, height = 6)
 
 
 # Completion targets for typology scenario 3 ------------------------------
@@ -668,11 +683,16 @@ plot_completion_targets_typology_3 <-
                                      "dashed", "Autre" = "dotted")) +
   scale_y_continuous("Logements", labels = convert_number) + 
   graph_theme_w_legendtitle +
-  theme(legend.title.align = 0.5)
+  theme(legend.title.align = 0.5) +
+  guides(
+    colour = guide_legend(ncol = 1),
+    shape = guide_legend(ncol = 1),
+    linetype = guide_legend(ncol = 1)
+  )
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_completion_targets_typology_3, filename = "outputs/targets/plot_completion_targets_typology_3.pdf",
-  width = 8.5, height = 6.5)
+  width = 6.5, height = 6)
 
 
 # Starts versus completions by typology -----------------------------------
@@ -934,11 +954,16 @@ plot_start_targets_typology_1 <-
                                      "dashed", "Autre" = "dotted")) +
   scale_y_continuous("Logements", labels = convert_number) + 
   graph_theme_w_legendtitle +
-  theme(legend.title.align = 0.5)
+  theme(legend.title.align = 0.5) +
+  guides(
+    colour = guide_legend(ncol = 1),
+    shape = guide_legend(ncol = 1),
+    linetype = guide_legend(ncol = 1)
+  )
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_start_targets_typology_1, filename = "outputs/targets/plot_start_targets_typology_1.pdf",
-  width = 6.5, height = 4)
+  width = 6.5, height = 6)
 
 # Start targets for typology scenario 2 -----------------------------------
 
@@ -980,11 +1005,16 @@ plot_start_targets_typology_2 <-
                                      "dashed", "Autre" = "dotted")) +
   scale_y_continuous("Logements", labels = convert_number) + 
   graph_theme_w_legendtitle +
-  theme(legend.title.align = 0.5)
+  theme(legend.title.align = 0.5) +
+  guides(
+    colour = guide_legend(ncol = 1),
+    shape = guide_legend(ncol = 1),
+    linetype = guide_legend(ncol = 1)
+  )
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_start_targets_typology_2, filename = "outputs/targets/plot_start_targets_typology_2.pdf",
-  width = 6.5, height = 4)
+  width = 6.5, height = 6)
 
 # Start targets for typology scenario 3 -----------------------------------
 
@@ -1026,11 +1056,16 @@ plot_start_targets_typology_3 <-
                                      "dashed", "Autre" = "dotted")) +
   scale_y_continuous("Logements", labels = convert_number) + 
   graph_theme_w_legendtitle +
-  theme(legend.title.align = 0.5)
+  theme(legend.title.align = 0.5) +
+  guides(
+    colour = guide_legend(ncol = 1),
+    shape = guide_legend(ncol = 1),
+    linetype = guide_legend(ncol = 1)
+  )
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_start_targets_typology_3, filename = "outputs/targets/plot_start_targets_typology_3.pdf",
-  width = 6.5, height = 4)
+  width = 6.5, height = 6)
 
 # Bedroom counts ----------------------------------------------------------
 
