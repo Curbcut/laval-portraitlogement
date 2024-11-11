@@ -250,6 +250,9 @@ plot_completion_targets <-
   graph_theme_w_legendtitle +
   theme(legend.title.align = 0.5)
 
+if (.Platform$OS.type == "windows") ggsave_pdf_png(
+  plot_completion_targets, filename = "outputs/targets/plot_completion_targets.pdf",
+  width = 6.5, height = 4)
 
 
 # Starts and completions for general model --------------------------------
@@ -290,28 +293,31 @@ starts_completions |>
   cor(use = "complete.obs")
 
 # Examine scatterplots
-plot_starts_completions <- 
+plot_starts_completions <-
   starts_completions |> 
   mutate(across(starts_0:starts_3, \(x) x / completions)) |> 
   pivot_longer(starts_0:starts_3) |> 
   mutate(name = case_when(
-    name == "starts_0" ~ "No lag",
-    name == "starts_1" ~ "One year",
-    name == "starts_2" ~ "Two years",
-    name == "starts_3" ~ "Three years")) |> 
-  mutate(name = factor(name, levels = c("No lag", "One year", "Two years", 
-                                        "Three years"))) |> 
+    name == "starts_0" ~ "Sans décalage",
+    name == "starts_1" ~ "Un an",
+    name == "starts_2" ~ "Deux ans",
+    name == "starts_3" ~ "Trois ans")) |> 
+  mutate(name = factor(name, levels = c("Sans décalage", "Un an", "Deux ans", 
+                                        "Trois ans"))) |> 
   ggplot(aes(year, value, colour = name)) +
   geom_line() +
   facet_wrap(vars(name)) +
   scale_x_continuous(NULL) + 
-  scale_y_continuous("Ratio of annual starts to completions", 
-                     labels = scales::percent) +
-  scale_colour_manual("Lag period",
+  scale_y_continuous("Ratio des mises en chantier\naux achèvements", 
+                     labels = convert_pct) +
+  scale_colour_manual("Période de décalage",
                       values = curbcut_colors$brandbook$color[c(4, 3, 2, 5)]) +
-  theme_minimal() +
-  theme(legend.position = "bottom",
-        text = element_text(family = "KMR Apparat"))
+  graph_theme
+
+if (.Platform$OS.type == "windows") ggsave_pdf_png(
+  plot_starts_completions, filename = "outputs/targets/plot_starts_completions.pdf",
+  width = 6.5, height = 4)
+
 
 # Regression diagnostics
 lm(completions ~ starts_2, data = starts_completions) |> plot(which = 1)
@@ -426,23 +432,44 @@ dwelling_targets_typology_1 <-
   select(-c(scn_ref_weak:scn_strong_strong))
 
 # Total units visualization
-plot_dwelling_targets_typology_1 <- 
+plot_dwelling_targets_typology_1 <-
   dwelling_targets_typology_1 |> 
   pivot_longer(-year) |> 
-  mutate(type = case_when(str_detect(name, "apart") ~ "apart",
-                          str_detect(name, "single") ~ "single",
-                          str_detect(name, "other") ~ "other"),
-         name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
-  ggplot(aes(year, value, colour = type)) +
-  geom_line() +
+  mutate(type = case_when(
+    str_detect(name, "apart") ~ "Appartements",
+    str_detect(name, "single") ~ "Unifamilial",
+    str_detect(name, "other") ~ "Autre"
+  ),
+  name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
+  mutate(isq = stringr::str_extract(name, "_.*_"),
+         var_to = stringr::str_extract(name, "(?<=_)([^_]+)$")) |>
+  mutate(name = case_when(name == "scn_ref_weak" ~ "Référence (ISQ), Taux d'occ. faible",
+                          name == "scn_ref_strong" ~ "Référence (ISQ), Taux d'occ. fort",
+                          name == "scn_weak_weak" ~ "Faible (ISQ), Taux d'occ. faible",
+                          name == "scn_weak_strong" ~ "Faible (ISQ), Taux d'occ. fort",
+                          name == "scn_strong_weak" ~ "Fort (ISQ), Taux d'occ. faible",
+                          name == "scn_strong_strong" ~ "Fort (ISQ), Taux d'occ. fort")) |> 
+  ggplot(aes(year, value, shape = var_to)) +
+  geom_line(aes(linetype = type), size = 0.75) +
+  geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
   facet_wrap(vars(name), nrow = 3) +
   scale_x_continuous(NULL) + 
-  scale_colour_manual(NULL, labels = c("Apartments", "Semi-detached, row, etc.", 
-                                       "Single-detached"),
-                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
-  theme_minimal() +
-  theme(legend.position = "bottom",
-        text = element_text(family = "KMR Apparat"))
+  scale_colour_manual("Scénario ISQ", 
+                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", `_weak_` = "#A3B0D1"), 
+                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
+  scale_shape_manual("Variation du taux d'occupation", 
+                     values = c(strong = 16, weak = 17), 
+                     labels = c(`strong` = "Fort", `weak` = "Faible")) +
+  scale_linetype_manual("Typologie du logement", 
+                        values = c("Appartements" = "solid", "Unifamilial" = 
+                                     "dashed", "Autre" = "dotted")) +
+  scale_y_continuous("Logements", labels = convert_number) + 
+  graph_theme_w_legendtitle +
+  theme(legend.title.align = 0.5)
+
+if (.Platform$OS.type == "windows") ggsave_pdf_png(
+  plot_dwelling_targets_typology_1, filename = "outputs/targets/plot_dwelling_targets_typology_1.pdf",
+  width = 8.5, height = 6.5)
 
 attrition_targets_typology_1 <- 
   dwelling_targets_typology_1 |> 
@@ -480,20 +507,41 @@ completion_targets_typology_1 <-
 plot_completion_targets_typology_1 <- 
   completion_targets_typology_1 |> 
   pivot_longer(-year) |> 
-  mutate(type = case_when(str_detect(name, "apart") ~ "apart",
-                          str_detect(name, "single") ~ "single",
-                          str_detect(name, "other") ~ "other"),
-         name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
-  ggplot(aes(year, value, colour = type)) +
-  geom_point() +
+  mutate(type = case_when(
+    str_detect(name, "apart") ~ "Appartements",
+    str_detect(name, "single") ~ "Unifamilial",
+    str_detect(name, "other") ~ "Autre"
+  ),
+  name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
+  mutate(isq = stringr::str_extract(name, "_.*_"),
+         var_to = stringr::str_extract(name, "(?<=_)([^_]+)$")) |>
+  mutate(name = case_when(name == "scn_ref_weak" ~ "Référence (ISQ), Taux d'occ. faible",
+                          name == "scn_ref_strong" ~ "Référence (ISQ), Taux d'occ. fort",
+                          name == "scn_weak_weak" ~ "Faible (ISQ), Taux d'occ. faible",
+                          name == "scn_weak_strong" ~ "Faible (ISQ), Taux d'occ. fort",
+                          name == "scn_strong_weak" ~ "Fort (ISQ), Taux d'occ. faible",
+                          name == "scn_strong_strong" ~ "Fort (ISQ), Taux d'occ. fort")) |> 
+  ggplot(aes(year, value, shape = var_to)) +
+  geom_line(aes(linetype = type), size = 0.75) +
+  geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
   facet_wrap(vars(name), nrow = 3) +
   scale_x_continuous(NULL) + 
-  scale_colour_manual(NULL, labels = c("Apartments", "Semi-detached, row, etc.", 
-                                       "Single-detached"),
-                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
-  theme_minimal() +
-  theme(legend.position = "bottom",
-        text = element_text(family = "KMR Apparat"))
+  scale_colour_manual("Scénario ISQ", 
+                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", `_weak_` = "#A3B0D1"), 
+                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
+  scale_shape_manual("Variation du taux d'occupation", 
+                     values = c(strong = 16, weak = 17), 
+                     labels = c(`strong` = "Fort", `weak` = "Faible")) +
+  scale_linetype_manual("Typologie du logement", 
+                        values = c("Appartements" = "solid", "Unifamilial" = 
+                                     "dashed", "Autre" = "dotted")) +
+  scale_y_continuous("Logements", labels = convert_number) + 
+  graph_theme_w_legendtitle +
+  theme(legend.title.align = 0.5)
+
+if (.Platform$OS.type == "windows") ggsave_pdf_png(
+  plot_completion_targets_typology_1, filename = "outputs/targets/plot_completion_targets_typology_1.pdf",
+  width = 8.5, height = 6.5)
 
 
 # Completion targets for typology scenario 2 ------------------------------
@@ -539,20 +587,41 @@ completion_targets_typology_2 <-
 plot_completion_targets_typology_2 <- 
   completion_targets_typology_2 |> 
   pivot_longer(-year) |> 
-  mutate(type = case_when(str_detect(name, "apart") ~ "apart",
-                          str_detect(name, "single") ~ "single",
-                          str_detect(name, "other") ~ "other"),
-         name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
-  ggplot(aes(year, value, colour = type)) +
-  geom_point() +
+  mutate(type = case_when(
+    str_detect(name, "apart") ~ "Appartements",
+    str_detect(name, "single") ~ "Unifamilial",
+    str_detect(name, "other") ~ "Autre"
+  ),
+  name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
+  mutate(isq = stringr::str_extract(name, "_.*_"),
+         var_to = stringr::str_extract(name, "(?<=_)([^_]+)$")) |>
+  mutate(name = case_when(name == "scn_ref_weak" ~ "Référence (ISQ), Taux d'occ. faible",
+                          name == "scn_ref_strong" ~ "Référence (ISQ), Taux d'occ. fort",
+                          name == "scn_weak_weak" ~ "Faible (ISQ), Taux d'occ. faible",
+                          name == "scn_weak_strong" ~ "Faible (ISQ), Taux d'occ. fort",
+                          name == "scn_strong_weak" ~ "Fort (ISQ), Taux d'occ. faible",
+                          name == "scn_strong_strong" ~ "Fort (ISQ), Taux d'occ. fort")) |> 
+  ggplot(aes(year, value, shape = var_to)) +
+  geom_line(aes(linetype = type), size = 0.75) +
+  geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
   facet_wrap(vars(name), nrow = 3) +
   scale_x_continuous(NULL) + 
-  scale_colour_manual(NULL, labels = c("Apartments", "Semi-detached, row, etc.", 
-                                       "Single-detached"),
-                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
-  theme_minimal() +
-  theme(legend.position = "bottom",
-        text = element_text(family = "KMR Apparat"))
+  scale_colour_manual("Scénario ISQ", 
+                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", `_weak_` = "#A3B0D1"), 
+                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
+  scale_shape_manual("Variation du taux d'occupation", 
+                     values = c(strong = 16, weak = 17), 
+                     labels = c(`strong` = "Fort", `weak` = "Faible")) +
+  scale_linetype_manual("Typologie du logement", 
+                        values = c("Appartements" = "solid", "Unifamilial" = 
+                                     "dashed", "Autre" = "dotted")) +
+  scale_y_continuous("Logements", labels = convert_number) + 
+  graph_theme_w_legendtitle +
+  theme(legend.title.align = 0.5)
+
+if (.Platform$OS.type == "windows") ggsave_pdf_png(
+  completion_targets_typology_2, filename = "outputs/targets/completion_targets_typology_2.pdf",
+  width = 8.5, height = 6.5)
 
 
 # Completion targets for typology scenario 3 ------------------------------
