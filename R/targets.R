@@ -1101,7 +1101,7 @@ if (.Platform$OS.type == "windows") ggsave_pdf_png(
   width = 6.5, height = 6)
 
 
-# Bedroom counts ----------------------------------------------------------
+# Bedroom count: household sizes ------------------------------------------
 
 # Get census vectors for household size
 size_96 <- c(
@@ -1207,6 +1207,20 @@ plot_size_trend <-
                       values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
   graph_theme
 
+# Create annual targets for all household sizes
+size_targets <- 
+  size_trend |> 
+  filter(year >= 2022) |> 
+  pivot_wider(names_from = type, values_from = s1) |> 
+  rename(strong_s1 = strong, weak_s1 = weak) |> 
+  mutate(strong_s4 = mean(census_size$s4_plus),
+         weak_s4 = mean(census_size$s4_plus),
+         strong_s2 = 1 - strong_s1 - strong_s4,
+         weak_s2 = 1 - weak_s1 - weak_s4)
+
+
+# Bedroom count: HH-BR ratio ----------------------------------------------
+
 # Get census vectors for bedroom counts
 br_2011 <- c(
   br_total = "v_CA11N_2247",
@@ -1243,24 +1257,25 @@ census_br <- bind_rows(
   select(-br_zero, -br_four)
 
 census_br |> 
+  # mutate(across(br_one:br_three, \(x) x / br_total)) |> 
+  select(-br_total) |> 
+  pivot_longer(-year) |> 
+  ggplot(aes(year, value, colour = name)) +
+  geom_line()
+
+# Calculate historical averages for HH size to BR count shares
+size_br <- 
+  census_br |> 
   mutate(across(br_one:br_three, \(x) x / br_total)) |> 
   select(-br_total) |> 
-  inner_join(census_size) |> 
+  inner_join(census_size, by = "year") |> 
   mutate(
     s1_br = s1 / br_one,
     s2_br = s2_3 / br_two,
     s4_br = s4_plus / br_three) |> 
   select(year, s1_br:s4_br) |> 
-  pivot_longer(-year) |> 
-  ggplot(aes(year, value, colour = name)) +
-  geom_line()
+  summarize(across(-year, mean))
 
-census_br |> 
-  mutate(across(br_one:br_three, \(x) x / br_total)) |> 
-  select(-br_total) |> 
-  pivot_longer(-year) |> 
-  ggplot(aes(year, value, colour = name)) +
-  geom_line()
 
 
 # Dedicated old-age housing -----------------------------------------------
@@ -1392,7 +1407,7 @@ qsavem(isq, plot_isq_households, occ_rate, occ_model, plot_occ_rate,
        plot_completions_monthly, dist_example, dist_out, 
        plot_start_targets_typology_1, plot_start_targets_typology_2, 
        plot_start_targets_typology_3,
-       plot_size_trend,
+       plot_size_trend, size_br,
        plot_isq_age, rpa_ratio, plot_dwelling_targets_rpa, 
        plot_completion_targets_rpa,
        file = "data/targets.qsm")
