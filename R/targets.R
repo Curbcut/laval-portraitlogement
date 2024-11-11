@@ -542,6 +542,20 @@ con_length <-
   select(year, type = `Dwelling Type`, con_length = Value) |> 
   filter(year >= 2002)
 
+# Visualization
+plot_con_length <- 
+  con_length |> 
+  filter(type != "All") |> 
+  ggplot(aes(year, con_length, colour = type)) +
+  geom_line() +
+  scale_x_continuous(NULL) + 
+  scale_y_continuous("Average construction length in months") + 
+  scale_colour_manual(NULL,
+                      values = curbcut_colors$brandbook$color[c(4, 3, 2, 5)]) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        text = element_text(family = "KMR Apparat"))
+
 # Get average construction lengths for non-apartments >= 2014
 con_length_type <- 
   con_length |> 
@@ -916,7 +930,7 @@ qsavem(isq, plot_isq_households, occ_rate, occ_model, plot_occ_rate,
        scenario_1_vals, scenario_2_vals, scenario_3_vals,
        plot_dwelling_targets_typology_1, plot_completion_targets_typology_1, 
        plot_completion_targets_typology_2, plot_completion_targets_typology_3,
-       
+       plot_con_length, con_length_type,
        plot_start_targets_typology_1, plot_start_targets_typology_2, 
        plot_start_targets_typology_3,
        plot_isq_age, rpa_ratio, plot_dwelling_targets_rpa, 

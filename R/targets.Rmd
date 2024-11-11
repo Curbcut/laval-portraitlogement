@@ -156,7 +156,7 @@ plot_starts_completions
 
 # Scenarios for typology-specific housing targets
 
-As discussed above, typology mix is the main policy lever which allows the City to influence housing affordability in Laval. The City may therefore wish to be deliberate about which housing types it encourages and which types it discourages in the future. Accordingly, we define three plausible scenarios to guide housing targets by housing type.
+As discussed above, typology mix is the main policy lever which allows the City to influence housing affordability in Laval. The City may therefore wish to be deliberate about which housing types it encourages and which types it discourages in the future. Accordingly, we define three plausible scenarios to guide housing targets by housing type. Each of these scenarios involves decomposing either the total dwelling targets or the completion targets established above into three housing types: single-detached homes, apartments, and other (semi-detached, row houses, etc.). These scenarios do not distinguish between large and small apartments, nor between rental and condominium apartments.
 
 Scenario 1 defines the amount of housing construction necessary to preserve the typology mix found in the City of Laval in the 2021 census. In other words, under this scenario, with whatever trajectory for total dwelling units the City tries to achieve, it does so in a way which would be expected to retain roughly `r convert_pct(scenario_1_vals$single)` of dwelling units as single-detached homes, `r convert_pct(scenario_1_vals$apart)` as apartment units, and `r convert_pct(scenario_1_vals$other)` as semi-detached homes, row houses, and plexes. Given that the share of dwelling units located in apartment buildings has been increasing over the last twenty years, this scenario would imply a halt to that trend.
 
@@ -200,6 +200,16 @@ plot_completion_targets_typology_3
 
 # Starts versus completions by typology
 
+
+Figure TKTK shows the average construction length of new housing construction by dwelling type. Two trends are evident. First, the construction time for apartments has been steadily increasing, from roughly half a year in the early 2000s to close to roughly 15 months in the 2020s. Second, non-apartment construction lengths have been quite stable, with particularly little variation in average construction length in the last decade.
+
+```{r plot_con_length}
+plot_con_length
+```
+
+We therefore assume that non-apartment construction lengths will remain constant in the future: `r con_length_type$single` months for single-detached homes and `r con_length_type$other` for semi-detached and row houses. And we apply linear regression to the 2014-2023 trend in apartment construction lengths to project future construction lengths for this dwelling type.
+
+This gives us expected average construction times for different building types for each year in the study period. But to model the distribution of construction times properly, we also need some measure of the variance of construction times. While CMHC does not release building-level data, we use census-tract level figures on average construction times as a plausible proxy.
 
 
 # Start targets for typology scenario 1
