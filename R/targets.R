@@ -440,7 +440,7 @@ dwelling_targets_typology_1 <-
 
 # Total units visualization
 plot_dwelling_targets_typology_1 <-
-dwelling_targets_typology_1 |> 
+  dwelling_targets_typology_1 |> 
   pivot_longer(-year) |> 
   mutate(
     type = case_when(
@@ -1207,7 +1207,10 @@ plot_size_trend <-
                       values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
   graph_theme
 
-# Create annual targets for all household sizes
+
+# Dwelling targets by household size --------------------------------------
+
+# Create annual percentage targets for all household sizes
 size_targets <- 
   size_trend |> 
   filter(year >= 2022) |> 
@@ -1216,7 +1219,27 @@ size_targets <-
   mutate(strong_s4 = mean(census_size$s4_plus),
          weak_s4 = mean(census_size$s4_plus),
          strong_s2 = 1 - strong_s1 - strong_s4,
-         weak_s2 = 1 - weak_s1 - weak_s4)
+         weak_s2 = 1 - weak_s1 - weak_s4) |> 
+  relocate(strong_s2, strong_s4, .after = strong_s1) |> 
+  relocate(weak_s2, weak_s4, .after = weak_s1)
+
+# Create annual dwelling targets for all household sizes
+dwelling_targets_size <- 
+  dwelling_targets |> 
+  mutate(across(-year, list(
+    strong_s1 = \(x) x * size_targets$strong_s1,
+    strong_s2 = \(x) x * size_targets$strong_s2,
+    strong_s4 = \(x) x * size_targets$strong_s4,
+    weak_s1 = \(x) x * size_targets$weak_s1,
+    weak_s2 = \(x) x * size_targets$weak_s2,
+    weak_s4 = \(x) x * size_targets$weak_s4))) |> 
+  select(-c(scn_ref_weak:scn_strong_strong))
+
+# Visualization
+dwelling_targets_size |> 
+  pivot_longer(-year) |> 
+  ggplot(aes(year, value, colour = name)) +
+  geom_point()
 
 
 # Bedroom count: HH-BR ratio ----------------------------------------------
@@ -1276,6 +1299,7 @@ size_br <-
   select(year, s1_br:s4_br) |> 
   summarize(across(-year, mean))
 
+size_br
 
 
 # Dedicated old-age housing -----------------------------------------------
