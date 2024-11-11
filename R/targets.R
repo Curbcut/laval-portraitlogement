@@ -463,6 +463,11 @@ completion_targets_typology_1 <-
                                               .before = 1))) |> 
   filter(year >= 2025)
 
+# Fix minimum completions at zero
+completion_targets_typology_1 <- 
+  completion_targets_typology_1 |> 
+  mutate(across(-year, \(x) pmax(x, 0)))
+
 # Completions visualization
 plot_completion_targets_typology_1 <- 
   completion_targets_typology_1 |> 
@@ -472,7 +477,7 @@ plot_completion_targets_typology_1 <-
                           str_detect(name, "other") ~ "other"),
          name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
   ggplot(aes(year, value, colour = type)) +
-  geom_line() +
+  geom_point() +
   facet_wrap(vars(name), nrow = 3) +
   scale_x_continuous(NULL) + 
   scale_colour_manual(NULL, labels = c("Apartments", "Semi-detached, row, etc.", 
