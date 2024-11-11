@@ -31,8 +31,9 @@ plot_isq_households <-
   scale_y_continuous("Nombre de ménages", labels = convert_number) +
   scale_colour_manual(NULL, labels = c("Scénario de référence", "Scénario fort", 
                                        "Scénario faible"),
-                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
+                      values = c(`reference` = "#73AD80", `strong` = "#E08565", `weak` = "#A3B0D1")) +
   graph_theme
+  
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_isq_households, filename = "outputs/targets/plot_isq_households.pdf",
@@ -71,20 +72,25 @@ occ_weak <-
 occ_rate <- bind_rows(occ_raw, occ_strong, occ_weak)
 
 # Visualization
-plot_occ_rate <- 
+plot_occ_rate <-
   occ_rate |> 
   ggplot(aes(year, occ_rate, colour = type)) +
   stat_function(fun = \(x) -0.0006591 * x + 2.2956686, lwd = 0.2,
-                colour = curbcut_colors$brandbook$color[3]) +
+                colour = curbcut_colors$brandbook$color[8]) +
   stat_function(fun = \(x) 0.01 * 0.958 ^ (x - 2021) + 0.954, lwd = 0.2,
-                colour = curbcut_colors$brandbook$color[2]) +
-  geom_point() +
+                colour = curbcut_colors$brandbook$color[5]) +
+  geom_point(aes(shape = type), size = 2) +
   scale_x_continuous(NULL) + 
   scale_y_continuous("Taux d'occupation", limits = c(0.92, 1), 
                      labels = convert_pct) +
-  scale_colour_manual(NULL, labels = c("Valeurs réelles", "Scénario fort", 
+  scale_colour_manual(NULL, labels = c("Valeurs réelles",
+                                       "Scénario fort",
                                        "Scénario faible"),
-                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
+                      values = curbcut_colors$brandbook$color[c(2, 5, 8)]) +
+  scale_shape_manual(NULL, labels = c("Valeurs réelles", 
+                                       "Scénario fort", 
+                                       "Scénario faible"),
+                      values = c(actual = 15, strong = 16, weak = 17)) +
   graph_theme
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
@@ -122,19 +128,17 @@ plot_dwelling_targets <-
   pivot_longer(-year) |> 
   mutate(isq = stringr::str_extract(name, "_.*_"),
          var_to = stringr::str_extract(name, "(?<=_)([^_]+)$")) |> 
-  ggplot(aes(year, value, colour = var_to)) +
-  geom_point(aes(shape = isq), size = 2.5) +
+  ggplot(aes(year, value, colour = isq)) +
+  geom_point(aes(shape = var_to), size = 1.5) +
   scale_y_continuous("Nombre total de\nlogement nécessaires", 
                      labels = convert_number) +
   scale_x_continuous(NULL) + 
-  scale_colour_manual("Variation du taux d'occupation", 
-                      values = c(strong = "#73AD80", weak = "#E08565"), 
-                      labels = c(`strong` = "Fort", weak = "Faible")) +
-  scale_shape_manual("Scénario ISQ", 
-                     # Specify the shape values here
-                     values = c(`_ref_` = 16, `_strong_` = 17, `_weak_` = 15),  
-                     labels = c(`_ref_` = "Référence", `_strong_` = "Fort", 
-                                `_weak_` = "Faible")) +
+  scale_colour_manual("Scénario ISQ", 
+                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", `_weak_` = "#A3B0D1"), 
+                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
+  scale_shape_manual("Variation du taux d'occupation", 
+                     values = c(strong = 16, weak = 17), 
+                     labels = c(`strong` = "Fort", `weak` = "Faible")) +
   graph_theme_w_legendtitle +
   theme(legend.title.align = 0.5)
 
@@ -231,20 +235,21 @@ plot_completion_targets <-
   pivot_longer(-year) |> 
   mutate(isq = stringr::str_extract(name, "_.*_"),
          var_to = stringr::str_extract(name, "(?<=_)([^_]+)$")) |> 
-  ggplot(aes(year, value, colour = var_to)) +
-  geom_point(aes(shape = isq), size = 2.5) +
+  # Set minimum value to zero to prevent negative completions
+  mutate(value = pmax(value, 0)) |> 
+  ggplot(aes(year, value, shape = var_to)) +
+  geom_point(aes(colour = isq), size = 1.5) +
   scale_y_continuous("Achèvements nécessaires", labels = convert_number) +
   scale_x_continuous(NULL) + 
-  scale_colour_manual("Variation du taux d'occupation", 
-                      values = c(strong = "#73AD80", weak = "#E08565"), 
-                      labels = c(`strong` = "Fort", weak = "Faible")) +
-  scale_shape_manual("Scénario ISQ", 
-                     # Specify the shape values here
-                     values = c(`_ref_` = 16, `_strong_` = 17, `_weak_` = 15),  
-                     labels = c(`_ref_` = "Référence", `_strong_` = "Fort", 
-                                `_weak_` = "Faible")) +
+  scale_colour_manual("Scénario ISQ", 
+                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", `_weak_` = "#A3B0D1"), 
+                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
+  scale_shape_manual("Variation du taux d'occupation", 
+                     values = c(strong = 16, weak = 17), 
+                     labels = c(`strong` = "Fort", `weak` = "Faible")) +
   graph_theme_w_legendtitle +
   theme(legend.title.align = 0.5)
+
 
 
 # Starts and completions for general model --------------------------------
