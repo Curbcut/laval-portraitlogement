@@ -1147,7 +1147,7 @@ plot_isq_age <-
                      labels = convert_number) +
   scale_colour_manual(NULL, labels = c("Scénario de référence", "Scénario fort", 
                                        "Scénario faible"),
-                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
+                      values = curbcut_colors$brandbook$color[c(3, 4, 2)]) +
   graph_theme
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
@@ -1181,7 +1181,7 @@ plot_dwelling_targets_rpa <-
   scale_x_continuous(NULL) + 
   scale_colour_manual(NULL, labels = c("Scénario de référence", "Scénario fort", 
                                        "Scénario faible"),
-                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
+                      values = curbcut_colors$brandbook$color[c(3, 4, 2)]) +
   graph_theme
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
@@ -1220,7 +1220,7 @@ plot_completion_targets_rpa <-
   scale_x_continuous(NULL) + 
   scale_colour_manual(NULL, labels = c("Scénario de référence", "Scénario fort", 
                                        "Scénario faible"),
-                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
+                      values = curbcut_colors$brandbook$color[c(3, 4, 2)]) +
   graph_theme
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
