@@ -232,6 +232,7 @@ We incorporate the three outputs described in this section (the year- and type-s
 
 # Start targets for typology scenario 1
 
+The estimated number of housing starts necessary by dwelling type to achieve the annual completions called for under typology scenario 1 are given in Figure TKTK.
 
 ```{r plot_start_targets_typology_1}
 plot_start_targets_typology_1
@@ -239,12 +240,17 @@ plot_start_targets_typology_1
 
 
 # Start targets for typology scenario 2
+
+The estimated number of housing starts necessary by dwelling type to achieve the annual completions called for under typology scenario 2 are given in Figure TKTK.
+
 ```{r plot_start_targets_typology_2}
 plot_start_targets_typology_2 
 ```
 
 
 # Start targets for typology scenario 3
+
+The estimated number of housing starts necessary by dwelling type to achieve the annual completions called for under typology scenario 3 are given in Figure TKTK.
 
 ```{r plot_start_targets_typology_3}
 plot_start_targets_typology_3
@@ -277,7 +283,7 @@ In 2023, there were `r rpa_ratio` units of dedicated older-adult housing for eac
 plot_dwelling_targets_rpa
 ```
 
-Taking into account already built older-adult housing, and assuming that older-adult housing has the same attrition rate of `r convert_pct(attrition_pct)` units per year as the private dwelling stock, we arrive at the targets for necessary older-adult housing completions per year in Figure TKTK. As with the general housing targets, we suggest that the City could adopt a rule of thumb of a two-year lag between starts and completions.
+Taking into account already built older-adult housing, and assuming that older-adult housing has the same attrition rate of `r convert_pct(attrition_pct)` units per year as the private dwelling stock, we arrive at the targets for necessary older-adult housing completions per year in Figure TKTK. (Minimum annual targets are fixed at zero.) As with the general housing targets, we suggest that the City could adopt a rule of thumb of a two-year lag between starts and completions.
 
 ```{r plot_completion_targets_rpa}
 plot_completion_targets_rpa

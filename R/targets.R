@@ -217,6 +217,11 @@ completion_targets <-
                                               .before = 1))) |> 
   filter(year >= 2025)
 
+# Set minimum value to zero to prevent negative completions
+completion_targets <- 
+  completion_targets |> 
+  mutate(across(-year, \(x) pmax(x, 0)))
+  
 
 # Final global housing targets --------------------------------------------
 
@@ -226,8 +231,6 @@ plot_completion_targets <-
   pivot_longer(-year) |> 
   mutate(isq = stringr::str_extract(name, "_.*_"),
          var_to = stringr::str_extract(name, "(?<=_)([^_]+)$")) |> 
-  # Set minimum value to zero to prevent negative completions
-  mutate(value = pmax(value, 0)) |> 
   ggplot(aes(year, value, colour = var_to)) +
   geom_point(aes(shape = isq), size = 2.5) +
   scale_y_continuous("Achèvements nécessaires", labels = convert_number) +
@@ -566,7 +569,7 @@ plot_completion_targets_typology_3 <-
                           str_detect(name, "other") ~ "other"),
          name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
   ggplot(aes(year, value, colour = type)) +
-  geom_line() +
+  geom_point() +
   facet_wrap(vars(name), nrow = 3) +
   scale_x_continuous(NULL) + 
   scale_colour_manual(NULL, labels = c("Apartments", "Semi-detached, row, etc.", 
@@ -779,7 +782,7 @@ build_starts <- function(comp_table) {
 # Create annual schedule of starts necessary to produce targeted completions
 start_targets_typology_1 <- 
   build_starts(completion_targets_typology_1) |> 
-  filter(year >= 2025)
+  filter(year >= 2025, year <= 2046)
 
 # Visualization
 plot_start_targets_typology_1 <- 
@@ -790,7 +793,7 @@ plot_start_targets_typology_1 <-
                           str_detect(name, "other") ~ "other"),
          name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
   ggplot(aes(year, value, colour = type)) +
-  geom_line() +
+  geom_point() +
   facet_wrap(vars(name), nrow = 3) +
   scale_x_continuous(NULL) + 
   scale_colour_manual(NULL, labels = c("Apartments", "Semi-detached, row, etc.", 
@@ -805,7 +808,7 @@ plot_start_targets_typology_1 <-
 
 start_targets_typology_2 <- 
   build_starts(completion_targets_typology_2) |> 
-  filter(year >= 2025)
+  filter(year >= 2025, year <= 2046)
 
 # Visualization
 plot_start_targets_typology_2 <- 
@@ -816,7 +819,7 @@ plot_start_targets_typology_2 <-
                           str_detect(name, "other") ~ "other"),
          name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
   ggplot(aes(year, value, colour = type)) +
-  geom_line() +
+  geom_point() +
   facet_wrap(vars(name), nrow = 3) +
   scale_x_continuous(NULL) + 
   scale_colour_manual(NULL, labels = c("Apartments", "Semi-detached, row, etc.", 
@@ -831,7 +834,7 @@ plot_start_targets_typology_2 <-
 
 start_targets_typology_3 <- 
   build_starts(completion_targets_typology_3) |> 
-  filter(year >= 2025)
+  filter(year >= 2025, year <= 2046)
 
 # Visualization
 plot_start_targets_typology_3 <- 
@@ -842,7 +845,7 @@ plot_start_targets_typology_3 <-
                           str_detect(name, "other") ~ "other"),
          name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
   ggplot(aes(year, value, colour = type)) +
-  geom_line() +
+  geom_point() +
   facet_wrap(vars(name), nrow = 3) +
   scale_x_continuous(NULL) + 
   scale_colour_manual(NULL, labels = c("Apartments", "Semi-detached, row, etc.", 
@@ -983,6 +986,11 @@ completion_targets_rpa <-
   mutate(across(-year, \(x) slider::slide_dbl(x, \(y) y[2] - y[1], 
                                               .before = 1))) |> 
   filter(year >= 2025)
+
+# Set minimum value to zero to prevent negative completions
+completion_targets_rpa <- 
+  completion_targets_rpa |> 
+  mutate(across(-year, \(x) pmax(x, 0)))
 
 # Visualization
 plot_completion_targets_rpa <- 
