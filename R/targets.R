@@ -138,7 +138,8 @@ plot_dwelling_targets <-
 # Obtain total private dwellings from each census period
 dwellings <- 
   map(c("CA1996", "CA01", "CA06", "CA11", "CA16", "CA21"), \(x) {
-    get_census(x, regions = list(CSD = "2465005"))}) |> 
+    get_census(x, regions = list(CSD = "2465005")) |> 
+      suppressMessages()}) |> 
   bind_rows() |> 
   select(dwellings = Dwellings) |> 
   mutate(year = c(1996, 2001, 2006, 2011, 2016, 2021), .before = dwellings)
@@ -209,8 +210,11 @@ completion_targets <-
 # Final global housing targets --------------------------------------------
 
 # Visualization
-completion_targets |> 
+plot_completion_targets <- 
+  completion_targets |> 
   pivot_longer(-year) |> 
+  # Set minimum value to zero to prevent negative completions
+  mutate(value = pmax(value, 0)) |> 
   ggplot(aes(year, value, colour = name)) +
   geom_point() +
   scale_y_continuous("Needed completions", labels = scales::comma) +
@@ -266,7 +270,8 @@ starts_completions |>
   cor(use = "complete.obs")
 
 # Examine scatterplots
-starts_completions |> 
+plot_starts_completions <- 
+  starts_completions |> 
   mutate(across(starts_0:starts_3, \(x) x / completions)) |> 
   pivot_longer(starts_0:starts_3) |> 
   mutate(name = case_when(
@@ -292,7 +297,7 @@ starts_completions |>
 lm(completions ~ starts_2, data = starts_completions) |> plot(which = 1)
 
 
-# Typology projections ----------------------------------------------------
+# Scenarios for typology-specific housing targets -------------------------
 
 # Vectors for census download
 type_2006 <- c(
@@ -390,7 +395,7 @@ scenario_3_vals <-
     other = 1 - single - apart)
 
 
-# Dwelling/completion targets by typology: scenario 1 ---------------------
+# Dwelling and completion targets for typology scenario 1 -----------------
 
 dwelling_targets_typology_1 <- 
   dwelling_targets |> 
@@ -399,6 +404,25 @@ dwelling_targets_typology_1 <-
     apart = \(x) x * scenario_1_vals$apart,
     other = \(x) x * scenario_1_vals$other))) |> 
   select(-c(scn_ref_weak:scn_strong_strong))
+
+# Total units visualization
+plot_dwelling_targets_typology_1 <- 
+  dwelling_targets_typology_1 |> 
+  pivot_longer(-year) |> 
+  mutate(type = case_when(str_detect(name, "apart") ~ "apart",
+                          str_detect(name, "single") ~ "single",
+                          str_detect(name, "other") ~ "other"),
+         name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
+  ggplot(aes(year, value, colour = type)) +
+  geom_line() +
+  facet_wrap(vars(name), nrow = 3) +
+  scale_x_continuous(NULL) + 
+  scale_colour_manual(NULL, labels = c("Apartments", "Semi-detached, row, etc.", 
+                                       "Single-detached"),
+                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        text = element_text(family = "KMR Apparat"))
 
 attrition_targets_typology_1 <- 
   dwelling_targets_typology_1 |> 
@@ -427,26 +451,9 @@ completion_targets_typology_1 <-
                                               .before = 1))) |> 
   filter(year >= 2025)
 
-# Total units visualization
-dwelling_targets_typology_1 |> 
-  pivot_longer(-year) |> 
-  mutate(type = case_when(str_detect(name, "apart") ~ "apart",
-                          str_detect(name, "single") ~ "single",
-                          str_detect(name, "other") ~ "other"),
-         name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
-  ggplot(aes(year, value, colour = type)) +
-  geom_line() +
-  facet_wrap(vars(name), nrow = 3) +
-  scale_x_continuous(NULL) + 
-  scale_colour_manual(NULL, labels = c("Apartments", "Semi-detached, row, etc.", 
-                                       "Single-detached"),
-                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
-  theme_minimal() +
-  theme(legend.position = "bottom",
-        text = element_text(family = "KMR Apparat"))
-
 # Completions visualization
-completion_targets_typology_1 |> 
+plot_completion_targets_typology_1 <- 
+  completion_targets_typology_1 |> 
   pivot_longer(-year) |> 
   mutate(type = case_when(str_detect(name, "apart") ~ "apart",
                           str_detect(name, "single") ~ "single",
@@ -464,7 +471,7 @@ completion_targets_typology_1 |>
         text = element_text(family = "KMR Apparat"))
 
 
-# Dwelling/completion targets by typology: scenario 2 ---------------------
+# Completion targets for typology scenario 2 ------------------------------
 
 completion_targets_typology_2 <- 
   completion_targets |> 
@@ -475,7 +482,8 @@ completion_targets_typology_2 <-
   select(-c(scn_ref_weak:scn_strong_strong))
 
 # Completions visualization
-completion_targets_typology_2 |> 
+plot_completion_targets_typology_2 <- 
+  completion_targets_typology_2 |> 
   pivot_longer(-year) |> 
   mutate(type = case_when(str_detect(name, "apart") ~ "apart",
                           str_detect(name, "single") ~ "single",
@@ -492,7 +500,8 @@ completion_targets_typology_2 |>
   theme(legend.position = "bottom",
         text = element_text(family = "KMR Apparat"))
 
-# Dwelling/completion targets by typology: scenario 3 ---------------------
+
+# Completion targets for typology scenario 3 ------------------------------
 
 completion_targets_typology_3 <- 
   completion_targets |> 
@@ -503,7 +512,8 @@ completion_targets_typology_3 <-
   select(-c(scn_ref_weak:scn_strong_strong))
 
 # Completions visualization
-completion_targets_typology_3 |> 
+plot_completion_targets_typology_3 <- 
+  completion_targets_typology_3 |> 
   pivot_longer(-year) |> 
   mutate(type = case_when(str_detect(name, "apart") ~ "apart",
                           str_detect(name, "single") ~ "single",
@@ -671,55 +681,69 @@ build_starts <- function(comp_table) {
   
 }
 
+
+# Start targets for typology scenario 1 -----------------------------------
+
 # Create annual schedule of starts necessary to produce targeted completions
 start_targets_typology_1 <- 
   build_starts(completion_targets_typology_1) |> 
   filter(year >= 2025)
 
+# Visualization
+plot_start_targets_typology_1 <- 
+  start_targets_typology_1 |> 
+  pivot_longer(-year) |> 
+  mutate(type = case_when(str_detect(name, "apart") ~ "apart",
+                          str_detect(name, "single") ~ "single",
+                          str_detect(name, "other") ~ "other"),
+         name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
+  ggplot(aes(year, value, colour = type)) +
+  geom_line() +
+  facet_wrap(vars(name), nrow = 3) +
+  scale_x_continuous(NULL) + 
+  scale_colour_manual(NULL, labels = c("Apartments", "Semi-detached, row, etc.", 
+                                       "Single-detached"),
+                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        text = element_text(family = "KMR Apparat"))
+
+
+# Start targets for typology scenario 2 -----------------------------------
+
 start_targets_typology_2 <- 
   build_starts(completion_targets_typology_2) |> 
   filter(year >= 2025)
+
+# Visualization
+plot_start_targets_typology_2 <- 
+  start_targets_typology_2 |> 
+  pivot_longer(-year) |> 
+  mutate(type = case_when(str_detect(name, "apart") ~ "apart",
+                          str_detect(name, "single") ~ "single",
+                          str_detect(name, "other") ~ "other"),
+         name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
+  ggplot(aes(year, value, colour = type)) +
+  geom_line() +
+  facet_wrap(vars(name), nrow = 3) +
+  scale_x_continuous(NULL) + 
+  scale_colour_manual(NULL, labels = c("Apartments", "Semi-detached, row, etc.", 
+                                       "Single-detached"),
+                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        text = element_text(family = "KMR Apparat"))
+
+
+# Start targets for typology scenario 3 -----------------------------------
 
 start_targets_typology_3 <- 
   build_starts(completion_targets_typology_3) |> 
   filter(year >= 2025)
 
-# Visualizations
-start_targets_typology_1 |> 
-  pivot_longer(-year) |> 
-  mutate(type = case_when(str_detect(name, "apart") ~ "apart",
-                          str_detect(name, "single") ~ "single",
-                          str_detect(name, "other") ~ "other"),
-         name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
-  ggplot(aes(year, value, colour = type)) +
-  geom_line() +
-  facet_wrap(vars(name), nrow = 3) +
-  scale_x_continuous(NULL) + 
-  scale_colour_manual(NULL, labels = c("Apartments", "Semi-detached, row, etc.", 
-                                       "Single-detached"),
-                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
-  theme_minimal() +
-  theme(legend.position = "bottom",
-        text = element_text(family = "KMR Apparat"))
-
-start_targets_typology_2 |> 
-  pivot_longer(-year) |> 
-  mutate(type = case_when(str_detect(name, "apart") ~ "apart",
-                          str_detect(name, "single") ~ "single",
-                          str_detect(name, "other") ~ "other"),
-         name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
-  ggplot(aes(year, value, colour = type)) +
-  geom_line() +
-  facet_wrap(vars(name), nrow = 3) +
-  scale_x_continuous(NULL) + 
-  scale_colour_manual(NULL, labels = c("Apartments", "Semi-detached, row, etc.", 
-                                       "Single-detached"),
-                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
-  theme_minimal() +
-  theme(legend.position = "bottom",
-        text = element_text(family = "KMR Apparat"))
-
-start_targets_typology_3 |> 
+# Visualization
+plot_start_targets_typology_3 <- 
+  start_targets_typology_3 |> 
   pivot_longer(-year) |> 
   mutate(type = case_when(str_detect(name, "apart") ~ "apart",
                           str_detect(name, "single") ~ "single",
@@ -808,7 +832,8 @@ isq_age <-
   select(scenario, year, value)
 
 # Visualization
-isq_age |> 
+plot_isq_age <- 
+  isq_age |> 
   ggplot(aes(year, value, colour = scenario)) +
   geom_line() +
   scale_x_continuous(NULL) + 
@@ -837,7 +862,8 @@ dwelling_targets_rpa <-
   mutate(across(-year, \(x) x * rpa_ratio))
 
 # Visualization
-dwelling_targets_rpa |> 
+plot_dwelling_targets_rpa <- 
+  dwelling_targets_rpa |> 
   pivot_longer(-year) |> 
   ggplot(aes(year, value, colour = name)) +
   geom_point() +
@@ -867,7 +893,8 @@ completion_targets_rpa <-
   filter(year >= 2025)
 
 # Visualization
-completion_targets_rpa |> 
+plot_completion_targets_rpa <- 
+  completion_targets_rpa |> 
   pivot_longer(-year) |> 
   ggplot(aes(year, value, colour = name)) +
   geom_point() +
@@ -884,5 +911,14 @@ completion_targets_rpa |>
 # Save outputs ------------------------------------------------------------
 
 qsavem(isq, plot_isq_households, occ_rate, occ_model, plot_occ_rate, 
-       plot_dwelling_targets, 
+       plot_dwelling_targets, attrition_pct, plot_completion_targets,
+       plot_starts_completions, 
+       scenario_1_vals, scenario_2_vals, scenario_3_vals,
+       plot_dwelling_targets_typology_1, plot_completion_targets_typology_1, 
+       plot_completion_targets_typology_2, plot_completion_targets_typology_3,
+       
+       plot_start_targets_typology_1, plot_start_targets_typology_2, 
+       plot_start_targets_typology_3,
+       plot_isq_age, rpa_ratio, plot_dwelling_targets_rpa, 
+       plot_completion_targets_rpa,
        file = "data/targets.qsm")
