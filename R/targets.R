@@ -1141,15 +1141,18 @@ isq_age <-
 plot_isq_age <- 
   isq_age |> 
   ggplot(aes(year, value, colour = scenario)) +
-  geom_line() +
+  geom_line(size = 1) +
   scale_x_continuous(NULL) + 
-  scale_y_continuous("Households headed by 75+", labels = scales::comma) +
-  scale_colour_manual(NULL, labels = c("Reference scenario", "Strong scenario", 
-                                       "Weak scenario"),
+  scale_y_continuous("Ménages dont le principal soutien\nest âgé de 75 ans ou plus", 
+                     labels = convert_number) +
+  scale_colour_manual(NULL, labels = c("Scénario de référence", "Scénario fort", 
+                                       "Scénario faible"),
                       values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
-  theme_minimal() +
-  theme(legend.position = "bottom",
-        text = element_text(family = "KMR Apparat"))
+  graph_theme
+
+if (.Platform$OS.type == "windows") ggsave_pdf_png(
+  plot_isq_age, filename = "outputs/targets/plot_isq_age.pdf",
+  width = 6.5, height = 4)
 
 # 2023 RPAs
 rpa_2023 <- 12038
@@ -1173,14 +1176,17 @@ plot_dwelling_targets_rpa <-
   pivot_longer(-year) |> 
   ggplot(aes(year, value, colour = name)) +
   geom_point() +
-  scale_y_continuous("Needed completions", labels = scales::comma) +
+  geom_line(size = 0.25) +
+  scale_y_continuous("Achèvements nécessaires", labels = convert_number) +
   scale_x_continuous(NULL) + 
-  scale_colour_manual(NULL, labels = c("Reference scenario", "Strong scenario", 
-                                       "Weak scenario"),
+  scale_colour_manual(NULL, labels = c("Scénario de référence", "Scénario fort", 
+                                       "Scénario faible"),
                       values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
-  theme_minimal() +
-  theme(legend.position = "bottom",
-        text = element_text(family = "KMR Apparat"))
+  graph_theme
+
+if (.Platform$OS.type == "windows") ggsave_pdf_png(
+  plot_dwelling_targets_rpa, filename = "outputs/targets/plot_dwelling_targets_rpa.pdf",
+  width = 6.5, height = 4)
 
 # Calculate cumulative attrition estimates
 attrition_targets_rpa <- 
@@ -1204,20 +1210,22 @@ completion_targets_rpa <-
   mutate(across(-year, \(x) pmax(x, 0)))
 
 # Visualization
-plot_completion_targets_rpa <- 
+plot_completion_targets_rpa <-
   completion_targets_rpa |> 
   pivot_longer(-year) |> 
   ggplot(aes(year, value, colour = name)) +
   geom_point() +
-  scale_y_continuous("Needed completions", labels = scales::comma) +
+  geom_line(size = 0.25) +
+  scale_y_continuous("Achèvements nécessaires", labels = convert_number) +
   scale_x_continuous(NULL) + 
-  scale_colour_manual(NULL, labels = c("Reference scenario", "Strong scenario", 
-                                       "Weak scenario"),
+  scale_colour_manual(NULL, labels = c("Scénario de référence", "Scénario fort", 
+                                       "Scénario faible"),
                       values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
-  theme_minimal() +
-  theme(legend.position = "bottom",
-        text = element_text(family = "KMR Apparat"))
+  graph_theme
 
+if (.Platform$OS.type == "windows") ggsave_pdf_png(
+  plot_completion_targets_rpa, filename = "outputs/targets/plot_completion_targets_rpa.pdf",
+  width = 6.5, height = 4)
 
 # Save outputs ------------------------------------------------------------
 
