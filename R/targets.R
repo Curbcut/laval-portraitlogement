@@ -1016,6 +1016,7 @@ if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_start_targets_typology_2, filename = "outputs/targets/plot_start_targets_typology_2.pdf",
   width = 6.5, height = 6)
 
+
 # Start targets for typology scenario 3 -----------------------------------
 
 start_targets_typology_3 <- 
@@ -1067,8 +1068,114 @@ if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_start_targets_typology_3, filename = "outputs/targets/plot_start_targets_typology_3.pdf",
   width = 6.5, height = 6)
 
+
 # Bedroom counts ----------------------------------------------------------
 
+# Get census vectors for household size
+size_96 <- c(
+  total = "v_CA1996_116",
+  s1 = "v_CA1996_117",
+  s2 = "v_CA1996_118",
+  s3 = "v_CA1996_119",
+  s4 = "v_CA1996_120",
+  s6 = "v_CA1996_121")
+
+size_01 <- c(
+  total = "v_CA01_121",
+  s1 = "v_CA01_122",
+  s2 = "v_CA01_123",
+  s3 = "v_CA01_124",
+  s4 = "v_CA01_125",
+  s6 = "v_CA01_126")
+
+size_06 <- c(
+  total = "v_CA06_128",
+  s1 = "v_CA06_129",
+  s2 = "v_CA06_130",
+  s3 = "v_CA06_131",
+  s4 = "v_CA06_132",
+  s6 = "v_CA06_133")
+
+size_11 <- c(
+  total = "v_CA11F_209",
+  s1 = "v_CA11F_210",
+  s2 = "v_CA11F_211",
+  s3 = "v_CA11F_212",
+  s4 = "v_CA11F_213",
+  s5 = "v_CA11F_214",
+  s6 = "v_CA11F_215")
+
+size_16 <- c(
+  total = "v_CA16_418",
+  s1 = "v_CA16_419",
+  s2 = "v_CA16_420",
+  s3 = "v_CA16_421",
+  s4 = "v_CA16_422",
+  s5 = "v_CA16_423")
+
+size_21 <- c(
+  total = "v_CA21_443",
+  s1 = "v_CA21_444",
+  s2 = "v_CA21_445",
+  s3 = "v_CA21_446",
+  s4 = "v_CA21_447",
+  s5 = "v_CA21_448")
+
+# Produce cleaned data frame with size percentages
+census_size <- bind_rows(
+  get_census("CA1996", regions = list(CSD = "2465005"), vectors = size_96),
+  get_census("CA01", regions = list(CSD = "2465005"), vectors = size_01),
+  get_census("CA11", regions = list(CSD = "2465005"), vectors = size_11),
+  get_census("CA16", regions = list(CSD = "2465005"), vectors = size_16),
+  get_census("CA21", regions = list(CSD = "2465005"), vectors = size_21)) |>
+  mutate(year = c(1996, 2001, 2011, 2016, 2021)) |> 
+  select(year, total, s1, s2, s3, s4, s5, s6) |> 
+  mutate(s5 = coalesce(s5, 0), s6 = coalesce(s6, 0)) |> 
+  mutate(s2_3 = s2 + s3, s4_plus = s4 + s5 + s6) |> 
+  select(-c(s2:s6)) |> 
+  mutate(across(s1:s4_plus, \(x) x / total)) |> 
+  select(-total)
+
+# Model s1
+s1_model <- lm(s1 ~ year, data = census_size)
+
+# Predict new annual data points using this linear trend
+size_strong <- tibble(year = 2022:2051, 
+                      s1 = predict(s1_model, tibble(year = 2022:2051)), 
+                      type = "strong")
+
+# Predict new annual data points using exponential decay on the linear trend
+size_weak <- tibble(year = 2022:2051, 
+                    s1 = -4.177448 + 0.002207 * year - 0.001 * 
+                      1.065 ^ (year - 1995),
+                    type = "weak")
+
+# Build combined data frame
+size_trend <- 
+  census_size |> 
+  select(year, s1) |> 
+  mutate(type = "actual") |> 
+  bind_rows(size_strong, size_weak)
+
+# Visualization
+plot_size_trend <- 
+  size_trend |> 
+  ggplot(aes(year, s1, colour = type)) +
+  stat_function(fun = \(x) -4.183448 + 0.002207 * x,, lwd = 0.2, 
+                colour = curbcut_colors$brandbook$color[3]) +
+  stat_function(fun = \(x) -4.177448 + 0.002207 * x - 0.001 * 
+                  1.065 ^ (x - 1995), lwd = 0.2, 
+                colour = curbcut_colors$brandbook$color[2]) +
+  geom_point() +
+  scale_x_continuous(NULL) + 
+  scale_y_continuous("One-person households as share of all households", 
+                     labels = convert_pct) +
+  scale_colour_manual(NULL, labels = c("Valeurs réelles", "Scénario fort",
+                                       "Scénario faible"),
+                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
+  graph_theme
+
+# Get census vectors for bedroom counts
 br_2011 <- c(
   br_total = "v_CA11N_2247",
   br_one = "v_CA11N_2248", # Zero or one
@@ -1097,21 +1204,31 @@ census_br <- bind_rows(
   get_census("CA16", regions = list(CSD = "2465005"), vectors = br_2016),
   get_census("CA21", regions = list(CSD = "2465005"), vectors = br_2021)) |>
   mutate(year = c(2011, 2016, 2021)) |> 
-  select(year, br_total, br_zero, br_one:br_four)
-
-census_br <- 
-  census_br |> 
+  select(year, br_total, br_zero, br_one:br_four) |> 
   replace_na(list(br_zero = 0)) |> 
-  mutate(br_one = br_zero + br_one) |> 
-  select(-br_zero)
+  mutate(br_one = br_zero + br_one,
+         br_three = br_three + br_four) |> 
+  select(-br_zero, -br_four)
 
 census_br |> 
-  mutate(across(br_one:br_four, \(x) x / br_total)) |> 
+  mutate(across(br_one:br_three, \(x) x / br_total)) |> 
   select(-br_total) |> 
+  inner_join(census_size) |> 
+  mutate(
+    s1_br = s1 / br_one,
+    s2_br = s2_3 / br_two,
+    s4_br = s4_plus / br_three) |> 
+  select(year, s1_br:s4_br) |> 
   pivot_longer(-year) |> 
   ggplot(aes(year, value, colour = name)) +
   geom_line()
 
+census_br |> 
+  mutate(across(br_one:br_three, \(x) x / br_total)) |> 
+  select(-br_total) |> 
+  pivot_longer(-year) |> 
+  ggplot(aes(year, value, colour = name)) +
+  geom_line()
 
 
 # Dedicated old-age housing -----------------------------------------------
