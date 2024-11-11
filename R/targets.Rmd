@@ -215,13 +215,21 @@ plot_con_length
 
 We therefore assume that non-apartment construction lengths will remain constant in the future: `r con_length_type$single` months for single-detached homes and `r con_length_type$other` for semi-detached and row houses. And we apply linear regression to the 2014-2023 trend in apartment construction lengths to project future construction lengths for this dwelling type.
 
-This gives us expected mean construction times for different building types for each year in the study period. But to model the distribution of construction times properly, we also need to measure the standard deviation construction times. While CMHC does not release building-level data, we use census-tract level figures on average construction times from 2010-2023 as a plausible proxy, since there are relatively few housing starts in each census tract each year. Plot TKTK shows that these construction times are roughly normally distributed. The standard deviations are `r con_length_SD$single` for single-detached homes, `r con_length_SD$apart` for apartments, and `r con_length_SD$other` for other houses.
+This gives us expected mean construction times for different building types for each year in the study period. But to model the distribution of construction times properly, we also need to measure the standard deviation construction times. While CMHC does not release building-level data, we use census-tract level figures on average construction times from 2010-2023 as a plausible proxy, since there are relatively few housing starts in each census tract each year. Figure TKTK shows that these construction times are roughly normally distributed. The standard deviations are `r con_length_SD$single` for single-detached homes, `r con_length_SD$apart` for apartments, and `r con_length_SD$other` for other houses.
 
 ```{r plot_con_length_CT}
 plot_con_length_CT
 ```
 
-Finally, we retrieve type-specific housing start frequencies by month to establish the seasonality of housing construction. 
+Finally, we retrieve type-specific housing completion frequencies by month to establish the seasonality of housing construction. Figure TKTK displays these frequencies, and demonstrates consistent winter lows and summer highs in housing completions, and relatively little variation between dwelling types.
+
+```{r plot_completions_monthly}
+plot_completions_monthly
+```
+
+We incorporate the three outputs described in this section (the year- and type-specific mean construction length, the type-specific construction length standard deviation, and the type-specific monthly distribution of housing starts) to create a probability distribution function that maps completions in a given year onto housing starts across a range of years. 
+
+
 
 # Start targets for typology scenario 1
 

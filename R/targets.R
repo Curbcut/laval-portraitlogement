@@ -611,9 +611,9 @@ plot_con_length_CT <-
   theme(legend.position = "none",
         text = element_text(family = "KMR Apparat"))
 
-# Proportion of starts in each month
-starts_monthly <- 
-  get_cmhc("Scss", "Starts", "Dwelling Type", "Historical Time Periods",
+# Proportion of completions in each month
+completions_monthly <- 
+  get_cmhc("Scss", "Completions", "Dwelling Type", "Historical Time Periods",
            geo_uid = "2465005") |> 
   filter(`Dwelling Type` != "All") |> 
   select(date = Date, type = `Dwelling Type`, value = Value) |> 
@@ -626,10 +626,18 @@ starts_monthly <-
   select(month, single = Single, apart = Apartment, other = Other)
 
 # Visualization
-starts_monthly |> 
+plot_completions_monthly <- 
+  completions_monthly |> 
   pivot_longer(-month) |> 
   ggplot(aes(month, value, colour = name)) +
-  geom_line()
+  geom_line() +
+  scale_x_continuous(NULL) + 
+  scale_colour_manual(NULL, labels = c("Apartments", "Semi-detached, row, etc.", 
+                                       "Single-detached"),
+                      values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        text = element_text(family = "KMR Apparat"))
 
 # Create month-specific distribution function for completions -> starts
 allocate_completions <- function(units, mn, stdv, month_dist, year) {
@@ -656,14 +664,14 @@ build_starts <- function(comp_table) {
   aparts <- str_which(names(comp_table), "_apart")
   others <- str_which(names(comp_table), "_other")
   
-  # iterate over column numbers
+  # Iterate over column numbers
   singles_out <-
     map(singles, \(col) {
       pmap(list(comp_table$year,
                 comp_table[[col]],
                 con_length_predicted$single),
            \(year, units, mn) allocate_completions(
-             units, mn, con_length_SD$single, starts_monthly$single, year)) |> 
+             units, mn, con_length_SD$single, completions_monthly$single, year)) |> 
         bind_rows() |> 
         summarize(starts = sum(pct), .by = year) |> 
         arrange(year)}) |> 
@@ -675,7 +683,7 @@ build_starts <- function(comp_table) {
               comp_table[[col]],
               con_length_predicted$apart),
          \(year, units, mn) allocate_completions(
-           units, mn, con_length_SD$apart, starts_monthly$apart, year)) |> 
+           units, mn, con_length_SD$apart, completions_monthly$apart, year)) |> 
       bind_rows() |> 
       summarize(starts = sum(pct), .by = year) |> 
       arrange(year)}) |> 
@@ -687,7 +695,7 @@ build_starts <- function(comp_table) {
               comp_table[[col]],
               con_length_predicted$other),
          \(year, units, mn) allocate_completions(
-           units, mn, con_length_SD$other, starts_monthly$other, year)) |> 
+           units, mn, con_length_SD$other, completions_monthly$other, year)) |> 
       bind_rows() |> 
       summarize(starts = sum(pct), .by = year) |> 
       arrange(year)}) |> 
@@ -941,6 +949,7 @@ qsavem(isq, plot_isq_households, occ_rate, occ_model, plot_occ_rate,
        plot_dwelling_targets_typology_1, plot_completion_targets_typology_1, 
        plot_completion_targets_typology_2, plot_completion_targets_typology_3,
        plot_con_length, con_length_type, plot_con_length_CT, con_length_SD,
+       plot_completions_monthly,
        plot_start_targets_typology_1, plot_start_targets_typology_2, 
        plot_start_targets_typology_3,
        plot_isq_age, rpa_ratio, plot_dwelling_targets_rpa, 
