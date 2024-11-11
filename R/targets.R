@@ -34,8 +34,9 @@ plot_isq_households <-
                       values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
   graph_theme
 
-ggsave_pdf_png(plot_isq_households, filename = "outputs/targets/plot_isq_households.pdf",
-               width = 6.5, height = 4)
+if (.Platform$OS.type == "windows") ggsave_pdf_png(
+  plot_isq_households, filename = "outputs/targets/plot_isq_households.pdf",
+  width = 6.5, height = 4)
 
 
 # Occupancy rate ----------------------------------------------------------
@@ -86,8 +87,9 @@ plot_occ_rate <-
                       values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
   graph_theme
 
-ggsave_pdf_png(plot_occ_rate, filename = "outputs/targets/plot_occ_rate.pdf",
-               width = 6.5, height = 4)
+if (.Platform$OS.type == "windows") ggsave_pdf_png(
+  plot_occ_rate, filename = "outputs/targets/plot_occ_rate.pdf",
+  width = 6.5, height = 4)
 
 
 # Total required dwelling units -------------------------------------------
@@ -122,19 +124,24 @@ plot_dwelling_targets <-
          var_to = stringr::str_extract(name, "(?<=_)([^_]+)$")) |> 
   ggplot(aes(year, value, colour = var_to)) +
   geom_point(aes(shape = isq), size = 2.5) +
-  scale_y_continuous("Nombre total de\nlogement nécessaires", labels = convert_number) +
+  scale_y_continuous("Nombre total de\nlogement nécessaires", 
+                     labels = convert_number) +
   scale_x_continuous(NULL) + 
   scale_colour_manual("Variation du taux d'occupation", 
                       values = c(strong = "#73AD80", weak = "#E08565"), 
                       labels = c(`strong` = "Fort", weak = "Faible")) +
   scale_shape_manual("Scénario ISQ", 
-                     values = c(`_ref_` = 16, `_strong_` = 17, `_weak_` = 15),  # Specify the shape values here
-                     labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
+                     # Specify the shape values here
+                     values = c(`_ref_` = 16, `_strong_` = 17, `_weak_` = 15),  
+                     labels = c(`_ref_` = "Référence", `_strong_` = "Fort", 
+                                `_weak_` = "Faible")) +
   graph_theme_w_legendtitle +
   theme(legend.title.align = 0.5)
 
-ggsave_pdf_png(plot_dwelling_targets, filename = "outputs/targets/plot_dwelling_targets.pdf",
-               width = 6.5, height = 4)
+if (.Platform$OS.type == "windows") ggsave_pdf_png(
+  plot_dwelling_targets, filename = "outputs/targets/plot_dwelling_targets.pdf",
+  width = 6.5, height = 4)
+
 
 # Dwelling attrition rate -------------------------------------------------
 
@@ -188,6 +195,7 @@ attrition_pct <-
 # Total 2021 dwellings
 dwellings_2021 <- 
   get_census("CA21", regions = list(CSD = "2465005")) |> 
+  suppressMessages() |> 
   pull(Dwellings)
 
 # Calculate cumulative attrition estimates
@@ -228,8 +236,10 @@ plot_completion_targets <-
                       values = c(strong = "#73AD80", weak = "#E08565"), 
                       labels = c(`strong` = "Fort", weak = "Faible")) +
   scale_shape_manual("Scénario ISQ", 
-                     values = c(`_ref_` = 16, `_strong_` = 17, `_weak_` = 15),  # Specify the shape values here
-                     labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
+                     # Specify the shape values here
+                     values = c(`_ref_` = 16, `_strong_` = 17, `_weak_` = 15),  
+                     labels = c(`_ref_` = "Référence", `_strong_` = "Fort", 
+                                `_weak_` = "Faible")) +
   graph_theme_w_legendtitle +
   theme(legend.title.align = 0.5)
 
@@ -648,13 +658,28 @@ allocate_completions <- function(units, mn, stdv, month_dist, year) {
   comp_4 <- pnorm(59:48, mn, stdv) - comp_3 - comp_2 - comp_1 - comp_0
   comp_5 <- pnorm(71:60, mn, stdv) - comp_4 - comp_3 - comp_2 - comp_1 - comp_0
   tibble(year = (year - 5):year, 
-         pct = c(sum(comp_0 * month_dist * units), 
-                 sum(comp_1 * month_dist * units), 
-                 sum(comp_2 * month_dist * units), 
-                 sum(comp_3 * month_dist * units), 
-                 sum(comp_4 * month_dist * units), 
-                 sum(comp_5 * month_dist * units)))
+         n = c(sum(comp_0 * month_dist * units), 
+               sum(comp_1 * month_dist * units), 
+               sum(comp_2 * month_dist * units), 
+               sum(comp_3 * month_dist * units), 
+               sum(comp_4 * month_dist * units), 
+               sum(comp_5 * month_dist * units)))
 }
+
+# Example of distribution
+dist_example <- tibble(
+  units = completion_targets_typology_1$scn_ref_weak_apart[6],
+  mn = con_length_predicted$apart[6],
+  stdv = con_length_SD$apart,
+  year = 2030
+)
+
+dist_out <- allocate_completions(
+  units = completion_targets_typology_1$scn_ref_weak_apart[6], 
+  mn = con_length_predicted$apart[6], 
+  stdv = con_length_SD$apart, 
+  month_dist = completions_monthly$apart, 
+  year = 2030)
 
 # Helper function to simplify application to completion targets tables
 build_starts <- function(comp_table) {
@@ -673,7 +698,7 @@ build_starts <- function(comp_table) {
            \(year, units, mn) allocate_completions(
              units, mn, con_length_SD$single, completions_monthly$single, year)) |> 
         bind_rows() |> 
-        summarize(starts = sum(pct), .by = year) |> 
+        summarize(starts = sum(n), .by = year) |> 
         arrange(year)}) |> 
     reduce(inner_join, by = "year") |> 
     set_names(c("year", names(comp_table)[singles]))
@@ -685,7 +710,7 @@ build_starts <- function(comp_table) {
          \(year, units, mn) allocate_completions(
            units, mn, con_length_SD$apart, completions_monthly$apart, year)) |> 
       bind_rows() |> 
-      summarize(starts = sum(pct), .by = year) |> 
+      summarize(starts = sum(n), .by = year) |> 
       arrange(year)}) |> 
     reduce(inner_join, by = "year") |> 
     set_names(c("year", names(comp_table)[aparts]))
@@ -697,7 +722,7 @@ build_starts <- function(comp_table) {
          \(year, units, mn) allocate_completions(
            units, mn, con_length_SD$other, completions_monthly$other, year)) |> 
       bind_rows() |> 
-      summarize(starts = sum(pct), .by = year) |> 
+      summarize(starts = sum(n), .by = year) |> 
       arrange(year)}) |> 
     reduce(inner_join, by = "year") |> 
     set_names(c("year", names(comp_table)[others]))
@@ -949,7 +974,7 @@ qsavem(isq, plot_isq_households, occ_rate, occ_model, plot_occ_rate,
        plot_dwelling_targets_typology_1, plot_completion_targets_typology_1, 
        plot_completion_targets_typology_2, plot_completion_targets_typology_3,
        plot_con_length, con_length_type, plot_con_length_CT, con_length_SD,
-       plot_completions_monthly,
+       plot_completions_monthly, dist_example, dist_out, 
        plot_start_targets_typology_1, plot_start_targets_typology_2, 
        plot_start_targets_typology_3,
        plot_isq_age, rpa_ratio, plot_dwelling_targets_rpa, 
