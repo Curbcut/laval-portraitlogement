@@ -31,7 +31,8 @@ plot_isq_households <-
   scale_y_continuous("Nombre de ménages", labels = convert_number) +
   scale_colour_manual(NULL, labels = c("Scénario de référence", "Scénario fort", 
                                        "Scénario faible"),
-                      values = c(`reference` = "#73AD80", `strong` = "#E08565", `weak` = "#A3B0D1")) +
+                      values = c(`reference` = "#73AD80", `strong` = "#E08565", 
+                                 `weak` = "#A3B0D1")) +
   graph_theme
   
 
@@ -134,8 +135,10 @@ plot_dwelling_targets <-
                      labels = convert_number) +
   scale_x_continuous(NULL) + 
   scale_colour_manual("Scénario ISQ", 
-                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", `_weak_` = "#A3B0D1"), 
-                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
+                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", 
+                                 `_weak_` = "#A3B0D1"), 
+                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", 
+                                 `_weak_` = "Faible")) +
   scale_shape_manual("Variation du taux d'occupation", 
                      values = c(strong = 16, weak = 17), 
                      labels = c(`strong` = "Fort", `weak` = "Faible")) +
@@ -242,8 +245,10 @@ plot_completion_targets <-
   scale_y_continuous("Achèvements nécessaires", labels = convert_number) +
   scale_x_continuous(NULL) + 
   scale_colour_manual("Scénario ISQ", 
-                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", `_weak_` = "#A3B0D1"), 
-                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
+                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", 
+                                 `_weak_` = "#A3B0D1"), 
+                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", 
+                                 `_weak_` = "Faible")) +
   scale_shape_manual("Variation du taux d'occupation", 
                      values = c(strong = 16, weak = 17), 
                      labels = c(`strong` = "Fort", `weak` = "Faible")) +
@@ -251,7 +256,8 @@ plot_completion_targets <-
   theme(legend.title.align = 0.5)
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
-  plot_completion_targets, filename = "outputs/targets/plot_completion_targets.pdf",
+  plot_completion_targets,
+  filename = "outputs/targets/plot_completion_targets.pdf",
   width = 6.5, height = 4)
 
 
@@ -315,7 +321,8 @@ plot_starts_completions <-
   graph_theme
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
-  plot_starts_completions, filename = "outputs/targets/plot_starts_completions.pdf",
+  plot_starts_completions, 
+  filename = "outputs/targets/plot_starts_completions.pdf",
   width = 6.5, height = 4)
 
 
@@ -435,28 +442,31 @@ dwelling_targets_typology_1 <-
 plot_dwelling_targets_typology_1 <-
 dwelling_targets_typology_1 |> 
   pivot_longer(-year) |> 
-  mutate(type = case_when(
-    str_detect(name, "apart") ~ "Appartements",
-    str_detect(name, "single") ~ "Unifamilial",
-    str_detect(name, "other") ~ "Autre"
-  ),
+  mutate(
+    type = case_when(
+      str_detect(name, "apart") ~ "Appartements", 
+      str_detect(name, "single") ~ "Unifamilial", 
+      str_detect(name, "other") ~ "Autre"),
   name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
   mutate(isq = stringr::str_extract(name, "_.*_"),
          var_to = stringr::str_extract(name, "(?<=_)([^_]+)$")) |>
-  mutate(name = case_when(name == "scn_ref_weak" ~ "Référence (ISQ), Taux d'occ. faible",
-                          name == "scn_ref_strong" ~ "Référence (ISQ), Taux d'occ. fort",
-                          name == "scn_weak_weak" ~ "Faible (ISQ), Taux d'occ. faible",
-                          name == "scn_weak_strong" ~ "Faible (ISQ), Taux d'occ. fort",
-                          name == "scn_strong_weak" ~ "Fort (ISQ), Taux d'occ. faible",
-                          name == "scn_strong_strong" ~ "Fort (ISQ), Taux d'occ. fort")) |> 
+  mutate(name = case_when(
+    name == "scn_ref_weak" ~ "Référence (ISQ), Taux d'occ. faible", 
+    name == "scn_ref_strong" ~ "Référence (ISQ), Taux d'occ. fort", 
+    name == "scn_weak_weak" ~ "Faible (ISQ), Taux d'occ. faible", 
+    name == "scn_weak_strong" ~ "Faible (ISQ), Taux d'occ. fort", 
+    name == "scn_strong_weak" ~ "Fort (ISQ), Taux d'occ. faible", 
+    name == "scn_strong_strong" ~ "Fort (ISQ), Taux d'occ. fort")) |> 
   ggplot(aes(year, value, shape = var_to)) +
   geom_line(aes(linetype = type), size = 0.75) +
   geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
   facet_wrap(vars(name), nrow = 3) +
   scale_x_continuous(NULL) + 
   scale_colour_manual("Scénario ISQ", 
-                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", `_weak_` = "#A3B0D1"), 
-                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
+                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", 
+                                 `_weak_` = "#A3B0D1"), 
+                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", 
+                                 `_weak_` = "Faible")) +
   scale_shape_manual("Variation du\ntaux d'occupation", 
                      values = c(strong = 16, weak = 17), 
                      labels = c(`strong` = "Fort", `weak` = "Faible")) +
@@ -469,11 +479,11 @@ dwelling_targets_typology_1 |>
   guides(
     colour = guide_legend(ncol = 1),
     shape = guide_legend(ncol = 1),
-    linetype = guide_legend(ncol = 1)
-  )
+    linetype = guide_legend(ncol = 1))
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
-  plot_dwelling_targets_typology_1, filename = "outputs/targets/plot_dwelling_targets_typology_1.pdf",
+  plot_dwelling_targets_typology_1, 
+  filename = "outputs/targets/plot_dwelling_targets_typology_1.pdf",
   width = 6.5, height = 6)
 
 attrition_targets_typology_1 <- 
@@ -512,28 +522,31 @@ completion_targets_typology_1 <-
 plot_completion_targets_typology_1 <- 
   completion_targets_typology_1 |> 
   pivot_longer(-year) |> 
-  mutate(type = case_when(
-    str_detect(name, "apart") ~ "Appartements",
-    str_detect(name, "single") ~ "Unifamilial",
-    str_detect(name, "other") ~ "Autre"
-  ),
+  mutate(
+    type = case_when(
+      str_detect(name, "apart") ~ "Appartements",
+      str_detect(name, "single") ~ "Unifamilial",
+      str_detect(name, "other") ~ "Autre"),
   name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
   mutate(isq = stringr::str_extract(name, "_.*_"),
          var_to = stringr::str_extract(name, "(?<=_)([^_]+)$")) |>
-  mutate(name = case_when(name == "scn_ref_weak" ~ "Référence (ISQ), Taux d'occ. faible",
-                          name == "scn_ref_strong" ~ "Référence (ISQ), Taux d'occ. fort",
-                          name == "scn_weak_weak" ~ "Faible (ISQ), Taux d'occ. faible",
-                          name == "scn_weak_strong" ~ "Faible (ISQ), Taux d'occ. fort",
-                          name == "scn_strong_weak" ~ "Fort (ISQ), Taux d'occ. faible",
-                          name == "scn_strong_strong" ~ "Fort (ISQ), Taux d'occ. fort")) |> 
+  mutate(name = case_when(
+    name == "scn_ref_weak" ~ "Référence (ISQ), Taux d'occ. faible", 
+    name == "scn_ref_strong" ~ "Référence (ISQ), Taux d'occ. fort", 
+    name == "scn_weak_weak" ~ "Faible (ISQ), Taux d'occ. faible", 
+    name == "scn_weak_strong" ~ "Faible (ISQ), Taux d'occ. fort", 
+    name == "scn_strong_weak" ~ "Fort (ISQ), Taux d'occ. faible", 
+    name == "scn_strong_strong" ~ "Fort (ISQ), Taux d'occ. fort")) |> 
   ggplot(aes(year, value, shape = var_to)) +
   geom_line(aes(linetype = type), size = 0.75) +
   geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
   facet_wrap(vars(name), nrow = 3) +
   scale_x_continuous(NULL) + 
   scale_colour_manual("Scénario ISQ", 
-                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", `_weak_` = "#A3B0D1"), 
-                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
+                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", 
+                                 `_weak_` = "#A3B0D1"), 
+                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", 
+                                 `_weak_` = "Faible")) +
   scale_shape_manual("Variation du taux d'occupation", 
                      values = c(strong = 16, weak = 17), 
                      labels = c(`strong` = "Fort", `weak` = "Faible")) +
@@ -546,11 +559,11 @@ plot_completion_targets_typology_1 <-
   guides(
     colour = guide_legend(ncol = 1),
     shape = guide_legend(ncol = 1),
-    linetype = guide_legend(ncol = 1)
-  )
+    linetype = guide_legend(ncol = 1))
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
-  plot_completion_targets_typology_1, filename = "outputs/targets/plot_completion_targets_typology_1.pdf",
+  plot_completion_targets_typology_1, 
+  filename = "outputs/targets/plot_completion_targets_typology_1.pdf",
   width = 6.5, height = 6)
 
 
@@ -597,28 +610,31 @@ completion_targets_typology_2 <-
 plot_completion_targets_typology_2 <- 
   completion_targets_typology_2 |> 
   pivot_longer(-year) |> 
-  mutate(type = case_when(
-    str_detect(name, "apart") ~ "Appartements",
-    str_detect(name, "single") ~ "Unifamilial",
-    str_detect(name, "other") ~ "Autre"
-  ),
+  mutate(
+    type = case_when(
+      str_detect(name, "apart") ~ "Appartements",
+      str_detect(name, "single") ~ "Unifamilial",
+      str_detect(name, "other") ~ "Autre"),
   name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
   mutate(isq = stringr::str_extract(name, "_.*_"),
          var_to = stringr::str_extract(name, "(?<=_)([^_]+)$")) |>
-  mutate(name = case_when(name == "scn_ref_weak" ~ "Référence (ISQ), Taux d'occ. faible",
-                          name == "scn_ref_strong" ~ "Référence (ISQ), Taux d'occ. fort",
-                          name == "scn_weak_weak" ~ "Faible (ISQ), Taux d'occ. faible",
-                          name == "scn_weak_strong" ~ "Faible (ISQ), Taux d'occ. fort",
-                          name == "scn_strong_weak" ~ "Fort (ISQ), Taux d'occ. faible",
-                          name == "scn_strong_strong" ~ "Fort (ISQ), Taux d'occ. fort")) |> 
+  mutate(name = case_when(
+    name == "scn_ref_weak" ~ "Référence (ISQ), Taux d'occ. faible", 
+    name == "scn_ref_strong" ~ "Référence (ISQ), Taux d'occ. fort", 
+    name == "scn_weak_weak" ~ "Faible (ISQ), Taux d'occ. faible", 
+    name == "scn_weak_strong" ~ "Faible (ISQ), Taux d'occ. fort", 
+    name == "scn_strong_weak" ~ "Fort (ISQ), Taux d'occ. faible", 
+    name == "scn_strong_strong" ~ "Fort (ISQ), Taux d'occ. fort")) |> 
   ggplot(aes(year, value, shape = var_to)) +
   geom_line(aes(linetype = type), size = 0.75) +
   geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
   facet_wrap(vars(name), nrow = 3) +
   scale_x_continuous(NULL) + 
   scale_colour_manual("Scénario ISQ", 
-                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", `_weak_` = "#A3B0D1"), 
-                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
+                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", 
+                                 `_weak_` = "#A3B0D1"), 
+                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", 
+                                 `_weak_` = "Faible")) +
   scale_shape_manual("Variation du taux d'occupation", 
                      values = c(strong = 16, weak = 17), 
                      labels = c(`strong` = "Fort", `weak` = "Faible")) +
@@ -631,11 +647,11 @@ plot_completion_targets_typology_2 <-
   guides(
     colour = guide_legend(ncol = 1),
     shape = guide_legend(ncol = 1),
-    linetype = guide_legend(ncol = 1)
-  )
+    linetype = guide_legend(ncol = 1))
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
-  plot_completion_targets_typology_2, filename = "outputs/targets/plot_completion_targets_typology_2.pdf",
+  plot_completion_targets_typology_2, 
+  filename = "outputs/targets/plot_completion_targets_typology_2.pdf",
   width = 6.5, height = 6)
 
 
@@ -653,28 +669,31 @@ completion_targets_typology_3 <-
 plot_completion_targets_typology_3 <- 
   completion_targets_typology_3 |> 
   pivot_longer(-year) |> 
-  mutate(type = case_when(
-    str_detect(name, "apart") ~ "Appartements",
-    str_detect(name, "single") ~ "Unifamilial",
-    str_detect(name, "other") ~ "Autre"
-  ),
+  mutate(
+    type = case_when(
+      str_detect(name, "apart") ~ "Appartements",
+      str_detect(name, "single") ~ "Unifamilial",
+      str_detect(name, "other") ~ "Autre"),
   name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
   mutate(isq = stringr::str_extract(name, "_.*_"),
          var_to = stringr::str_extract(name, "(?<=_)([^_]+)$")) |>
-  mutate(name = case_when(name == "scn_ref_weak" ~ "Référence (ISQ), Taux d'occ. faible",
-                          name == "scn_ref_strong" ~ "Référence (ISQ), Taux d'occ. fort",
-                          name == "scn_weak_weak" ~ "Faible (ISQ), Taux d'occ. faible",
-                          name == "scn_weak_strong" ~ "Faible (ISQ), Taux d'occ. fort",
-                          name == "scn_strong_weak" ~ "Fort (ISQ), Taux d'occ. faible",
-                          name == "scn_strong_strong" ~ "Fort (ISQ), Taux d'occ. fort")) |> 
+  mutate(name = case_when(
+    name == "scn_ref_weak" ~ "Référence (ISQ), Taux d'occ. faible", 
+    name == "scn_ref_strong" ~ "Référence (ISQ), Taux d'occ. fort", 
+    name == "scn_weak_weak" ~ "Faible (ISQ), Taux d'occ. faible", 
+    name == "scn_weak_strong" ~ "Faible (ISQ), Taux d'occ. fort", 
+    name == "scn_strong_weak" ~ "Fort (ISQ), Taux d'occ. faible", 
+    name == "scn_strong_strong" ~ "Fort (ISQ), Taux d'occ. fort")) |> 
   ggplot(aes(year, value, shape = var_to)) +
   geom_line(aes(linetype = type), size = 0.75) +
   geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
   facet_wrap(vars(name), nrow = 3) +
   scale_x_continuous(NULL) + 
   scale_colour_manual("Scénario ISQ", 
-                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", `_weak_` = "#A3B0D1"), 
-                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
+                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", 
+                                 `_weak_` = "#A3B0D1"), 
+                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", 
+                                 `_weak_` = "Faible")) +
   scale_shape_manual("Variation du taux d'occupation", 
                      values = c(strong = 16, weak = 17), 
                      labels = c(`strong` = "Fort", `weak` = "Faible")) +
@@ -691,7 +710,8 @@ plot_completion_targets_typology_3 <-
   )
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
-  plot_completion_targets_typology_3, filename = "outputs/targets/plot_completion_targets_typology_3.pdf",
+  plot_completion_targets_typology_3, 
+  filename = "outputs/targets/plot_completion_targets_typology_3.pdf",
   width = 6.5, height = 6)
 
 
@@ -787,7 +807,6 @@ if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_con_length_CT, filename = "outputs/targets/plot_con_length_CT.pdf",
   width = 6.5, height = 4)
 
-
 # Proportion of completions in each month
 completions_monthly <- 
   get_cmhc("Scss", "Completions", "Dwelling Type", "Historical Time Periods",
@@ -820,7 +839,8 @@ plot_completions_monthly <-
   graph_theme
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
-  plot_completions_monthly, filename = "outputs/targets/plot_completions_monthly.pdf",
+  plot_completions_monthly, 
+  filename = "outputs/targets/plot_completions_monthly.pdf",
   width = 6.5, height = 4)
 
 # Create month-specific distribution function for completions -> starts
@@ -845,8 +865,7 @@ dist_example <- tibble(
   units = completion_targets_typology_1$scn_ref_weak_apart[6],
   mn = con_length_predicted$apart[6],
   stdv = con_length_SD$apart,
-  year = 2030
-)
+  year = 2030)
 
 dist_out <- allocate_completions(
   units = completion_targets_typology_1$scn_ref_weak_apart[6], 
@@ -870,7 +889,8 @@ build_starts <- function(comp_table) {
                 comp_table[[col]],
                 con_length_predicted$single),
            \(year, units, mn) allocate_completions(
-             units, mn, con_length_SD$single, completions_monthly$single, year)) |> 
+             units, mn, con_length_SD$single, 
+             completions_monthly$single, year)) |> 
         bind_rows() |> 
         summarize(starts = sum(n), .by = year) |> 
         arrange(year)}) |> 
@@ -924,28 +944,31 @@ start_targets_typology_1 <-
 plot_start_targets_typology_1 <- 
   start_targets_typology_1 |> 
   pivot_longer(-year) |> 
-  mutate(type = case_when(
-    str_detect(name, "apart") ~ "Appartements",
-    str_detect(name, "single") ~ "Unifamilial",
-    str_detect(name, "other") ~ "Autre"
-  ),
+  mutate(
+    type = case_when(
+      str_detect(name, "apart") ~ "Appartements",
+      str_detect(name, "single") ~ "Unifamilial",
+      str_detect(name, "other") ~ "Autre"),
   name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
   mutate(isq = stringr::str_extract(name, "_.*_"),
          var_to = stringr::str_extract(name, "(?<=_)([^_]+)$")) |>
-  mutate(name = case_when(name == "scn_ref_weak" ~ "Référence (ISQ), Taux d'occ. faible",
-                          name == "scn_ref_strong" ~ "Référence (ISQ), Taux d'occ. fort",
-                          name == "scn_weak_weak" ~ "Faible (ISQ), Taux d'occ. faible",
-                          name == "scn_weak_strong" ~ "Faible (ISQ), Taux d'occ. fort",
-                          name == "scn_strong_weak" ~ "Fort (ISQ), Taux d'occ. faible",
-                          name == "scn_strong_strong" ~ "Fort (ISQ), Taux d'occ. fort")) |> 
+  mutate(name = case_when(
+    name == "scn_ref_weak" ~ "Référence (ISQ), Taux d'occ. faible", 
+    name == "scn_ref_strong" ~ "Référence (ISQ), Taux d'occ. fort", 
+    name == "scn_weak_weak" ~ "Faible (ISQ), Taux d'occ. faible", 
+    name == "scn_weak_strong" ~ "Faible (ISQ), Taux d'occ. fort", 
+    name == "scn_strong_weak" ~ "Fort (ISQ), Taux d'occ. faible", 
+    name == "scn_strong_strong" ~ "Fort (ISQ), Taux d'occ. fort")) |> 
   ggplot(aes(year, value, shape = var_to)) +
   geom_line(aes(linetype = type), size = 0.75) +
   geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
   facet_wrap(vars(name), nrow = 3) +
   scale_x_continuous(NULL) + 
   scale_colour_manual("Scénario ISQ", 
-                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", `_weak_` = "#A3B0D1"), 
-                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
+                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", 
+                                 `_weak_` = "#A3B0D1"), 
+                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", 
+                                 `_weak_` = "Faible")) +
   scale_shape_manual("Variation du taux d'occupation", 
                      values = c(strong = 16, weak = 17), 
                      labels = c(`strong` = "Fort", `weak` = "Faible")) +
@@ -958,12 +981,13 @@ plot_start_targets_typology_1 <-
   guides(
     colour = guide_legend(ncol = 1),
     shape = guide_legend(ncol = 1),
-    linetype = guide_legend(ncol = 1)
-  )
+    linetype = guide_legend(ncol = 1))
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
-  plot_start_targets_typology_1, filename = "outputs/targets/plot_start_targets_typology_1.pdf",
+  plot_start_targets_typology_1, 
+  filename = "outputs/targets/plot_start_targets_typology_1.pdf",
   width = 6.5, height = 6)
+
 
 # Start targets for typology scenario 2 -----------------------------------
 
@@ -975,28 +999,31 @@ start_targets_typology_2 <-
 plot_start_targets_typology_2 <- 
   start_targets_typology_2 |> 
   pivot_longer(-year) |> 
-  mutate(type = case_when(
-    str_detect(name, "apart") ~ "Appartements",
-    str_detect(name, "single") ~ "Unifamilial",
-    str_detect(name, "other") ~ "Autre"
-  ),
+  mutate(
+    type = case_when(
+      str_detect(name, "apart") ~ "Appartements",
+      str_detect(name, "single") ~ "Unifamilial",
+      str_detect(name, "other") ~ "Autre"),
   name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
   mutate(isq = stringr::str_extract(name, "_.*_"),
          var_to = stringr::str_extract(name, "(?<=_)([^_]+)$")) |>
-  mutate(name = case_when(name == "scn_ref_weak" ~ "Référence (ISQ), Taux d'occ. faible",
-                          name == "scn_ref_strong" ~ "Référence (ISQ), Taux d'occ. fort",
-                          name == "scn_weak_weak" ~ "Faible (ISQ), Taux d'occ. faible",
-                          name == "scn_weak_strong" ~ "Faible (ISQ), Taux d'occ. fort",
-                          name == "scn_strong_weak" ~ "Fort (ISQ), Taux d'occ. faible",
-                          name == "scn_strong_strong" ~ "Fort (ISQ), Taux d'occ. fort")) |> 
+  mutate(name = case_when(
+    name == "scn_ref_weak" ~ "Référence (ISQ), Taux d'occ. faible", 
+    name == "scn_ref_strong" ~ "Référence (ISQ), Taux d'occ. fort", 
+    name == "scn_weak_weak" ~ "Faible (ISQ), Taux d'occ. faible", 
+    name == "scn_weak_strong" ~ "Faible (ISQ), Taux d'occ. fort", 
+    name == "scn_strong_weak" ~ "Fort (ISQ), Taux d'occ. faible", 
+    name == "scn_strong_strong" ~ "Fort (ISQ), Taux d'occ. fort")) |> 
   ggplot(aes(year, value, shape = var_to)) +
   geom_line(aes(linetype = type), size = 0.75) +
   geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
   facet_wrap(vars(name), nrow = 3) +
   scale_x_continuous(NULL) + 
   scale_colour_manual("Scénario ISQ", 
-                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", `_weak_` = "#A3B0D1"), 
-                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
+                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", 
+                                 `_weak_` = "#A3B0D1"), 
+                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", 
+                                 `_weak_` = "Faible")) +
   scale_shape_manual("Variation du taux d'occupation", 
                      values = c(strong = 16, weak = 17), 
                      labels = c(`strong` = "Fort", `weak` = "Faible")) +
@@ -1013,7 +1040,8 @@ plot_start_targets_typology_2 <-
   )
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
-  plot_start_targets_typology_2, filename = "outputs/targets/plot_start_targets_typology_2.pdf",
+  plot_start_targets_typology_2, 
+  filename = "outputs/targets/plot_start_targets_typology_2.pdf",
   width = 6.5, height = 6)
 
 
@@ -1027,28 +1055,31 @@ start_targets_typology_3 <-
 plot_start_targets_typology_3 <- 
   start_targets_typology_3 |> 
   pivot_longer(-year) |> 
-  mutate(type = case_when(
-    str_detect(name, "apart") ~ "Appartements",
-    str_detect(name, "single") ~ "Unifamilial",
-    str_detect(name, "other") ~ "Autre"
-  ),
+  mutate(
+    type = case_when(
+      str_detect(name, "apart") ~ "Appartements",
+      str_detect(name, "single") ~ "Unifamilial",
+      str_detect(name, "other") ~ "Autre"),
   name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
   mutate(isq = stringr::str_extract(name, "_.*_"),
          var_to = stringr::str_extract(name, "(?<=_)([^_]+)$")) |>
-  mutate(name = case_when(name == "scn_ref_weak" ~ "Référence (ISQ), Taux d'occ. faible",
-                          name == "scn_ref_strong" ~ "Référence (ISQ), Taux d'occ. fort",
-                          name == "scn_weak_weak" ~ "Faible (ISQ), Taux d'occ. faible",
-                          name == "scn_weak_strong" ~ "Faible (ISQ), Taux d'occ. fort",
-                          name == "scn_strong_weak" ~ "Fort (ISQ), Taux d'occ. faible",
-                          name == "scn_strong_strong" ~ "Fort (ISQ), Taux d'occ. fort")) |> 
+  mutate(name = case_when(
+    name == "scn_ref_weak" ~ "Référence (ISQ), Taux d'occ. faible",
+    name == "scn_ref_strong" ~ "Référence (ISQ), Taux d'occ. fort",
+    name == "scn_weak_weak" ~ "Faible (ISQ), Taux d'occ. faible",
+    name == "scn_weak_strong" ~ "Faible (ISQ), Taux d'occ. fort",
+    name == "scn_strong_weak" ~ "Fort (ISQ), Taux d'occ. faible",
+    name == "scn_strong_strong" ~ "Fort (ISQ), Taux d'occ. fort")) |> 
   ggplot(aes(year, value, shape = var_to)) +
   geom_line(aes(linetype = type), size = 0.75) +
   geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
   facet_wrap(vars(name), nrow = 3) +
   scale_x_continuous(NULL) + 
   scale_colour_manual("Scénario ISQ", 
-                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", `_weak_` = "#A3B0D1"), 
-                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
+                      values = c(`_ref_` = "#73AD80", `_strong_` = "#E08565", 
+                                 `_weak_` = "#A3B0D1"), 
+                      labels = c(`_ref_` = "Référence", `_strong_` = "Fort", 
+                                 `_weak_` = "Faible")) +
   scale_shape_manual("Variation du taux d'occupation", 
                      values = c(strong = 16, weak = 17), 
                      labels = c(`strong` = "Fort", `weak` = "Faible")) +
@@ -1065,7 +1096,8 @@ plot_start_targets_typology_3 <-
   )
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
-  plot_start_targets_typology_3, filename = "outputs/targets/plot_start_targets_typology_3.pdf",
+  plot_start_targets_typology_3, 
+  filename = "outputs/targets/plot_start_targets_typology_3.pdf",
   width = 6.5, height = 6)
 
 
@@ -1260,8 +1292,9 @@ plot_isq_age <-
   ggplot(aes(year, value, colour = scenario)) +
   geom_line(size = 1) +
   scale_x_continuous(NULL) + 
-  scale_y_continuous("Ménages dont le principal soutien\nest âgé de 75 ans ou plus", 
-                     labels = convert_number) +
+  scale_y_continuous(
+    "Ménages dont le principal soutien\nest âgé de 75 ans ou plus", 
+    labels = convert_number) +
   scale_colour_manual(NULL, labels = c("Scénario de référence", "Scénario fort", 
                                        "Scénario faible"),
                       values = curbcut_colors$brandbook$color[c(3, 4, 2)]) +
@@ -1302,7 +1335,8 @@ plot_dwelling_targets_rpa <-
   graph_theme
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
-  plot_dwelling_targets_rpa, filename = "outputs/targets/plot_dwelling_targets_rpa.pdf",
+  plot_dwelling_targets_rpa, 
+  filename = "outputs/targets/plot_dwelling_targets_rpa.pdf",
   width = 6.5, height = 4)
 
 # Calculate cumulative attrition estimates
@@ -1341,8 +1375,10 @@ plot_completion_targets_rpa <-
   graph_theme
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
-  plot_completion_targets_rpa, filename = "outputs/targets/plot_completion_targets_rpa.pdf",
+  plot_completion_targets_rpa, 
+  filename = "outputs/targets/plot_completion_targets_rpa.pdf",
   width = 6.5, height = 4)
+
 
 # Save outputs ------------------------------------------------------------
 
