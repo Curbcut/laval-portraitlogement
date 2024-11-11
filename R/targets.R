@@ -498,6 +498,35 @@ completion_targets_typology_2 <-
     other = \(x) scenario_2_vals$other))) |> 
   select(-c(scn_ref_weak:scn_strong_strong))
 
+# Fix minimum completions at zero
+completion_targets_typology_2 <- 
+  completion_targets_typology_2 |> 
+  mutate(scn_weak_weak_single = map2_dbl(
+    scn_weak_weak_single, 
+    scn_weak_weak_apart, 
+    \(x, y) {
+      if_else(y < 0, x + y * scenario_2_vals$single / 
+                (scenario_2_vals$single + scenario_2_vals$other), x)})) |> 
+  mutate(scn_weak_weak_other = map2_dbl(
+    scn_weak_weak_other, 
+    scn_weak_weak_apart, 
+    \(x, y) {
+      if_else(y < 0, x + y * scenario_2_vals$other / 
+                (scenario_2_vals$single + scenario_2_vals$other), x)})) |> 
+  mutate(scn_weak_strong_single = map2_dbl(
+    scn_weak_strong_single, 
+    scn_weak_strong_apart, 
+    \(x, y) {
+      if_else(y < 0, x + y * scenario_2_vals$single / 
+                (scenario_2_vals$single + scenario_2_vals$other), x)})) |> 
+  mutate(scn_weak_strong_other = map2_dbl(
+    scn_weak_strong_other, 
+    scn_weak_strong_apart, 
+    \(x, y) {
+      if_else(y < 0, x + y * scenario_2_vals$other / 
+                (scenario_2_vals$single + scenario_2_vals$other), x)})) |> 
+  mutate(across(-year, \(x) pmax(x, 0)))
+  
 # Completions visualization
 plot_completion_targets_typology_2 <- 
   completion_targets_typology_2 |> 
@@ -507,7 +536,7 @@ plot_completion_targets_typology_2 <-
                           str_detect(name, "other") ~ "other"),
          name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
   ggplot(aes(year, value, colour = type)) +
-  geom_line() +
+  geom_point() +
   facet_wrap(vars(name), nrow = 3) +
   scale_x_continuous(NULL) + 
   scale_colour_manual(NULL, labels = c("Apartments", "Semi-detached, row, etc.", 
