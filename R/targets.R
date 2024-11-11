@@ -122,13 +122,14 @@ plot_dwelling_targets <-
          var_to = stringr::str_extract(name, "(?<=_)([^_]+)$")) |> 
   ggplot(aes(year, value, colour = var_to)) +
   geom_point(aes(shape = isq), size = 2.5) +
-  scale_y_continuous("Nombre total de\nlogement nécessaires", labels = scales::comma) +
+  scale_y_continuous("Nombre total de\nlogement nécessaires", labels = convert_number) +
   scale_x_continuous(NULL) + 
-  scale_colour_manual("Variation du taux d'occupation", values = curbcut_colors$brandbook$color[c(
-    3, 4)], labels = c("Fort", "Faible")) +
+  scale_colour_manual("Variation du taux d'occupation", 
+                      values = c(strong = "#73AD80", weak = "#E08565"), 
+                      labels = c(`strong` = "Fort", weak = "Faible")) +
   scale_shape_manual("Scénario ISQ", 
-                     values = c(16, 17, 15),  # Specify the shape values here
-                     labels = c("Référence", "Fort", "Faible")) +
+                     values = c(`_ref_` = 16, `_strong_` = 17, `_weak_` = 15),  # Specify the shape values here
+                     labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
   graph_theme_w_legendtitle +
   theme(legend.title.align = 0.5)
 
@@ -212,26 +213,25 @@ completion_targets <-
 # Final global housing targets --------------------------------------------
 
 # Visualization
-plot_completion_targets <- 
+plot_completion_targets <-
   completion_targets |> 
   pivot_longer(-year) |> 
+  mutate(isq = stringr::str_extract(name, "_.*_"),
+         var_to = stringr::str_extract(name, "(?<=_)([^_]+)$")) |> 
   # Set minimum value to zero to prevent negative completions
   mutate(value = pmax(value, 0)) |> 
-  ggplot(aes(year, value, colour = name)) +
-  geom_point() +
-  scale_y_continuous("Needed completions", labels = scales::comma) +
+  ggplot(aes(year, value, colour = var_to)) +
+  geom_point(aes(shape = isq), size = 2.5) +
+  scale_y_continuous("Achèvements nécessaires", labels = convert_number) +
   scale_x_continuous(NULL) + 
-  scale_colour_manual(NULL, values = curbcut_colors$brandbook$color[c(
-    3, 8, 2, 6, 5, 4)], labels = c(
-      "Ref. ISQ, strong occ. rate change",
-      "Ref. ISQ, weak occ. rate change",
-      "Strong ISQ, strong occ. rate change",
-      "Strong ISQ, weak occ. rate change",
-      "Weak ISQ, strong occ. rate change",
-      "Weak ISQ, weak occ. rate change")) +
-  theme_minimal() +
-  theme(legend.position = "bottom",
-        text = element_text(family = "KMR Apparat"))
+  scale_colour_manual("Variation du taux d'occupation", 
+                      values = c(strong = "#73AD80", weak = "#E08565"), 
+                      labels = c(`strong` = "Fort", weak = "Faible")) +
+  scale_shape_manual("Scénario ISQ", 
+                     values = c(`_ref_` = 16, `_strong_` = 17, `_weak_` = 15),  # Specify the shape values here
+                     labels = c(`_ref_` = "Référence", `_strong_` = "Fort", `_weak_` = "Faible")) +
+  graph_theme_w_legendtitle +
+  theme(legend.title.align = 0.5)
 
 
 # Starts and completions for general model --------------------------------
