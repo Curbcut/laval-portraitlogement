@@ -200,13 +200,12 @@ plot_completion_targets_typology_3
 
 # Starts versus completions by typology
 
-Modeling housing development by dwelling type allows us to incorporate a more sophisticated perspective on the temporal relationship between housing starts and completions. We use historical trends in construction lengths to build year- and type-specific probability distribution functions for construction length as follows:
+Modeling housing development by dwelling type allows us to incorporate a more sophisticated perspective on the temporal relationship between housing starts and completions. We use historical trends in construction lengths to build year- and type-specific probability distribution functions for construction time as follows:
 
 $$
-F(t,type) = N(\mu_{t,type}, \sigma_{type})
+CT_{t, type} \sim N(\mu_{t, type}, \sigma_{type})
 $$
-In other words, given 
-
+In other words, each dwelling type has construction times which are normally distributed around a time- and type-specific mean, with a type-specific standard deviation. In combination with information about the seasonality of housing starts, this approach allows us to estimate the distribution of lags between starts and completions.
 
 Figure TKTK shows the average construction length of new housing construction by dwelling type. Two trends are evident. First, the construction time for apartments has been steadily increasing, from roughly half a year in the early 2000s to close to roughly 15 months in the 2020s. Second, non-apartment construction lengths have been quite stable, with particularly little variation in average construction length in the last decade.
 
@@ -216,14 +215,13 @@ plot_con_length
 
 We therefore assume that non-apartment construction lengths will remain constant in the future: `r con_length_type$single` months for single-detached homes and `r con_length_type$other` for semi-detached and row houses. And we apply linear regression to the 2014-2023 trend in apartment construction lengths to project future construction lengths for this dwelling type.
 
-This gives us expected average construction times for different building types for each year in the study period. But to model the distribution of construction times properly, we also need some measure of the variance of construction times. While CMHC does not release building-level data, we use census-tract level figures on average construction times as a plausible proxy.
-
-
+This gives us expected mean construction times for different building types for each year in the study period. But to model the distribution of construction times properly, we also need to measure the standard deviation construction times. While CMHC does not release building-level data, we use census-tract level figures on average construction times from 2010-2023 as a plausible proxy, since there are relatively few housing starts in each census tract each year. Plot TKTK shows that these construction times are roughly normally distributed. The standard deviations are `r con_length_SD$single` for single-detached homes, `r con_length_SD$apart` for apartments, and `r con_length_SD$other` for other houses.
 
 ```{r plot_con_length_CT}
 plot_con_length_CT
 ```
 
+Finally, we retrieve type-specific housing start frequencies by month to establish the seasonality of housing construction. 
 
 # Start targets for typology scenario 1
 
