@@ -1200,13 +1200,17 @@ plot_size_trend <-
                 colour = curbcut_colors$brandbook$color[2]) +
   geom_point() +
   scale_x_continuous(NULL) + 
-  scale_y_continuous("One-person households as share of all households", 
+  scale_y_continuous("Ménages d'une personne en\nproportion de l'ensemble des ménages", 
                      labels = convert_pct) +
   scale_colour_manual(NULL, labels = c("Valeurs réelles", "Scénario fort",
                                        "Scénario faible"),
                       values = curbcut_colors$brandbook$color[c(4, 3, 2)]) +
   graph_theme
 
+if (.Platform$OS.type == "windows") ggsave_pdf_png(
+  plot_size_trend, 
+  filename = "outputs/targets/plot_size_trend.pdf",
+  width = 6.5, height = 4)
 
 # Dwelling targets by household size --------------------------------------
 
@@ -1236,11 +1240,88 @@ dwelling_targets_size <-
   select(-c(scn_ref_weak:scn_strong_strong))
 
 # Visualization
-dwelling_targets_size |> 
+plot_dwelling_targets_size_strong_1phs <- 
+  dwelling_targets_size |> 
   pivot_longer(-year) |> 
-  ggplot(aes(year, value, colour = name)) +
-  geom_point()
+  mutate(isq = sub("^[^_]+_([^_]+)_.*", "\\1", name),
+         var_to = sub("^[^_]+_[^_]+_([^_]+)_.*", "\\1", name),
+         br = sub("^[^_]+_[^_]+_[^_]+_([^_]+)_.*", "\\1", name),
+         hs = sub(".*_([^_]+)$", "\\1", name),
+         br_hs = paste0(br,"-", hs)) |>
+  filter(br == "strong") |> 
+  mutate(title = case_when(hs == "s1" ~ "Ménage d'une personne",
+                           hs == "s2" ~ "Ménage de 2 ou 3 personnes",
+                           hs == "s4" ~ "Ménage de 4 personnes et plus")) |>
+  ggplot(aes(year, value, shape = var_to)) +
+  geom_line(aes(linetype = type), size = 0.75) +
+  geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
+  facet_wrap(vars(title), nrow = 3) +
+  scale_x_continuous(NULL) + 
+  scale_colour_manual("Scénario ISQ", 
+                      values = c(`ref` = "#73AD80", `strong` = "#E08565", 
+                                 `weak` = "#A3B0D1"), 
+                      labels = c(`ref` = "Référence", `strong` = "Fort", 
+                                 `weak` = "Faible")) +
+  scale_shape_manual("Variation du taux d'occupation", 
+                     values = c(strong = 16, weak = 17), 
+                     labels = c(`strong` = "Fort", `weak` = "Faible")) +
+  scale_linetype_manual("Typologie du logement", 
+                        values = c("Appartements" = "solid", "Unifamilial" = 
+                                     "dashed", "Autre" = "dotted")) +
+  scale_y_continuous("Logements", labels = convert_number) + 
+  graph_theme_w_legendtitle +
+  theme(legend.title.align = 0.5) +
+  guides(
+    colour = guide_legend(ncol = 1),
+    shape = guide_legend(ncol = 1),
+    linetype = guide_legend(ncol = 1)
+  )
 
+plot_dwelling_targets_size_weak_1phs <- 
+  dwelling_targets_size |> 
+  pivot_longer(-year) |> 
+  mutate(isq = sub("^[^_]+_([^_]+)_.*", "\\1", name),
+         var_to = sub("^[^_]+_[^_]+_([^_]+)_.*", "\\1", name),
+         br = sub("^[^_]+_[^_]+_[^_]+_([^_]+)_.*", "\\1", name),
+         hs = sub(".*_([^_]+)$", "\\1", name),
+         br_hs = paste0(br,"-", hs)) |>
+  filter(br == "weak") |> 
+  mutate(title = case_when(hs == "s1" ~ "Ménage d'une personne",
+                           hs == "s2" ~ "Ménage de 2 ou 3 personnes",
+                           hs == "s4" ~ "Ménage de 4 personnes et plus")) |>
+  ggplot(aes(year, value, shape = var_to)) +
+  geom_line(aes(linetype = type), size = 0.75) +
+  geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
+  facet_wrap(vars(title), nrow = 3) +
+  scale_x_continuous(NULL) + 
+  scale_colour_manual("Scénario ISQ", 
+                      values = c(`ref` = "#73AD80", `strong` = "#E08565", 
+                                 `weak` = "#A3B0D1"), 
+                      labels = c(`ref` = "Référence", `strong` = "Fort", 
+                                 `weak` = "Faible")) +
+  scale_shape_manual("Variation du taux d'occupation", 
+                     values = c(strong = 16, weak = 17), 
+                     labels = c(`strong` = "Fort", `weak` = "Faible")) +
+  scale_linetype_manual("Typologie du logement", 
+                        values = c("Appartements" = "solid", "Unifamilial" = 
+                                     "dashed", "Autre" = "dotted")) +
+  scale_y_continuous("Logements", labels = convert_number) + 
+  graph_theme_w_legendtitle +
+  theme(legend.title.align = 0.5) +
+  guides(
+    colour = guide_legend(ncol = 1),
+    shape = guide_legend(ncol = 1),
+    linetype = guide_legend(ncol = 1)
+  )
+
+if (.Platform$OS.type == "windows") ggsave_pdf_png(
+  plot_dwelling_targets_size_strong_1phs, 
+  filename = "outputs/targets/plot_dwelling_targets_size_strong_1phs.pdf",
+  width = 6.5, height = 6)
+
+if (.Platform$OS.type == "windows") ggsave_pdf_png(
+  plot_dwelling_targets_size_weak_1phs, filename = "outputs/targets/plot_dwelling_targets_size_weak_1phs.pdf",
+  width = 6.5, height = 6)
 
 # Bedroom count: HH-BR ratio ----------------------------------------------
 
@@ -1298,9 +1379,6 @@ size_br <-
     s4_br = s4_plus / br_three) |> 
   select(year, s1_br:s4_br) |> 
   summarize(across(-year, mean))
-
-size_br
-
 
 # Dedicated old-age housing -----------------------------------------------
 
@@ -1366,7 +1444,7 @@ plot_dwelling_targets_rpa <-
   ggplot(aes(year, value, colour = name)) +
   geom_point() +
   geom_line(size = 0.25) +
-  scale_y_continuous("Achèvements nécessaires", labels = convert_number) +
+  scale_y_continuous("RPA nécessaires", labels = convert_number) +
   scale_x_continuous(NULL) + 
   scale_colour_manual(NULL, labels = c("Scénario de référence", "Scénario fort", 
                                        "Scénario faible"),
