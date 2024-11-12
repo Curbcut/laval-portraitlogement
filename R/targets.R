@@ -1212,6 +1212,7 @@ if (.Platform$OS.type == "windows") ggsave_pdf_png(
   filename = "outputs/targets/plot_size_trend.pdf",
   width = 6.5, height = 4)
 
+
 # Dwelling targets by household size --------------------------------------
 
 # Create annual percentage targets for all household sizes
@@ -1274,8 +1275,7 @@ plot_dwelling_targets_size_strong_1phs <-
   guides(
     colour = guide_legend(ncol = 1),
     shape = guide_legend(ncol = 1),
-    linetype = guide_legend(ncol = 1)
-  )
+    linetype = guide_legend(ncol = 1))
 
 plot_dwelling_targets_size_weak_1phs <- 
   dwelling_targets_size |> 
@@ -1311,8 +1311,7 @@ plot_dwelling_targets_size_weak_1phs <-
   guides(
     colour = guide_legend(ncol = 1),
     shape = guide_legend(ncol = 1),
-    linetype = guide_legend(ncol = 1)
-  )
+    linetype = guide_legend(ncol = 1))
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_dwelling_targets_size_strong_1phs, 

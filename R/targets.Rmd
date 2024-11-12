@@ -259,6 +259,10 @@ plot_start_targets_typology_3
 
 # Scenarios for dwelling-size-specific housing targets
 
+As the Laval population changes over time, the population's housing needs will change as well. While many aspects of this change are not amenable to modelling and to setting targets, one 
+
+
+A clearly observable trend over the last twenty years in Laval has been an increase in one-person households. 
 
 
 # Housing targets for older-adult housing
