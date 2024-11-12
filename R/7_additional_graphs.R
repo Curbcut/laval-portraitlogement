@@ -33,7 +33,13 @@ get_pyramid_mixed <- function(region) {
   f <- get_pyramid(region = region, age_vectors_female) |> 
     mutate(genre = "Femmes")
   
-  rbind(m, f) |> 
+  t <- merge(m, f, by = "age")
+  t$pop <- t$pop.x + t$pop.y
+  t <- t[c("age", "pop")]
+  t <- tibble::as_tibble(t)
+  t$genre = "Total"
+  
+  rbind(m, f, t) |> 
     group_by(genre) |> 
     mutate(total_pop = sum(pop)) |> 
     mutate(pop_pct = pop / total_pop) |> 
@@ -54,6 +60,7 @@ population_data$geo <- factor(population_data$geo,
 
 age_pyramid <- 
   population_data |> 
+  filter(genre != "Total") |> 
   mutate(pop_pct = ifelse(genre == "Hommes", -pop_pct, pop_pct)) |> 
   ggplot(aes(x = age, y = pop_pct, color = geo, group = interaction(geo, genre))) +
   geom_smooth(method = "loess", span = 0.1, se = FALSE, size = 1) + # Apply smoothing with LOESS
@@ -80,7 +87,8 @@ write_excel_csv(population_data, file = "data/complementary_data_output/age_pyra
 # Got to extract age through many CSDs for découpage administratif du Québec
 census_csds <- get_census("CA21", regions = list(PR = 24), level = "CSD", geo_format = "sf")
 census_csds <- sf::st_transform(csds, crs = 32618)
-csds$area <- cc.buildr::get_area(csds)
+csds <- census_csds
+csds$area <- cc.buildr::get_area(census_csds)
 
 ra <- read_sf("data/region_admin/regio_s.shp")
 lanau <- ra[ra$RES_NM_REG == "Lanaudière", ]
@@ -122,7 +130,8 @@ population_data$geo <- factor(population_data$geo,
                                          "RMR de Montréal", "Québec", "Laval"))
 
 structure_age_compares <- 
-population_data %>%
+  population_data %>%
+  filter(genre == "Total") |> 
   mutate(pop_pct = abs(pop_pct)) |> 
   ggplot(aes(x = age, y = pop_pct, color = geo, group = geo)) +
   geom_smooth(method = "loess", span = 0.1, se = FALSE, size = 1) +
@@ -145,12 +154,12 @@ projected <-
          `...1` == "Référence A2024") |> 
   rename(`Année` = `...4`,
          `genre` = ...5) |> 
-  filter(genre %in% c(1,2)) |> 
+  filter(genre %in% c(1,2,3)) |> 
   select(Année, genre, `0-4`:`100+`) |> 
   mutate_all(as.numeric) |> 
   pivot_longer(cols = `0-4`:`100+`, names_to = "age", values_to = "pop") |> 
   filter(Année %in% c(2021, 2041)) |> 
-  mutate(genre = ifelse(genre == 1, "Hommes", "Femmes"))
+  mutate(genre = ifelse(genre == 1, "Hommes", ifelse(genre == 2, "Femmes", "Total")))
 
 age_vectors_male <- paste0("v_CA01_", 7:24)
 age_vectors_female <- paste0("v_CA01_", 26:43)
@@ -168,19 +177,30 @@ get_pyramid_2001 <- function(region, vectors) {
     mutate(Année = 2001)
 }
 
+
+m <- get_pyramid_2001(region = list("CSD" = 2465005), vectors = age_vectors_male) |> 
+  mutate(genre = "Hommes")
+f <- get_pyramid_2001(region = list("CSD" = 2465005), vectors = age_vectors_female) |> 
+  mutate(genre = "Femmes")
+
+t <- merge(m, f, by = "age")
+t$pop <- t$pop.x + t$pop.y
+t <- t[c("age", "pop")]
+t <- tibble::as_tibble(t)
+t$genre = "Total"
+t$`Année` <- 2001
+
+population_data_raw <- bind_rows(m, f, t)
+
+
 population_data_raw <- 
-  bind_rows(
-    get_pyramid_2001(region = list("CSD" = 2465005), vectors = age_vectors_male) |> 
-      mutate(genre = "Hommes"),
-    get_pyramid_2001(region = list("CSD" = 2465005), vectors = age_vectors_female) |> 
-      mutate(genre = "Femmes"),
-    projected
-  ) |> 
+  rbind(population_data_raw, projected) |> 
   group_by(genre, Année) |> 
   mutate(total_pop = sum(pop)) |> 
   mutate(pop_pct = pop / total_pop) |> 
   ungroup() |> 
-  select(-total_pop)
+  select(-total_pop) |> 
+  arrange(`Année`, `genre`)
 
 population_data <- population_data_raw
 
@@ -193,6 +213,7 @@ population_data$Année <- factor(as.character(population_data$Année),
 
 age_pyramid_project <- 
 population_data |> 
+  filter(genre != "Total") |> 
   mutate(pop_pct = pop_pct / 4) |> 
   mutate(pop_pct = ifelse(genre == "Femmes", -pop_pct, pop_pct)) |> 
   ggplot(aes(x = age, y = pop_pct, color = as.factor(Année), group = interaction(Année, genre))) +
@@ -210,7 +231,9 @@ population_data |>
 
 
 ggsave_pdf_png(age_pyramid_project, "outputs/7/age_pyramid_project.pdf", width = 6.5, height = 3.5)
-write_excel_csv(population_data_raw, file = "data/complementary_data_output/age_pyramid_project.csv")
+population_data_raw_tosave <- population_data_raw
+population_data_raw_tosave$age <- paste("Groupe", population_data_raw_tosave$age)
+write_excel_csv(population_data_raw_tosave, file = "data/complementary_data_output/age_pyramid_project.csv")
 
 
 # Proportions groupe d'âge ------------------------------------------------
