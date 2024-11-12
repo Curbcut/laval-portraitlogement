@@ -1265,9 +1265,6 @@ plot_dwelling_targets_size_strong_1phs <-
   scale_shape_manual("Variation du taux d'occupation", 
                      values = c(strong = 16, weak = 17), 
                      labels = c(`strong` = "Fort", `weak` = "Faible")) +
-  scale_linetype_manual("Typologie du logement", 
-                        values = c("Appartements" = "solid", "Unifamilial" = 
-                                     "dashed", "Autre" = "dotted")) +
   scale_y_continuous("Logements", labels = convert_number) + 
   graph_theme_w_legendtitle +
   theme(legend.title.align = 0.5) +
@@ -1300,9 +1297,6 @@ plot_dwelling_targets_size_weak_1phs <-
   scale_shape_manual("Variation du taux d'occupation", 
                      values = c(strong = 16, weak = 17), 
                      labels = c(`strong` = "Fort", `weak` = "Faible")) +
-  scale_linetype_manual("Typologie du logement", 
-                        values = c("Appartements" = "solid", "Unifamilial" = 
-                                     "dashed", "Autre" = "dotted")) +
   scale_y_continuous("Logements", labels = convert_number) + 
   graph_theme_w_legendtitle +
   theme(legend.title.align = 0.5) +
@@ -1314,12 +1308,12 @@ plot_dwelling_targets_size_weak_1phs <-
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_dwelling_targets_size_strong_1phs, 
   filename = "outputs/targets/plot_dwelling_targets_size_strong_1phs.pdf",
-  width = 6.5, height = 6)
+  width = 6.5, height = 8)
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_dwelling_targets_size_weak_1phs, 
   filename = "outputs/targets/plot_dwelling_targets_size_weak_1phs.pdf",
-  width = 6.5, height = 6)
+  width = 6.5, height = 8)
 
 
 # Bedroom count: HH-BR ratio ----------------------------------------------
@@ -1425,9 +1419,6 @@ plot_dwelling_targets_br_strong_1phs <-
   scale_shape_manual("Variation du taux d'occupation", 
                      values = c(strong = 16, weak = 17), 
                      labels = c(`strong` = "Fort", `weak` = "Faible")) +
-  scale_linetype_manual("Typologie du logement", 
-                        values = c("Appartements" = "solid", "Unifamilial" = 
-                                     "dashed", "Autre" = "dotted")) +
   scale_y_continuous("Logements", labels = convert_number) + 
   graph_theme_w_legendtitle +
   theme(legend.title.align = 0.5) +
@@ -1461,9 +1452,6 @@ plot_dwelling_targets_br_weak_1phs <-
   scale_shape_manual("Variation du taux d'occupation", 
                      values = c(strong = 16, weak = 17), 
                      labels = c(`strong` = "Fort", `weak` = "Faible")) +
-  scale_linetype_manual("Typologie du logement", 
-                        values = c("Appartements" = "solid", "Unifamilial" = 
-                                     "dashed", "Autre" = "dotted")) +
   scale_y_continuous("Logements", labels = convert_number) + 
   graph_theme_w_legendtitle +
   theme(legend.title.align = 0.5) +
@@ -1476,12 +1464,12 @@ plot_dwelling_targets_br_weak_1phs <-
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_dwelling_targets_br_strong_1phs, 
   filename = "outputs/targets/plot_dwelling_targets_br_strong_1phs.pdf",
-  width = 6.5, height = 6)
+  width = 6.5, height = 8)
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_dwelling_targets_br_weak_1phs, 
   filename = "outputs/targets/plot_dwelling_targets_br_weak_1phs.pdf",
-  width = 6.5, height = 6)
+  width = 6.5, height = 8)
 
 
 # Completion targets for bedrooms -----------------------------------------
@@ -1569,9 +1557,6 @@ plot_completion_targets_br_strong <-
   scale_shape_manual("Variation du taux d'occupation", 
                      values = c(strong = 16, weak = 17), 
                      labels = c(`strong` = "Fort", `weak` = "Faible")) +
-  scale_linetype_manual("Typologie du logement", 
-                        values = c("Appartements" = "solid", "Unifamilial" = 
-                                     "dashed", "Autre" = "dotted")) +
   scale_y_continuous("Achèvements", labels = convert_number) + 
   graph_theme_w_legendtitle +
   theme(legend.title.align = 0.5) +
@@ -1605,9 +1590,6 @@ plot_completion_targets_br_weak <-
   scale_shape_manual("Variation du taux d'occupation", 
                      values = c(strong = 16, weak = 17), 
                      labels = c(`strong` = "Fort", `weak` = "Faible")) +
-  scale_linetype_manual("Typologie du logement", 
-                        values = c("Appartements" = "solid", "Unifamilial" = 
-                                     "dashed", "Autre" = "dotted")) +
   scale_y_continuous("Achèvements", labels = convert_number) + 
   graph_theme_w_legendtitle +
   theme(legend.title.align = 0.5) +
@@ -1620,12 +1602,12 @@ plot_completion_targets_br_weak <-
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_completion_targets_br_strong, 
   filename = "outputs/targets/plot_completion_targets_br_strong.pdf",
-  width = 6.5, height = 6)
+  width = 6.5, height = 8)
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_completion_targets_br_weak, 
   filename = "outputs/targets/plot_completion_targets_br_weak.pdf",
-  width = 6.5, height = 6)
+  width = 6.5, height = 8)
 
 
 # Dedicated old-age housing -----------------------------------------------
