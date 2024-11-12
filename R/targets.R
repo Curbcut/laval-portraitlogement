@@ -1685,7 +1685,7 @@ qsavem(isq, plot_isq_households, occ_rate, occ_model, plot_occ_rate,
        plot_completions_monthly, dist_example, dist_out, 
        plot_start_targets_typology_1, plot_start_targets_typology_2, 
        plot_start_targets_typology_3,
-       plot_size_trend, dwelling_targets_size, size_br,
+       plot_size_trend, size_br,
        plot_isq_age, rpa_ratio, plot_dwelling_targets_rpa, 
        plot_completion_targets_rpa,
        file = "data/targets.qsm")

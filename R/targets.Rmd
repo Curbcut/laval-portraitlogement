@@ -271,6 +271,12 @@ The two household size trends can be applied to the global dwelling targets we d
 
 # Dwelling targets by bedroom count
 
+If small and large households will be an increasingly large share of the total Laval population in the future, to what extent does this imply a change in the size of dwelling units demanded in the city? Over the last ten years, the relationship between household size and dwelling unit size has been reasonably consistent. On average, there have been `r size_br$s1_br` one-person households per studio or one-bedroom unit, `r size_br$s2_br` two- or three-person households per two-bedroom unit, and `r size_br$s4_br` four-or-more-person households per three-or-more-bedroom unit. If these ratios hold steady into the future, this would imply a proportionate increase in studio and one-bedroom units and a proportionate decrease in two-bedroom units. Figure TKTK shows the precise dwelling targets by bedroom count implied by the household size scenario described above, under the assumption that the relationship between household size and dwelling size remains consistent with its recent historical average.
+
+
+# Completion targets by bedroom count
+
+To convert dwelling targets by bedroom count into annual completion targets by bedroom count, we follow the same procedure as with our global completion targets, assuming a constant rate of building attrition across different unit types. As before we set a floor of zero housing completions per year. The completion targets are shown in Figure TKTK.
 
 
 # Housing targets for older-adult housing
