@@ -1534,14 +1534,25 @@ completion_targets_br <-
 # Fix minimum completions at zero
 completion_targets_br <- 
   completion_targets_br |> 
-  mutate(across(-year, \(x) pmax(x, 0)))
+  pivot_longer(-year) |> 
+  mutate(group = str_remove(name, "_\\dbr"),
+         br = str_extract(name, "\\dbr")) |> 
+  mutate(group_sum = sum(value), .by = c(year, group)) |>  
+  mutate(
+    value = case_when(
+      group_sum <= 0 ~ 0,
+      sum(value < 0) == 1 & value < 0 ~ 0,
+      sum(value < 0) == 1 & value > 0 ~
+        value + (group_sum - sum(value[value > 0])) * 
+        value / sum(value[value > 0]),
+      sum(value < 0) == 0 ~ value), .by = c(year, group)) |> 
+  select(-c(group:group_sum)) |> 
+  pivot_wider()
 
 # Completions visualization
-# plot_completion_targets_br <-
-  # completion_targets_br |> 
-    dwelling_targets_br |> 
+plot_completion_targets_br <-
+  completion_targets_br |>
   pivot_longer(-year) |> 
-    filter(str_detect(name, "scn_ref_strong_strong")) |> 
   ggplot(aes(year, value, colour = name)) +
   geom_point()
 
