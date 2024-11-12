@@ -1254,7 +1254,6 @@ plot_dwelling_targets_size_strong_1phs <-
                            hs == "s2" ~ "Ménage de 2 ou 3 personnes",
                            hs == "s4" ~ "Ménage de 4 personnes et plus")) |>
   ggplot(aes(year, value, shape = var_to)) +
-  geom_line(aes(linetype = type), size = 0.75) +
   geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
   facet_wrap(vars(title), nrow = 3) +
   scale_x_continuous(NULL) + 
@@ -1290,7 +1289,6 @@ plot_dwelling_targets_size_weak_1phs <-
                            hs == "s2" ~ "Ménage de 2 ou 3 personnes",
                            hs == "s4" ~ "Ménage de 4 personnes et plus")) |>
   ggplot(aes(year, value, shape = var_to)) +
-  geom_line(aes(linetype = type), size = 0.75) +
   geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
   facet_wrap(vars(title), nrow = 3) +
   scale_x_continuous(NULL) + 
@@ -1416,7 +1414,6 @@ plot_dwelling_targets_br_strong_1phs <-
                            hs == "2br" ~ "Logement de deux CC",
                            hs == "3br" ~ "Logement de trois CC et plus")) |>
   ggplot(aes(year, value, shape = var_to)) +
-  geom_line(aes(linetype = type), size = 0.75) +
   geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
   facet_wrap(vars(title), nrow = 3) +
   scale_x_continuous(NULL) + 
@@ -1453,7 +1450,6 @@ plot_dwelling_targets_br_weak_1phs <-
                            hs == "2br" ~ "Logement de deux CC",
                            hs == "3br" ~ "Logement de trois CC et plus")) |>
   ggplot(aes(year, value, shape = var_to)) +
-  geom_line(aes(linetype = type), size = 0.75) +
   geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
   facet_wrap(vars(title), nrow = 3) +
   scale_x_continuous(NULL) + 
@@ -1548,12 +1544,88 @@ completion_targets_br <-
   select(-c(group:group_sum)) |> 
   pivot_wider()
 
-# Completions visualization
-plot_completion_targets_br <-
+# Visualization
+plot_completion_targets_br_strong <-
   completion_targets_br |>
   pivot_longer(-year) |> 
-  ggplot(aes(year, value, colour = name)) +
-  geom_point()
+  mutate(isq = sub("^[^_]+_([^_]+)_.*", "\\1", name),
+         var_to = sub("^[^_]+_[^_]+_([^_]+)_.*", "\\1", name),
+         br = sub("^[^_]+_[^_]+_[^_]+_([^_]+)_.*", "\\1", name),
+         hs = sub(".*_([^_]+)$", "\\1", name),
+         br_hs = paste0(br,"-", hs)) |>
+  filter(br == "strong") |> 
+  mutate(title = case_when(hs == "1br" ~ "Logement d'une CC",
+                           hs == "2br" ~ "Logement de deux CC",
+                           hs == "3br" ~ "Logement de trois CC et plus")) |>
+  ggplot(aes(year, value, shape = var_to)) +
+  geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
+  facet_wrap(vars(title), nrow = 3) +
+  scale_x_continuous(NULL) + 
+  scale_colour_manual("Scénario ISQ", 
+                      values = c(`ref` = "#73AD80", `strong` = "#E08565", 
+                                 `weak` = "#A3B0D1"), 
+                      labels = c(`ref` = "Référence", `strong` = "Fort", 
+                                 `weak` = "Faible")) +
+  scale_shape_manual("Variation du taux d'occupation", 
+                     values = c(strong = 16, weak = 17), 
+                     labels = c(`strong` = "Fort", `weak` = "Faible")) +
+  scale_linetype_manual("Typologie du logement", 
+                        values = c("Appartements" = "solid", "Unifamilial" = 
+                                     "dashed", "Autre" = "dotted")) +
+  scale_y_continuous("Achèvements", labels = convert_number) + 
+  graph_theme_w_legendtitle +
+  theme(legend.title.align = 0.5) +
+  guides(
+    colour = guide_legend(ncol = 1),
+    shape = guide_legend(ncol = 1),
+    linetype = guide_legend(ncol = 1)
+  )
+
+plot_completion_targets_br_weak <-
+  completion_targets_br |>
+  pivot_longer(-year) |> 
+  mutate(isq = sub("^[^_]+_([^_]+)_.*", "\\1", name),
+         var_to = sub("^[^_]+_[^_]+_([^_]+)_.*", "\\1", name),
+         br = sub("^[^_]+_[^_]+_[^_]+_([^_]+)_.*", "\\1", name),
+         hs = sub(".*_([^_]+)$", "\\1", name),
+         br_hs = paste0(br,"-", hs)) |>
+  filter(br == "weak") |> 
+  mutate(title = case_when(hs == "1br" ~ "Logement d'une CC",
+                           hs == "2br" ~ "Logement de deux CC",
+                           hs == "3br" ~ "Logement de trois CC et plus")) |>
+  ggplot(aes(year, value, shape = var_to)) +
+  geom_point(aes(colour = isq), size = 1.5, alpha = 0.75) +
+  facet_wrap(vars(title), nrow = 3) +
+  scale_x_continuous(NULL) + 
+  scale_colour_manual("Scénario ISQ", 
+                      values = c(`ref` = "#73AD80", `strong` = "#E08565", 
+                                 `weak` = "#A3B0D1"), 
+                      labels = c(`ref` = "Référence", `strong` = "Fort", 
+                                 `weak` = "Faible")) +
+  scale_shape_manual("Variation du taux d'occupation", 
+                     values = c(strong = 16, weak = 17), 
+                     labels = c(`strong` = "Fort", `weak` = "Faible")) +
+  scale_linetype_manual("Typologie du logement", 
+                        values = c("Appartements" = "solid", "Unifamilial" = 
+                                     "dashed", "Autre" = "dotted")) +
+  scale_y_continuous("Achèvements", labels = convert_number) + 
+  graph_theme_w_legendtitle +
+  theme(legend.title.align = 0.5) +
+  guides(
+    colour = guide_legend(ncol = 1),
+    shape = guide_legend(ncol = 1),
+    linetype = guide_legend(ncol = 1)
+  )
+
+if (.Platform$OS.type == "windows") ggsave_pdf_png(
+  plot_completion_targets_br_strong, 
+  filename = "outputs/targets/plot_completion_targets_br_strong.pdf",
+  width = 6.5, height = 6)
+
+if (.Platform$OS.type == "windows") ggsave_pdf_png(
+  plot_completion_targets_br_weak, 
+  filename = "outputs/targets/plot_completion_targets_br_weak.pdf",
+  width = 6.5, height = 6)
 
 
 # Dedicated old-age housing -----------------------------------------------
