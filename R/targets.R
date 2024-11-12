@@ -1320,8 +1320,10 @@ if (.Platform$OS.type == "windows") ggsave_pdf_png(
   width = 6.5, height = 6)
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
-  plot_dwelling_targets_size_weak_1phs, filename = "outputs/targets/plot_dwelling_targets_size_weak_1phs.pdf",
+  plot_dwelling_targets_size_weak_1phs, 
+  filename = "outputs/targets/plot_dwelling_targets_size_weak_1phs.pdf",
   width = 6.5, height = 6)
+
 
 # Bedroom count: HH-BR ratio ----------------------------------------------
 
@@ -1482,28 +1484,66 @@ if (.Platform$OS.type == "windows") ggsave_pdf_png(
   width = 6.5, height = 6)
 
 if (.Platform$OS.type == "windows") ggsave_pdf_png(
-  plot_dwelling_targets_br_weak_1phs, filename = "outputs/targets/plot_dwelling_targets_br_weak_1phs.pdf",
+  plot_dwelling_targets_br_weak_1phs, 
+  filename = "outputs/targets/plot_dwelling_targets_br_weak_1phs.pdf",
   width = 6.5, height = 6)
 
 
+# Completion targets for bedrooms -----------------------------------------
 
+dwellings_2021_br <- 
+  census_br |> 
+  filter(year == 2021)
 
+attrition_targets_br <- 
+  dwelling_targets_br |> 
+  mutate(across(-year, \(x) x * attrition_pct)) |> 
+  mutate(across(-year, cumsum))
 
+# Add attrition then remove 2021 dwellings and take dif to create annual targets
+completion_targets_br <-
+  (dwelling_targets_br + attrition_targets_br) |> 
+  as_tibble() |> 
+  mutate(year = year / 2) |> 
+  mutate(across(ends_with("_1br"), \(x) x - dwellings_2021_br$br_one),
+         across(ends_with("_2br"), \(x) x - dwellings_2021_br$br_two),
+         across(ends_with("_3br"), \(x) x - dwellings_2021_br$br_three)) |> 
+  add_row(year = 2021, scn_ref_weak_strong_1br = 0, scn_ref_weak_strong_2br = 0, 
+          scn_ref_weak_strong_3br = 0, scn_ref_weak_weak_1br = 0, 
+          scn_ref_weak_weak_2br = 0, scn_ref_weak_weak_3br = 0, 
+          scn_ref_strong_strong_1br = 0, scn_ref_strong_strong_2br = 0, 
+          scn_ref_strong_strong_3br = 0, scn_ref_strong_weak_1br = 0, 
+          scn_ref_strong_weak_2br = 0, scn_ref_strong_weak_3br = 0, 
+          scn_weak_weak_strong_1br = 0, scn_weak_weak_strong_2br = 0, 
+          scn_weak_weak_strong_3br = 0, scn_weak_weak_weak_1br = 0, 
+          scn_weak_weak_weak_2br = 0, scn_weak_weak_weak_3br = 0, 
+          scn_weak_strong_strong_1br = 0, scn_weak_strong_strong_2br = 0, 
+          scn_weak_strong_strong_3br = 0, scn_weak_strong_weak_1br = 0, 
+          scn_weak_strong_weak_2br = 0, scn_weak_strong_weak_3br = 0, 
+          scn_strong_weak_strong_1br = 0, scn_strong_weak_strong_2br = 0, 
+          scn_strong_weak_strong_3br = 0, scn_strong_weak_weak_1br = 0,
+          scn_strong_weak_weak_2br = 0, scn_strong_weak_weak_3br = 0,
+          scn_strong_strong_strong_1br = 0, scn_strong_strong_strong_2br = 0,
+          scn_strong_strong_strong_3br = 0, scn_strong_strong_weak_1br = 0,
+          scn_strong_strong_weak_2br = 0, scn_strong_strong_weak_3br = 0) |> 
+  arrange(year) |> 
+  mutate(across(-year, \(x) slider::slide_dbl(x, \(y) y[2] - y[1], 
+                                              .before = 1))) |> 
+  filter(year >= 2025)
 
+# Fix minimum completions at zero
+completion_targets_br <- 
+  completion_targets_br |> 
+  mutate(across(-year, \(x) pmax(x, 0)))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Completions visualization
+# plot_completion_targets_br <-
+  # completion_targets_br |> 
+    dwelling_targets_br |> 
+  pivot_longer(-year) |> 
+    filter(str_detect(name, "scn_ref_strong_strong")) |> 
+  ggplot(aes(year, value, colour = name)) +
+  geom_point()
 
 
 # Dedicated old-age housing -----------------------------------------------
