@@ -1,6 +1,23 @@
 #### Target calculations #######################################################
 
 source("R/utils/startup.R")
+library(openxlsx)
+
+create_wb <- function(table, name, filterable_cols, pct_cols = c(),
+                      value_cols = c(), file) {
+  wb <- createWorkbook()
+  addWorksheet(wb, name)
+  writeData(wb, name, table)
+  addFilter(wb, name, rows = 1, cols = filterable_cols) 
+  addStyle(wb, name, style = createStyle(numFmt = "0.00 %"), 
+           rows = 2:(nrow(table)+1), 
+           cols = pct_cols, gridExpand = TRUE)
+  addStyle(wb, name, style = createStyle(numFmt = "# ##0"), 
+           rows = 2:(nrow(table)+1), 
+           cols = value_cols, gridExpand = TRUE)
+  setColWidths(wb, name, cols = 1:ncol(table), widths = "auto")
+  saveWorkbook(wb, file, overwrite = TRUE)
+}
 
 
 # ISQ household projections -----------------------------------------------
@@ -98,6 +115,19 @@ if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_occ_rate, filename = "outputs/targets/plot_occ_rate.pdf",
   width = 6.5, height = 4)
 
+# Save an Excel file of taux d'occupationm projeté
+occ_rate_tosave <- occ_rate
+names(occ_rate_tosave)[1:3] <- c("Année", "Taux d'occupation", "Scénario")
+occ_rate_tosave <- occ_rate_tosave[c(1,3,2)]
+occ_rate_tosave$Scénario <- gsub("actual", "Valeurs réelles", occ_rate_tosave$Scénario)
+occ_rate_tosave$Scénario <- gsub("strong", "Fort", occ_rate_tosave$Scénario)
+occ_rate_tosave$Scénario <- gsub("weak", "Faible", occ_rate_tosave$Scénario)
+
+create_wb(table = occ_rate_tosave, 
+          name = "Taux d'occupation", 
+          filterable_cols = 2,
+          pct_cols = 3,
+          file = "data/objectifs/8222_projections_taux_occupation.xlsx")
 
 # Total required dwelling units -------------------------------------------
 
@@ -131,7 +161,7 @@ plot_dwelling_targets <-
          var_to = stringr::str_extract(name, "(?<=_)([^_]+)$")) |> 
   ggplot(aes(year, value, colour = isq)) +
   geom_point(aes(shape = var_to), size = 1.5) +
-  scale_y_continuous("Nombre total de\nlogement nécessaires", 
+  scale_y_continuous("Nombre total de\nlogements nécessaires", 
                      labels = convert_number) +
   scale_x_continuous(NULL) + 
   scale_colour_manual("Scénario ISQ", 
@@ -149,6 +179,28 @@ if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_dwelling_targets, filename = "outputs/targets/plot_dwelling_targets.pdf",
   width = 6.5, height = 4)
 
+# Save as xlsx
+dwelling_targets_tosave <- 
+dwelling_targets |> 
+  pivot_longer(-year) |> 
+  mutate(isq = stringr::str_extract(name, "_.*_"),
+         isq = gsub("_", "", isq),
+         isq = case_when(isq == "ref" ~ "Référence A2024",
+                         isq == "weak" ~ "Faible D2024",
+                         isq == "strong" ~ "Fort E2024"),
+         var_to = stringr::str_extract(name, "(?<=_)([^_]+)$"),
+         var_to = case_when(var_to == "weak" ~ "Faible",
+                            var_to == "strong" ~ "Fort")) |> 
+  transmute(`Année` = year,
+            `Scénario des ménages` = isq,
+            `Scénario du taux d'occupation` = var_to,
+            `Nombre total de logements nécessaires` = value)
+
+create_wb(table = dwelling_targets_tosave, 
+          name = "Logements nécessaires", 
+          filterable_cols = c(2,3),
+          value_cols = 4,
+          file = "data/objectifs/8223_objectifs_globaux_totaux_logements.xlsx")
 
 # Dwelling attrition rate -------------------------------------------------
 
@@ -259,6 +311,29 @@ if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_completion_targets,
   filename = "outputs/targets/plot_completion_targets.pdf",
   width = 6.5, height = 4)
+
+# Save as xlsx
+plot_completion_targets_tosave <- 
+  completion_targets |> 
+  pivot_longer(-year) |> 
+  mutate(isq = stringr::str_extract(name, "_.*_"),
+         isq = gsub("_", "", isq),
+         isq = case_when(isq == "ref" ~ "Référence A2024",
+                         isq == "weak" ~ "Faible D2024",
+                         isq == "strong" ~ "Fort E2024"),
+         var_to = stringr::str_extract(name, "(?<=_)([^_]+)$"),
+         var_to = case_when(var_to == "weak" ~ "Faible",
+                            var_to == "strong" ~ "Fort")) |> 
+  transmute(`Année` = year,
+            `Scénario des ménages` = isq,
+            `Scénario du taux d'occupation` = var_to,
+            `Achèvements` = value)
+
+create_wb(table = plot_completion_targets_tosave, 
+          name = "Achèvements", 
+          filterable_cols = c(2,3),
+          value_cols = 4,
+          file = "data/objectifs/8225_objectifs_globaux_achevements_logements.xlsx")
 
 
 # Starts and completions for general model --------------------------------
@@ -485,6 +560,8 @@ if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_dwelling_targets_typology_1, 
   filename = "outputs/targets/plot_dwelling_targets_typology_1.pdf",
   width = 6.5, height = 6)
+
+
 
 attrition_targets_typology_1 <- 
   dwelling_targets_typology_1 |> 
@@ -1101,6 +1178,46 @@ if (.Platform$OS.type == "windows") ggsave_pdf_png(
   width = 6.5, height = 6)
 
 
+# Save typology -----------------------------------------------------------
+
+rbind(
+  start_targets_typology_1 |> 
+    pivot_longer(-year) |> 
+    mutate(`Scénario Curbcut (typologie)` = 1, .after = year),
+  start_targets_typology_2 |> 
+    pivot_longer(-year) |> 
+    mutate(`Scénario Curbcut (typologie)` = 2, .after = year),
+  start_targets_typology_3 |> 
+    pivot_longer(-year) |> 
+    mutate(`Scénario Curbcut (typologie)` = 3, .after = year)
+) |> 
+  mutate(
+    type = case_when(
+      str_detect(name, "apart") ~ "Appartements",
+      str_detect(name, "single") ~ "Unifamilial",
+      str_detect(name, "other") ~ "Autre"),
+    name = str_remove(name, "(_apart)|(_single)|(_other)"),
+    name = str_remove(name, "(_apart)|(_single)|(_other)")) |> 
+  mutate(isq = stringr::str_extract(name, "_.*_"),
+         isq = gsub("_", "", isq),
+         isq = case_when(isq == "ref" ~ "Référence A2024",
+                         isq == "weak" ~ "Faible D2024",
+                         isq == "strong" ~ "Fort E2024"),
+         var_to = stringr::str_extract(name, "(?<=_)([^_]+)$"),
+         var_to = case_when(var_to == "weak" ~ "Faible",
+                            var_to == "strong" ~ "Fort")) |> 
+  transmute(`Année` = year,
+            `Scénario des ménages` = isq,
+            `Scénario du taux d'occupation` = var_to,
+            Typologie = type,
+            `Scénario Curbcut (typologie)` = `Scénario Curbcut (typologie)`,
+            `Mises en chantier` = value) |> 
+  create_wb(name = "Mises en chantier", 
+            filterable_cols = c(2,3,4,5),
+            value_cols = 6,
+            file = "data/objectifs/8235_objectifs_mises_en_chantier_typologie.xlsx")
+
+
 # Bedroom count: household sizes ------------------------------------------
 
 # Get census vectors for household size
@@ -1609,6 +1726,35 @@ if (.Platform$OS.type == "windows") ggsave_pdf_png(
   filename = "outputs/targets/plot_completion_targets_br_weak.pdf",
   width = 6.5, height = 8)
 
+# Save typology -----------------------------------------------------------
+
+completion_targets_br |>
+  pivot_longer(-year) |> 
+  mutate(isq = sub("^[^_]+_([^_]+)_.*", "\\1", name),
+         var_to = sub("^[^_]+_[^_]+_([^_]+)_.*", "\\1", name),
+         br = sub("^[^_]+_[^_]+_[^_]+_([^_]+)_.*", "\\1", name),
+         hs = sub(".*_([^_]+)$", "\\1", name),
+         br_hs = paste0(br,"-", hs)) |>
+  mutate(isq = case_when(isq == "ref" ~ "Référence A2024",
+                         isq == "weak" ~ "Faible D2024",
+                         isq == "strong" ~ "Fort E2024"),
+         var_to = case_when(var_to == "weak" ~ "Faible",
+                            var_to == "strong" ~ "Fort"),
+         br = case_when(br == "weak" ~ "Faible",
+                        br == "strong" ~ "Fort")) |> 
+  mutate(hs = case_when(hs == "1br" ~ "Une chambre",
+                        hs == "2br" ~ "Deux chambres",
+                        hs == "3br" ~ "Trois chambres et plus")) |> 
+  transmute(`Année` = year,
+            `Scénario des ménages` = isq,
+            `Scénario du taux d'occupation` = var_to,
+            `Scénario Curbcut (Ménages)` = br,
+            `Taille du logement` = hs,
+            `Achèvements` = value) |> 
+  create_wb(name = "Achèvements", 
+            filterable_cols = c(2,3,4,5),
+            value_cols = 6,
+            file = "data/objectifs/8243_objectifs_achevements_taille.xlsx")
 
 # Dedicated old-age housing -----------------------------------------------
 
@@ -1725,6 +1871,21 @@ if (.Platform$OS.type == "windows") ggsave_pdf_png(
   plot_completion_targets_rpa, 
   filename = "outputs/targets/plot_completion_targets_rpa.pdf",
   width = 6.5, height = 4)
+
+
+# Save
+completion_targets_rpa |>
+  pivot_longer(-year) |> 
+  mutate(name = case_when(name == "reference" ~ "Référence A2024",
+                          name == "weak" ~ "Faible D2024",
+                          name == "strong" ~ "Fort E2024")) |> 
+  transmute(`Année` = year,
+            `Scénario des ménages` = name,
+            `Achèvements` = value) |> 
+  create_wb(name = "Achèvements", 
+            filterable_cols = c(2),
+            value_cols = 3,
+            file = "data/objectifs/825_objectifs_achevements_personnes_agees.xlsx")
 
 
 # Save outputs ------------------------------------------------------------
