@@ -259,10 +259,18 @@ plot_start_targets_typology_3
 
 # Scenarios for dwelling-size-specific housing targets
 
-As the Laval population changes over time, the population's housing needs will change as well. While many aspects of this change are not amenable to modelling and to setting targets, one 
+As the Laval population changes over time, the population's housing needs will change as well. While many aspects of this change will not be foreseeable in advance, a clearly observable trend over the last twenty years in Laval has been an increase in one-person households. This growth has mostly come at the expense of two- and three-person households, which have been declining as a share of total households, while larger households have been holding steady. If this trend were to continue into the future, it would potentially imply a growing need for studio and one-bedroom homes.
+
+To explore this possibility, we define two potential future pathways for the one-person share of Laval households. The "strong" scenario is one in which this share increases linearly as a function of time. The "weak" scenario takes this same linear trend and adds exponential decay, so that the growth of one-person share of households progressively slows. Both of these trends are excellent fits to the historical record, and both represent plausible future possibilities. They are illustrated in Figure TKTK.
 
 
-A clearly observable trend over the last twenty years in Laval has been an increase in one-person households. 
+# Dwelling targets by household size
+
+The two household size trends can be applied to the global dwelling targets we developed above to define household-size-specific dwelling targets. In both cases, we take the projected future share of one-person households, hold the share of four-or-more-person households constant, and then allocate the remaining share of dwelling units to two- and three-person households. The results are given in Figures TKTK and TKTK.
+
+
+# Dwelling targets by bedroom count
+
 
 
 # Housing targets for older-adult housing
