@@ -6,4 +6,5 @@ Les solutions Curbcut, une filiale de l’Université McGill, ont été́ manda
 *	Mettre à jour et bonifier le diagnostic en matière d’habitation sur le territoire lavallois, en décrivant les enjeux et les besoins en la matière ; 
 *	Intégrer l’indicateur stratégique suivant : la variation du nombre et des parts de logements par type de construction résidentielle ; 
 *	Définir les cibles pour cet indicateur aux horizons quatre, huit et douze ans.
+
 Ce projet a été réalisé en étroite collaboration entre Les solutions Curbcut et le service de l’urbanisme de la Ville de Laval.
